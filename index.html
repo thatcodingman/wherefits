@@ -504,18 +504,26 @@ function drawWorld(dt){
   // Tier 2: the horizon opens. These rewards are deliberately placed in
   // unobstructed right-side landscape so the user can actually see them.
   if(horizonOpens){
-    // A proper bridge now crosses the visible right-side water.
-    const bx1=cw*.79,bx2=cw*.96,by=ch*.735;
+    // Tier 2 bridge: intentionally large and placed in the open lower-right water so it is unmistakable.
+    const bx1=cw*.79,bx2=cw*.995,by=ch*.805;
     ctx.save();
-    ctx.strokeStyle=sceneIndex===3?"#5a4b3b":"#805b3f";ctx.lineWidth=12;
-    ctx.beginPath();ctx.moveTo(bx1,by);ctx.quadraticCurveTo((bx1+bx2)/2,by-20,bx2,by);ctx.stroke();
-    ctx.strokeStyle=sceneIndex===3?"#b29a72":"#d3a875";ctx.lineWidth=2.5;
-    for(let i=0;i<11;i++){
-      const x=bx1+i*(bx2-bx1)/10, yy=by-20*Math.sin(i/10*Math.PI);
-      ctx.beginPath();ctx.moveTo(x,yy-8);ctx.lineTo(x,yy+8);ctx.stroke();
+    // supports
+    ctx.strokeStyle=sceneIndex===3?"#4f4338":"#6e5139";ctx.lineWidth=5;
+    [bx1+.025*cw,bx2-.025*cw].forEach(x=>{ctx.beginPath();ctx.moveTo(x,by+7);ctx.lineTo(x,by+38);ctx.stroke()});
+    // bridge deck
+    ctx.strokeStyle=sceneIndex===3?"#6a5845":"#7f5738";ctx.lineWidth=15;
+    ctx.beginPath();ctx.moveTo(bx1,by);ctx.quadraticCurveTo((bx1+bx2)/2,by-28,bx2,by);ctx.stroke();
+    // bright top edge
+    ctx.strokeStyle=sceneIndex===3?"#c4ab7e":"#e0b77d";ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(bx1,by-5);ctx.quadraticCurveTo((bx1+bx2)/2,by-33,bx2,by-5);ctx.stroke();
+    // railing posts and rails
+    ctx.strokeStyle=sceneIndex===3?"#b89e74":"#d7aa70";ctx.lineWidth=3;
+    for(let i=0;i<13;i++){
+      const x=bx1+i*(bx2-bx1)/12, yy=by-28*Math.sin(i/12*Math.PI);
+      ctx.beginPath();ctx.moveTo(x,yy-2);ctx.lineTo(x,yy-24);ctx.stroke();
     }
-    ctx.strokeStyle=sceneIndex===3?"rgba(238,220,177,.62)":"rgba(244,221,177,.95)";ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(bx1,by-8);ctx.quadraticCurveTo((bx1+bx2)/2,by-27,bx2,by-8);ctx.stroke();
+    ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(bx1,by-21);ctx.quadraticCurveTo((bx1+bx2)/2,by-51,bx2,by-21);ctx.stroke();
     ctx.restore();
 
     // A clearly visible mountain waterfall drops into the lake at the right horizon.
@@ -527,30 +535,42 @@ function drawWorld(dt){
     ctx.moveTo(fx-26,top+3);ctx.quadraticCurveTo(fx-14,top-8,fx-4,top+4);
     ctx.lineTo(fx+12,top-4);ctx.quadraticCurveTo(fx+23,top+8,fx+27,top+18);
     ctx.lineTo(fx+18,shore);ctx.lineTo(fx-20,shore);ctx.closePath();ctx.fill();
-    // water ribbons
+    // several falling water ribbons with a subtle animated lateral shift
+    const wfShift=reduceMotion?0:Math.sin(t*2.2)*3;
     ctx.strokeStyle=sceneIndex===3?"rgba(187,235,226,.72)":"rgba(239,255,250,.96)";
+    ctx.lineCap="round";
+    ctx.lineWidth=7;
+    ctx.beginPath();ctx.moveTo(fx-7,top);ctx.bezierCurveTo(fx-17+wfShift,top+38,fx+10-wfShift,top+80,fx-5,shore);ctx.stroke();
     ctx.lineWidth=4;
-    ctx.beginPath();ctx.moveTo(fx-4,top);ctx.bezierCurveTo(fx-10,top+42,fx+9,top+78,fx-1,shore);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(fx+3,top+2);ctx.bezierCurveTo(fx-3,top+43,fx+19+wfShift,top+78,fx+5,shore-2);ctx.stroke();
     ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(fx+6,top+6);ctx.bezierCurveTo(fx+1,top+46,fx+15,top+83,fx+8,shore-4);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(fx+13,top+10);ctx.bezierCurveTo(fx+7,top+46,fx+22,top+82,fx+14,shore-6);ctx.stroke();
     // splash pool
     ctx.globalAlpha=.7;ctx.strokeStyle="#eefcf6";ctx.lineWidth=2;
     for(let i=0;i<3;i++){
       ctx.beginPath();ctx.ellipse(fx+3,shore+i*4,18+i*8,3+i,0,0,Math.PI*2);ctx.stroke();
+    }
+    ctx.fillStyle=sceneIndex===3?"rgba(214,244,238,.65)":"rgba(255,255,255,.82)";
+    for(let i=0;i<7;i++){
+      const dx=Math.sin(i*4.7)*18, dy=(i%3)*5 + (reduceMotion?0:Math.sin(t*2+i)*2);
+      ctx.beginPath();ctx.arc(fx+dx,shore-8-dy,1.7,0,Math.PI*2);ctx.fill();
     }
     ctx.restore();
 
     // Small settlement in the open far-right horizon: more than the first cabin,
     // but still distant enough to preserve the feeling of a developing world.
     const village=[
-      [0.925,0.625,16],[0.965,0.615,13],[0.885,0.635,11]
+      [0.905,0.765,25],[0.965,0.745,20],[0.845,0.785,17]
     ];
     village.forEach(([xp,yp,size],i)=>{
       const x=cw*xp,y=ch*yp;
       ctx.save();
       ctx.fillStyle=sceneIndex===3?"#29483f":i===0?"#8a6248":"#927052";
-      ctx.fillRect(x-size/2,y-size*.45,size,size*.45);
-      ctx.beginPath();ctx.moveTo(x-size*.62,y-size*.45);ctx.quadraticCurveTo(x,y-size*.9,x+size*.62,y-size*.45);ctx.closePath();ctx.fill();
+      ctx.fillRect(x-size/2,y-size*.55,size,size*.55);
+      ctx.beginPath();ctx.moveTo(x-size*.68,y-size*.55);ctx.quadraticCurveTo(x,y-size*1.02,x+size*.68,y-size*.55);ctx.closePath();ctx.fill();
+      // warm chimney smoke makes the settlement readable even at a distance
+      ctx.fillStyle=sceneIndex===3?"rgba(224,238,231,.25)":"rgba(255,255,255,.45)";
+      ctx.fillRect(x+size*.22,y-size*.88,3,9);
       if(sceneIndex===3){
         ctx.fillStyle="#ffe5a0";ctx.fillRect(x-size*.12,y-size*.32,size*.20,size*.18);
       }else{
