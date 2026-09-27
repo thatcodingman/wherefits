@@ -527,8 +527,8 @@ function drawWorld(dt){
     ctx.save();
 
     // WATER CHANNEL — the bridge crosses this exact body of water.
-    const nearBank={x:cw*.57,y:ch*.83};
-    const farBank={x:cw*.965,y:ch*.69};
+    const nearBank={x:cw*.53,y:ch*.83};
+    const farBank={x:cw*.99,y:ch*.69};
     const dx=farBank.x-nearBank.x, dy=farBank.y-nearBank.y;
     const bridgeLen=Math.hypot(dx,dy);
     const ux=dx/bridgeLen, uy=dy/bridgeLen;
@@ -562,15 +562,15 @@ function drawWorld(dt){
 
     // ROAD FROM THE SAND PATH TO THE NEAR BRIDGE APPROACH.
     ctx.strokeStyle=sceneIndex===3?'#303a37':'#555a55';ctx.lineWidth=31;ctx.lineCap='round';
-    ctx.beginPath();ctx.moveTo(cw*.50,ch*.995);ctx.bezierCurveTo(cw*.51,ch*.94,cw*.53,ch*.88,nearBank.x,nearBank.y);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cw*.50,ch*.995);ctx.bezierCurveTo(cw*.50,ch*.94,cw*.515,ch*.88,nearBank.x,nearBank.y);ctx.stroke();
     ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.78)':'rgba(255,225,145,.98)';ctx.lineWidth=2.5;ctx.setLineDash([15,11]);
-    ctx.beginPath();ctx.moveTo(cw*.50,ch*.995);ctx.bezierCurveTo(cw*.51,ch*.94,cw*.53,ch*.88,nearBank.x,nearBank.y);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(cw*.50,ch*.995);ctx.bezierCurveTo(cw*.50,ch*.94,cw*.515,ch*.88,nearBank.x,nearBank.y);ctx.stroke();ctx.setLineDash([]);
 
     // ROAD FROM THE FAR BRIDGE APPROACH INTO THE HOMES.
     ctx.strokeStyle=sceneIndex===3?'#303a37':'#555a55';ctx.lineWidth=31;
-    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*.975,ch*.65,cw*1.005,ch*.60,cw*1.04,ch*.57);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*.995,ch*.65,cw*1.015,ch*.60,cw*1.04,ch*.57);ctx.stroke();
     ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.78)':'rgba(255,225,145,.98)';ctx.lineWidth=2.5;ctx.setLineDash([15,11]);
-    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*.975,ch*.65,cw*1.005,ch*.60,cw*1.04,ch*.57);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*.995,ch*.65,cw*1.015,ch*.60,cw*1.04,ch*.57);ctx.stroke();ctx.setLineDash([]);
 
     // RETRACTABLE BRIDGE.
     // Two substantial bridge leaves extend from opposite banks and meet at center.
