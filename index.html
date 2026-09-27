@@ -64,7 +64,7 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 </head>
 <body>
 <div id="world" aria-hidden="true"><canvas id="worldCanvas"></canvas><div class="world-ui-layer"></div><div class="world-badge" id="worldBadge">Your world · first signs</div></div><div class="overlay"></div>
-<div class="world-unlock" id="worldUnlock" aria-hidden="true"><div class="world-unlock-card"><div class="world-unlock-icon">🌿</div><div class="world-unlock-kicker">10% · FIRST SIGNS</div><h2>The world is starting to change.</h2><p>Your first meaningful progress has opened up the landscape. More life is appearing, and there's a little more waiting ahead.</p><button type="button" id="closeWorldUnlock">Explore the world</button></div></div>
+<div class="world-unlock" id="worldUnlock" aria-hidden="true"><div class="world-unlock-card"><div class="world-unlock-icon">🌿</div><div class="world-unlock-kicker">25% · THE HORIZON OPENS</div><h2>The horizon opens.</h2><p>You've made enough progress for the world to open up. New mountains, water, paths, and places are appearing ahead.</p><button type="button" id="closeWorldUnlock">Explore the world</button></div></div>
 <main class="shell">
 <header><a class="brand" href="#" aria-label="WhereFits home"><div class="logo"></div><div><strong>WHEREFITS</strong><span>Build a life that fits you.</span></div></a><div class="top-actions"><button class="ghost" id="resetDemo">Reset demo</button><button class="ghost" id="themePulse">Change scene</button><button class="ghost" id="worldMotion">Pause world</button></div></header>
 <section class="hero"><div class="eyebrow">Your life, one move at a time</div><h1>Build a life that fits you.</h1><p>WhereFits turns the things you want to change into a clear plan, a few meaningful moves today, and a place to see your progress.</p></section>
@@ -449,7 +449,8 @@ function drawWorld(dt){
   for(let i=0;i<4;i++){const x=cw*(.80+i*.06),y=ch*(.81-i*.032);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-ch*.09);ctx.stroke()}
 
   // Distant little homes/lights establish a place beyond the path.
-  for(let i=0;i<(startingWorld?0:firstSigns?1:horizonOpens?5:7);i++){
+  // Tier 2 gets its larger settlement later in the open right-side area.
+  for(let i=0;i<(startingWorld?0:firstSigns?1:0);i++){
     const x=cw*(.29+i*.065),y=ch*(.615-(i%2)*.008);
     ctx.fillStyle=sceneIndex===3?"rgba(30,51,47,.9)":"rgba(73,99,82,.70)";
     ctx.fillRect(x,y-7,15,8);
@@ -500,15 +501,70 @@ function drawWorld(dt){
     ctx.restore();
   }
 
-  // Tier 2: the landscape gains a proper bridge, waterfall pool, and tiny distant settlement.
+  // Tier 2: the horizon opens. These rewards are deliberately placed in
+  // unobstructed right-side landscape so the user can actually see them.
   if(horizonOpens){
-    const bx1=cw*.62,bx2=cw*.77,by=ch*.715;
-    ctx.save();ctx.strokeStyle=sceneIndex===3?"#625642":"#8d6747";ctx.lineWidth=10;ctx.beginPath();ctx.moveTo(bx1,by);ctx.quadraticCurveTo((bx1+bx2)/2,by-18,bx2,by);ctx.stroke();
-    ctx.strokeStyle=sceneIndex===3?"#b29a72":"#d0a776";ctx.lineWidth=2;
-    for(let i=0;i<9;i++){const x=bx1+i*(bx2-bx1)/8,yy=by-18*Math.sin(i/8*Math.PI);ctx.beginPath();ctx.moveTo(x,yy-7);ctx.lineTo(x,yy+7);ctx.stroke()}ctx.restore();
-    ctx.save();ctx.strokeStyle=sceneIndex===3?"rgba(185,224,215,.48)":"rgba(235,255,247,.7)";ctx.lineWidth=2;
-    for(let i=0;i<4;i++){ctx.beginPath();ctx.ellipse(cw*.555,ch*(.705+i*.008),22+i*8,3+i,0,0,Math.PI*2);ctx.stroke()}ctx.restore();
-    for(let i=0;i<3;i++){const x=cw*(.31+i*.055),y=ch*(.625-(i%2)*.012);ctx.save();ctx.fillStyle=sceneIndex===3?"#2d4940":"#7c6753";ctx.fillRect(x,y-10,19,10);ctx.beginPath();ctx.moveTo(x-3,y-10);ctx.lineTo(x+9,y-20);ctx.lineTo(x+22,y-10);ctx.closePath();ctx.fill();if(sceneIndex===3){ctx.fillStyle="#ffe7a2";ctx.fillRect(x+7,y-7,4,4)}ctx.restore()}
+    // A proper bridge now crosses the visible right-side water.
+    const bx1=cw*.79,bx2=cw*.96,by=ch*.735;
+    ctx.save();
+    ctx.strokeStyle=sceneIndex===3?"#5a4b3b":"#805b3f";ctx.lineWidth=12;
+    ctx.beginPath();ctx.moveTo(bx1,by);ctx.quadraticCurveTo((bx1+bx2)/2,by-20,bx2,by);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?"#b29a72":"#d3a875";ctx.lineWidth=2.5;
+    for(let i=0;i<11;i++){
+      const x=bx1+i*(bx2-bx1)/10, yy=by-20*Math.sin(i/10*Math.PI);
+      ctx.beginPath();ctx.moveTo(x,yy-8);ctx.lineTo(x,yy+8);ctx.stroke();
+    }
+    ctx.strokeStyle=sceneIndex===3?"rgba(238,220,177,.62)":"rgba(244,221,177,.95)";ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(bx1,by-8);ctx.quadraticCurveTo((bx1+bx2)/2,by-27,bx2,by-8);ctx.stroke();
+    ctx.restore();
+
+    // A clearly visible mountain waterfall drops into the lake at the right horizon.
+    const fx=cw*.905, top=ch*.485, shore=ch*.675;
+    ctx.save();
+    // rock chute
+    ctx.fillStyle=sceneIndex===3?"#385d55":"#587d69";
+    ctx.beginPath();
+    ctx.moveTo(fx-26,top+3);ctx.quadraticCurveTo(fx-14,top-8,fx-4,top+4);
+    ctx.lineTo(fx+12,top-4);ctx.quadraticCurveTo(fx+23,top+8,fx+27,top+18);
+    ctx.lineTo(fx+18,shore);ctx.lineTo(fx-20,shore);ctx.closePath();ctx.fill();
+    // water ribbons
+    ctx.strokeStyle=sceneIndex===3?"rgba(187,235,226,.72)":"rgba(239,255,250,.96)";
+    ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(fx-4,top);ctx.bezierCurveTo(fx-10,top+42,fx+9,top+78,fx-1,shore);ctx.stroke();
+    ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(fx+6,top+6);ctx.bezierCurveTo(fx+1,top+46,fx+15,top+83,fx+8,shore-4);ctx.stroke();
+    // splash pool
+    ctx.globalAlpha=.7;ctx.strokeStyle="#eefcf6";ctx.lineWidth=2;
+    for(let i=0;i<3;i++){
+      ctx.beginPath();ctx.ellipse(fx+3,shore+i*4,18+i*8,3+i,0,0,Math.PI*2);ctx.stroke();
+    }
+    ctx.restore();
+
+    // Small settlement in the open far-right horizon: more than the first cabin,
+    // but still distant enough to preserve the feeling of a developing world.
+    const village=[
+      [0.925,0.625,16],[0.965,0.615,13],[0.885,0.635,11]
+    ];
+    village.forEach(([xp,yp,size],i)=>{
+      const x=cw*xp,y=ch*yp;
+      ctx.save();
+      ctx.fillStyle=sceneIndex===3?"#29483f":i===0?"#8a6248":"#927052";
+      ctx.fillRect(x-size/2,y-size*.45,size,size*.45);
+      ctx.beginPath();ctx.moveTo(x-size*.62,y-size*.45);ctx.quadraticCurveTo(x,y-size*.9,x+size*.62,y-size*.45);ctx.closePath();ctx.fill();
+      if(sceneIndex===3){
+        ctx.fillStyle="#ffe5a0";ctx.fillRect(x-size*.12,y-size*.32,size*.20,size*.18);
+      }else{
+        ctx.fillStyle="rgba(255,244,208,.82)";ctx.fillRect(x-size*.25,y-size*.31,size*.16,size*.16);
+      }
+      ctx.restore();
+    });
+
+    // A little footpath now branches from the main route toward the new bridge.
+    ctx.save();
+    ctx.strokeStyle=sceneIndex===3?"rgba(204,179,133,.72)":"rgba(228,201,151,.95)";
+    ctx.lineWidth=6;
+    ctx.beginPath();ctx.moveTo(cw*.56,ch*.75);ctx.quadraticCurveTo(cw*.72,ch*.70,cw*.84,ch*.715);ctx.stroke();
+    ctx.restore();
   }
 
   // Large framing trees: only at the edges so they don't hide the interface.
@@ -569,7 +625,7 @@ document.querySelectorAll(".nav-btn").forEach(btn=>btn.addEventListener("click",
 update();
 </script>
 <script>
-(()=>{const unlock=document.getElementById("worldUnlock"),close=document.getElementById("closeWorldUnlock");if(!unlock||!close)return;function show(){if(worldTier!==2||localStorage.getItem("wherefits_tier2_seen"))return;setTimeout(()=>{const h=unlock.querySelector("h2"),p=unlock.querySelector("p");if(h)h.textContent="THE HORIZON OPENS";if(p)p.textContent="You've made enough progress for the world to open up. New mountains, water, paths, and places are appearing ahead.";unlock.classList.add("show");unlock.setAttribute("aria-hidden","false")},700)}function hide(){unlock.classList.remove("show");unlock.setAttribute("aria-hidden","true");localStorage.setItem("wherefits_tier2_seen","1")}close.addEventListener("click",hide);unlock.addEventListener("click",e=>{if(e.target===unlock)hide()});show()})();
+(()=>{const unlock=document.getElementById("worldUnlock"),close=document.getElementById("closeWorldUnlock");if(!unlock||!close)return;function show(){if(worldTier!==2||localStorage.getItem("wherefits_tier2_seen"))return;setTimeout(()=>{const k=unlock.querySelector(".world-unlock-kicker"),h=unlock.querySelector("h2"),p=unlock.querySelector("p");if(k)k.textContent="25% · THE HORIZON OPENS";if(h)h.textContent="THE HORIZON OPENS";if(p)p.textContent="You've made enough progress for the world to open up. New mountains, water, paths, and places are appearing ahead.";unlock.classList.add("show");unlock.setAttribute("aria-hidden","false")},700)}function hide(){unlock.classList.remove("show");unlock.setAttribute("aria-hidden","true");localStorage.setItem("wherefits_tier2_seen","1")}close.addEventListener("click",hide);unlock.addEventListener("click",e=>{if(e.target===unlock)hide()});show()})();
 </script>
 </body>
 </html>
