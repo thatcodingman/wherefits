@@ -86,7 +86,7 @@ const key="wherefits001",state=JSON.parse(localStorage.getItem(key)||"{}"),dateE
 dateEl.textContent=new Intl.DateTimeFormat(undefined,{weekday:"short",month:"short",day:"numeric"}).format(new Date());
 const journal=document.getElementById("journal");journal.value=state.journal||"";
 if(state.done)Object.keys(state.done).forEach(k=>{const el=document.querySelector(`[data-move="${k}"]`);if(el)el.classList.toggle("done",state.done[k])});
-function update(){const all=[...document.querySelectorAll(".move")],done=all.filter(x=>x.classList.contains("done")).length;document.getElementById("moveCount").textContent=`${done} / ${all.length}`;document.getElementById("moveProgress").style.width=(done/all.length*100)+"%";state.done={};all.forEach(x=>state.done[x.dataset.move]=x.classList.contains("done"));localStorage.setItem(key,JSON.stringify(state));const w=document.getElementById("world");w.dataset.progress=done;document.querySelectorAll(".path-lights i").forEach((el,i)=>el.style.opacity=done>=i+1?".9":"0");document.querySelector(".path").style.opacity=done?String(.65+done*.07):".65";progressMoves=done;document.getElementById("worldBadge").textContent=done===0?"Your world · "+sceneLabels[scenes[sceneIndex]]:done===1?"Your world · the path is appearing":done===2?"Your world · momentum is building":"Your world · three moves made";document.getElementById("worldStatus").textContent=done===0?"THE WORLD CHANGES AS YOU MOVE":done===1?"ONE MOVE MADE · THE PATH IS APPEARING":done===2?"TWO MOVES MADE · MOMENTUM IS BUILDING":"THREE MOVES MADE · THE PATH IS LIT"
+function update(){const all=[...document.querySelectorAll(".move")],done=all.filter(x=>x.classList.contains("done")).length;document.getElementById("moveCount").textContent=`${done} / ${all.length}`;document.getElementById("moveProgress").style.width=(done/all.length*100)+"%";state.done={};all.forEach(x=>state.done[x.dataset.move]=x.classList.contains("done"));localStorage.setItem(key,JSON.stringify(state));const w=document.getElementById("world");w.dataset.progress=done;document.querySelectorAll(".path-lights i").forEach((el,i)=>el.style.opacity=done>=i+1?".9":"0");document.querySelector(".path").style.opacity=done?String(.65+done*.07):".65";progressMoves=done;document.getElementById("worldBadge").textContent=worldTier===0?("Your world · starting point"):(done===0?"Your world · "+sceneLabels[scenes[sceneIndex]]:done===1?"Your world · the path is appearing":done===2?"Your world · momentum is building":"Your world · three moves made");document.getElementById("worldStatus").textContent=done===0?"THE WORLD CHANGES AS YOU MOVE":done===1?"ONE MOVE MADE · THE PATH IS APPEARING":done===2?"TWO MOVES MADE · MOMENTUM IS BUILDING":"THREE MOVES MADE · THE PATH IS LIT"
 }
 document.querySelectorAll(".check").forEach(btn=>btn.addEventListener("click",()=>{btn.closest(".move").classList.toggle("done");update()}));
 document.getElementById("saveJournal").addEventListener("click",()=>{state.journal=journal.value;localStorage.setItem(key,JSON.stringify(state));const s=document.getElementById("saved");s.classList.add("show");setTimeout(()=>s.classList.remove("show"),1600)});
@@ -94,10 +94,17 @@ document.getElementById("resetDemo").addEventListener("click",()=>{localStorage.
 const scenes=["morning","day","sunset","night"],sceneLabels={morning:"quiet morning",day:"open day",sunset:"golden hour",night:"quiet night"};let sceneIndex=0;
 const canvas=document.getElementById("worldCanvas"),ctx=canvas.getContext("2d"),reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let cw=0,ch=0,dpr=1,worldTime=0,progressMoves=0;
+// Tier 0 is our locked starting-world build. Later tiers will be selected automatically from this same percentage.
+const worldProgress=Number(state.worldProgress||0);
+function getWorldTier(p){if(p>=100)return 7;if(p>=90)return 6;if(p>=75)return 5;if(p>=60)return 4;if(p>=40)return 3;if(p>=25)return 2;if(p>=10)return 1;return 0;}
+const worldTier=getWorldTier(worldProgress);
 const clouds=[{x:.08,y:.16,s:1.0,v:.00024},{x:.46,y:.23,s:.76,v:.00016},{x:.78,y:.13,s:.84,v:.00020},{x:.30,y:.34,s:.60,v:.00013}];
 const trees=Array.from({length:34},(_,i)=>({x:(i/33)*1.08-.04,h:.10+((i*37)%11)/100,w:.035+((i*17)%7)/300,phase:i*.7}));
 const birds=Array.from({length:5},(_,i)=>({x:.1+i*.2,y:.18+(i%2)*.08,v:.018+i*.004}));
 const fireflies=Array.from({length:26},(_,i)=>({x:(i*43%97)/100,y:.58+(i*29%35)/100,v:.3+(i%5)*.12,p:i*.8}));
+const fish=Array.from({length:11},(_,i)=>({x:(i*31%97)/100,y:.77+(i*17%17)/100,v:.018+(i%5)*.004,phase:i*.9,scale:.7+(i%4)*.12}));
+const ducks=[{x:.68,y:.735,v:.010,phase:0,scale:1},{x:.79,y:.765,v:.007,phase:1.8,scale:.82}];
+const dragonflies=Array.from({length:5},(_,i)=>({x:.58+i*.08,y:.69+(i%2)*.035,v:.014+i*.002,phase:i*1.7}));
 function resizeCanvas(){dpr=Math.min(2,window.devicePixelRatio||1);cw=window.innerWidth;ch=window.innerHeight;canvas.width=Math.floor(cw*dpr);canvas.height=Math.floor(ch*dpr);ctx.setTransform(dpr,0,0,dpr,0,0)}
 function lerp(a,b,t){return a+(b-a)*t}
 function sceneColors(){
@@ -130,6 +137,8 @@ function drawTree(x,base,h,w,c1,c2){
 }
 function drawWorld(dt){
   worldTime+=dt;const c=sceneColors(),t=worldTime*.001;
+  const startingWorld=worldTier===0;
+  const mountainShift=startingWorld?.11:0;
   ctx.clearRect(0,0,cw,ch);
 
   // SKY — intentionally simple and large so the world reads immediately.
@@ -149,7 +158,7 @@ function drawWorld(dt){
 
   // Stars at night.
   if(sceneIndex===3){
-    for(let i=0;i<95;i++){
+    for(let i=0;i<(startingWorld?58:95);i++){
       const x=(i*137%997)/997*cw,y=(i*71%430)/430*ch*.53;
       const a=.28+.25*Math.sin(t*1.4+i);
       ctx.fillStyle=`rgba(255,255,255,${a})`;ctx.fillRect(x,y,1.5,1.5);
@@ -166,26 +175,26 @@ function drawWorld(dt){
   // MOUNTAINS — broad, rounded ridges instead of triangular peaks.
   function roundedRange(fill, base, offset, scale, alpha){
     ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle=fill;ctx.beginPath();
-    const y0=ch*base;
+    const y0=ch*(base+mountainShift);
     ctx.moveTo(0,y0);
     const anchors=[
-      [-.08,.72],[.06,.60],[.18,.63],[.29,.51],[.40,.59],[.52,.49],[.63,.57],[.74,.47],[.86,.56],[1.02,.48],[1.10,.64]
+      [-.08,.66],[.05,.48],[.14,.55],[.25,.39],[.36,.50],[.48,.34],[.59,.46],[.70,.37],[.82,.49],[.94,.36],[1.08,.53],[1.14,.66]
     ];
     for(let i=0;i<anchors.length-1;i++){
       const [x1,y1]=anchors[i],[x2,y2]=anchors[i+1];
       const mx=(x1+x2)/2;
       const lift=Math.sin(i*1.7+offset)*.018*scale;
-      ctx.bezierCurveTo((mx-.055)*cw,(y1+lift)*ch,mx*cw,(y2-lift)*ch,(x2)*cw,(y2)*ch);
+      ctx.bezierCurveTo((mx-.055)*cw,(y1+lift+mountainShift)*ch,mx*cw,(y2-lift+mountainShift)*ch,(x2)*cw,(y2+mountainShift)*ch);
     }
     ctx.lineTo(cw,y0);ctx.lineTo(0,y0);ctx.closePath();ctx.fill();ctx.restore();
   }
-  roundedRange(sceneIndex===3?"#3a6b61":c.hill, .73, .7, 1, .95);
-  roundedRange(sceneIndex===3?"#245448":c.hill2, .80, 1.4, 1.15, .98);
+  roundedRange(sceneIndex===3?"#3a6b61":c.hill, .75, .7, 1, .95);
+  roundedRange(sceneIndex===3?"#245448":c.hill2, .83, 1.4, 1.15, .98);
 
   // Rounded mountain faces: curved highlight bands follow the ridges.
-  ctx.save();ctx.globalAlpha=sceneIndex===3?.24:.24;
+  ctx.save();ctx.globalAlpha=startingWorld?.13:(sceneIndex===3?.24:.24);
   const ridgeBands=[
-    [.10,.61,.19,.73],[.30,.52,.39,.73],[.51,.50,.60,.72],[.72,.48,.82,.72],[.91,.51,1.02,.73]
+    [.07,.49,.20,.72],[.25,.40,.39,.73],[.46,.35,.61,.72],[.67,.38,.82,.72],[.87,.37,1.04,.73]
   ];
   ridgeBands.forEach((r,i)=>{
     const [x1,y1,x2,y2]=r;ctx.fillStyle=i%2?c.ridge:"#d9efdf";ctx.beginPath();
@@ -200,13 +209,13 @@ function drawWorld(dt){
 
   // Distant atmospheric ridges give the mountains depth.
   ctx.save();ctx.globalAlpha=.28;ctx.fillStyle=sceneIndex===3?"#183f42":"#a8d3c3";ctx.beginPath();
-  ctx.moveTo(0,ch*.64);ctx.bezierCurveTo(cw*.16,ch*.56,cw*.26,ch*.60,cw*.38,ch*.57);
-  ctx.bezierCurveTo(cw*.51,ch*.54,cw*.62,ch*.61,cw*.76,ch*.55);
-  ctx.bezierCurveTo(cw*.88,ch*.51,cw*.96,ch*.59,cw,ch*.54);ctx.lineTo(cw,ch*.72);ctx.lineTo(0,ch*.72);ctx.closePath();ctx.fill();ctx.restore();
+  ctx.moveTo(0,ch*.59);ctx.bezierCurveTo(cw*.16,ch*.50,cw*.26,ch*.55,cw*.38,ch*.52);
+  ctx.bezierCurveTo(cw*.51,ch*.49,cw*.62,ch*.56,cw*.76,ch*.50);
+  ctx.bezierCurveTo(cw*.88,ch*.46,cw*.96,ch*.54,cw,ch*.49);ctx.lineTo(cw,ch*.70);ctx.lineTo(0,ch*.70);ctx.closePath();ctx.fill();ctx.restore();
 
   // Soft snow/light accents on only the highest rounded ridges.
-  ctx.save();ctx.globalAlpha=sceneIndex===3?.38:.55;ctx.fillStyle="#f5f1dd";
-  [[.30,.515,.055],[.52,.495,.06],[.74,.475,.06]].forEach(([x,y,w])=>{
+  ctx.save();ctx.globalAlpha=startingWorld?.22:(sceneIndex===3?.38:.55);ctx.fillStyle="#f5f1dd";
+  [[.25,.40,.07],[.48,.34,.08],[.70,.38,.075],[.92,.37,.07]].forEach(([x,y,w])=>{
     ctx.beginPath();ctx.moveTo(x*cw,y*ch);
     ctx.bezierCurveTo((x-w*.55)*cw,(y+.025)*ch,(x-w*.72)*cw,(y+.045)*ch,(x-w)*cw,(y+.07)*ch);
     ctx.bezierCurveTo((x-w*.4)*cw,(y+.055)*ch,(x+w*.4)*cw,(y+.06)*ch,(x+w)*cw,(y+.07)*ch);
@@ -222,8 +231,8 @@ function drawWorld(dt){
   ctx.beginPath();ctx.moveTo(0,ch*.67);ctx.quadraticCurveTo(cw*.16,ch*.59,cw*.42,ch*.70);ctx.lineTo(cw*.53,ch);ctx.lineTo(0,ch);ctx.closePath();ctx.fill();
 
   // Lake occupies the right side instead of the entire bottom, making it unmistakable.
-  ctx.fillStyle=c.water;ctx.beginPath();ctx.moveTo(cw*.47,ch*.70);ctx.quadraticCurveTo(cw*.70,ch*.62,cw,ch*.68);ctx.lineTo(cw,ch);ctx.lineTo(cw*.53,ch);ctx.closePath();ctx.fill();
-  ctx.fillStyle="rgba(255,255,255,.18)";ctx.fillRect(cw*.55,ch*.705,cw*.45,2);
+  ctx.fillStyle=c.water;ctx.beginPath();ctx.moveTo(cw*(startingWorld?.58:.47),ch*(startingWorld?.76:.70));ctx.quadraticCurveTo(cw*(startingWorld?.78:.70),ch*(startingWorld?.69:.62),cw,ch*(startingWorld?.73:.68));ctx.lineTo(cw,ch);ctx.lineTo(cw*.53,ch);ctx.closePath();ctx.fill();
+  ctx.fillStyle="rgba(255,255,255,.18)";ctx.fillRect(cw*(startingWorld?.64:.55),ch*(startingWorld?.765:.705),cw*(startingWorld?.36:.45),2);
   ctx.save();ctx.globalAlpha=.30;ctx.strokeStyle="#fff";ctx.lineWidth=1.2;
   for(let i=0;i<16;i++){
     const y=ch*(.73+i*.015),len=cw*(.13+((i*17)%10)/100),x=cw*(.62+((i*23)%27)/100),shift=reduceMotion?0:Math.sin(t*2.2+i*.7)*16;
@@ -245,6 +254,59 @@ function drawWorld(dt){
     ctx.restore();
   }
 
+  // LIVING WATER — fish, ducks, insects, lily pads and little wake trails.
+  // The lake should feel inhabited, not like a blue shape behind the UI.
+  ctx.save();
+  for(let i=0;i<7;i++){
+    const x=cw*(.57+((i*29)%39)/100), y=ch*(.77+((i*17)%15)/100);
+    ctx.fillStyle=i%2?'rgba(63,128,126,.55)':'rgba(77,145,132,.46)';
+    ctx.beginPath();ctx.ellipse(x,y,9+(i%3)*3,3+(i%2),0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(238,252,239,.35)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.ellipse(x,y,15+(i%3)*3,5+(i%2),0,0,Math.PI*2);ctx.stroke();
+  }
+  ctx.restore();
+
+  // Fish schools: small silhouettes that continuously swim through the shallows.
+  fish.forEach((f,i)=>{
+    if(startingWorld && i>1) return;
+    if(sceneIndex===3 && i>5) return;
+    const fx=cw*(.54+((f.x+t*f.v)%1)*.43), fy=ch*f.y+Math.sin(t*1.8+f.phase)*3;
+    const sc=f.scale;
+    ctx.save();ctx.translate(fx,fy);ctx.scale(sc,sc);ctx.globalAlpha=sceneIndex===3?.42:.68;
+    ctx.fillStyle=i%3===0?'#e7c77d':(i%2?'#3f8b82':'#d5a968');
+    ctx.beginPath();ctx.ellipse(0,0,9,4.5,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.moveTo(-7,0);ctx.lineTo(-15,-5);ctx.lineTo(-15,5);ctx.closePath();ctx.fill();
+    ctx.fillStyle='rgba(255,250,218,.8)';ctx.beginPath();ctx.arc(5,-1,1.1,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+    // wake
+    ctx.save();ctx.globalAlpha=.25;ctx.strokeStyle='#eff9ec';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(fx-17*sc,fy);ctx.quadraticCurveTo(fx-27*sc,fy-3,fx-37*sc,fy);ctx.stroke();ctx.restore();
+  });
+
+  // Two ducks quietly crossing the lake.
+  ducks.forEach((d,i)=>{
+    if(startingWorld && i>0) return;
+    const dx=cw*(.52+((d.x+t*d.v)%1)*.42), dy=ch*d.y+Math.sin(t*1.5+d.phase)*2;
+    const sc=d.scale;
+    ctx.save();ctx.translate(dx,dy);ctx.scale(sc,sc);ctx.globalAlpha=sceneIndex===3?.5:.9;
+    ctx.fillStyle='#334f49';ctx.beginPath();ctx.ellipse(0,0,13,7,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(9,-6,5.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#d89a4e';ctx.beginPath();ctx.moveTo(14,-6);ctx.lineTo(21,-4);ctx.lineTo(14,-2);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='rgba(250,255,239,.5)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(-20,7);ctx.quadraticCurveTo(0,11,21,7);ctx.stroke();
+    ctx.restore();
+  });
+
+  // Dragonflies skim just above the shoreline.
+  if(sceneIndex!==3){
+    dragonflies.forEach((d,i)=>{
+      if(startingWorld && i>1) return;
+      const dx=cw*(.54+((d.x+t*d.v)%1)*.40), dy=ch*d.y+Math.sin(t*2.5+d.phase)*7;
+      ctx.save();ctx.translate(dx,dy);ctx.globalAlpha=.48;ctx.strokeStyle=i%2?'#4f8f8d':'#6c7897';ctx.lineWidth=1.1;
+      ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(10,-4);ctx.moveTo(0,0);ctx.lineTo(-9,-4);ctx.stroke();
+      ctx.fillStyle='#395f62';ctx.beginPath();ctx.ellipse(0,0,5,1.5,0,0,Math.PI*2);ctx.fill();ctx.restore();
+    });
+  }
+
   // A visible path starts in the foreground and leads to the horizon.
   ctx.fillStyle=sceneIndex===3?"rgba(208,184,137,.68)":"rgba(222,196,143,.92)";
   ctx.beginPath();
@@ -257,7 +319,7 @@ function drawWorld(dt){
 
   // Visible wind: soft airborne seed/leaves plus stronger moving ribbons.
   if(!reduceMotion && sceneIndex!==3){
-    ctx.save();ctx.globalAlpha=.32;ctx.strokeStyle="rgba(255,255,255,.95)";ctx.lineWidth=1.8;
+    ctx.save();ctx.globalAlpha=startingWorld?.20:.32;ctx.strokeStyle="rgba(255,255,255,.95)";ctx.lineWidth=1.8;
     for(let i=0;i<9;i++){
       const y=ch*(.30+i*.040)+Math.sin(t*1.7+i)*9;
       const travel=(t*95+i*173)%(cw+340)-170;
@@ -267,7 +329,7 @@ function drawWorld(dt){
     ctx.restore();
     // Small drifting seeds make the wind readable in the foreground.
     ctx.save();ctx.fillStyle="rgba(241,237,204,.72)";
-    for(let i=0;i<32;i++){
+    for(let i=0;i<(startingWorld?12:32);i++){
       const x=((t*38+i*97)%(cw+80))-40;
       const y=ch*(.57+((i*17)%36)/100)+Math.sin(t*1.8+i)*12;
       ctx.beginPath();ctx.arc(x,y,1.4+(i%3)*.45,0,Math.PI*2);ctx.fill();
@@ -275,7 +337,7 @@ function drawWorld(dt){
     ctx.restore();
     // A second, faster layer of leaves makes the wind feel continuous rather than decorative.
     ctx.save();
-    for(let i=0;i<22;i++){
+    for(let i=0;i<(startingWorld?8:22);i++){
       const x=((t*120+i*83)%(cw+120))-60;
       const y=ch*(.52+((i*23)%35)/100)+Math.sin(t*2.4+i)*14;
       ctx.globalAlpha=.35+(i%3)*.08;ctx.fillStyle=i%2?"#f4d89a":"#d7efc8";
@@ -296,8 +358,25 @@ function drawWorld(dt){
   }
   ctx.restore();
 
+  // Taller left meadow grass: layered blades, seed heads and a little wind-driven sway.
+  ctx.save();
+  for(let i=0;i<(startingWorld?42:75);i++){
+    const x=cw*(.005+((i*47)%43)/100), base=ch*(.84+((i*23)%13)/100);
+    const h=18+(i%7)*5, sway=reduceMotion?0:Math.sin(t*2.4+i*.55)*8+Math.sin(t*1.1+i)*3;
+    ctx.strokeStyle=i%4===0?'rgba(52,104,66,.9)':'rgba(79,128,77,.8)';ctx.lineWidth=1.7;
+    ctx.beginPath();ctx.moveTo(x,base);ctx.quadraticCurveTo(x+sway*.35,base-h*.58,x+sway,base-h);ctx.stroke();
+    if(i%9===0){ctx.fillStyle='rgba(204,178,112,.8)';ctx.beginPath();ctx.ellipse(x+sway,base-h,3,5,-.25,0,Math.PI*2);ctx.fill()}
+  }
+  // broad leaf clusters make the lower-left corner feel lush instead of empty.
+  for(let i=0;i<(startingWorld?8:18);i++){
+    const x=cw*(.01+((i*31)%38)/100), y=ch*(.91+((i*11)%8)/100);
+    ctx.fillStyle=i%2?'rgba(58,118,71,.72)':'rgba(83,139,82,.68)';
+    ctx.beginPath();ctx.ellipse(x,y,14+(i%3)*4,5+(i%2)*2,(-.5+(i%4)*.25),0,Math.PI*2);ctx.fill();
+  }
+  ctx.restore();
+
   // Flowers.
-  for(let i=0;i<34;i++){
+  for(let i=0;i<(startingWorld?12:34);i++){
     const x=(i*91%48)/100*cw,y=ch*(.78+((i*13)%18)/100);
     ctx.fillStyle=i%3===0?"rgba(255,242,204,.95)":"rgba(246,232,220,.82)";
     ctx.beginPath();ctx.arc(x,y,2.4,0,Math.PI*2);ctx.fill();
@@ -309,7 +388,7 @@ function drawWorld(dt){
   for(let i=0;i<4;i++){const x=cw*(.80+i*.06),y=ch*(.81-i*.032);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-ch*.09);ctx.stroke()}
 
   // Distant little homes/lights establish a place beyond the path.
-  for(let i=0;i<7;i++){
+  for(let i=0;i<(startingWorld?0:7);i++){
     const x=cw*(.29+i*.065),y=ch*(.615-(i%2)*.008);
     ctx.fillStyle=sceneIndex===3?"rgba(30,51,47,.9)":"rgba(73,99,82,.70)";
     ctx.fillRect(x,y-7,15,8);
@@ -318,7 +397,7 @@ function drawWorld(dt){
   }
 
   // Large framing trees: only at the edges so they don't hide the interface.
-  const edgeTrees=[
+  const edgeTrees=startingWorld?[[.05,.88,.14,.075],[.93,.88,.14,.075]]:[
     [.045,.86,.24,.13],[.12,.87,.18,.105],[.22,.86,.14,.08],
     [.78,.87,.15,.085],[.90,.86,.22,.12],[.97,.85,.27,.145]
   ];
@@ -328,7 +407,7 @@ function drawWorld(dt){
   });
 
   // A few distant trees along the horizon.
-  for(let i=0;i<18;i++){
+  for(let i=0;i<(startingWorld?7:18);i++){
     const x=cw*(.22+(i/17)*.58),base=ch*(.68-((i%3)*.006));
     drawTree(x,base,ch*(.08+(i%4)*.012),cw*.035,c.hill2,c.hill);
   }
@@ -336,6 +415,7 @@ function drawWorld(dt){
   // Birds crossing the open sky.
   if(sceneIndex!==3){
     birds.forEach((b,i)=>{
+      if(startingWorld && i>1) return;
       const bx=((b.x+t*b.v)%1.18-.08)*cw,by=b.y*ch+Math.sin(t*1.9+i)*9;
       const flap=Math.sin(t*7+i)*4;
       ctx.strokeStyle="rgba(47,75,70,.55)";ctx.lineWidth=1.5;ctx.beginPath();
