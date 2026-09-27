@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>WhereFits — Build a life that fits you.</title>
+<title>WhereFits — Build a life that fits you. · Ferry Crossing</title>
 <meta name="description" content="WhereFits helps you turn the life you want into a plan, today's moves, and steady progress.">
 <style>
 :root{--bg:#f3f1e8;--panel:rgba(255,254,248,.82);--text:#20332f;--muted:#536c65;--line:rgba(32,51,47,.11);--accent:#36a77e;--accent2:#3aaec2;--gold:#f0c45f;--sky:#c9edf4;--shadow:0 20px 55px rgba(30,67,59,.14);--radius:22px}
@@ -159,6 +159,7 @@ function drawWorld(dt){
   const startingWorld=worldTier===0;
   const firstSigns=worldTier===1;
   const horizonOpens=worldTier===2;
+  const ferryCrossing=worldProgress>=25;
   const growingWorld=worldTier>=3;
   const establishedWorld=worldTier>=4;
   const lifeTakesShape=worldTier>=5;
@@ -500,12 +501,12 @@ function drawWorld(dt){
 
   // Tier 2: the horizon opens. The sand path now leads to a real ferry crossing.
   // The ferry repeatedly travels between the near shore and the neighborhood across the water.
-  if(horizonOpens){
+  if(ferryCrossing){
     ctx.save();
 
-    // The water channel sits directly between the end of the path and the houses.
-    const nearBank={x:cw*.55,y:ch*.875};
-    const farBank={x:cw*.89,y:ch*.705};
+    // The water channel sits directly between the end of the sand path and the houses.
+    const nearBank={x:cw*.58,y:ch*.855};
+    const farBank={x:cw*.91,y:ch*.675};
     const dx=farBank.x-nearBank.x, dy=farBank.y-nearBank.y;
     const crossingLen=Math.hypot(dx,dy);
     const ux=dx/crossingLen, uy=dy/crossingLen;
@@ -513,38 +514,38 @@ function drawWorld(dt){
 
     ctx.fillStyle=sceneIndex===3?'#245f69':'#43aebb';
     ctx.beginPath();
-    ctx.moveTo(cw*.48,ch*.75);
-    ctx.bezierCurveTo(cw*.62,ch*.71,cw*.77,ch*.78,cw*.90,ch*.73);
-    ctx.bezierCurveTo(cw*.98,ch*.70,cw*1.03,ch*.72,cw*1.05,ch*.74);
-    ctx.lineTo(cw*1.05,ch*1.03);ctx.lineTo(cw*.50,ch*1.03);ctx.closePath();ctx.fill();
+    ctx.moveTo(cw*.52,ch*.73);
+    ctx.bezierCurveTo(cw*.65,ch*.69,cw*.78,ch*.75,cw*.91,ch*.69);
+    ctx.bezierCurveTo(cw*.98,ch*.67,cw*1.03,ch*.69,cw*1.05,ch*.71);
+    ctx.lineTo(cw*1.05,ch*1.03);ctx.lineTo(cw*.52,ch*1.03);ctx.closePath();ctx.fill();
 
     // Natural shoreline rather than a hard geometric edge.
     ctx.strokeStyle=sceneIndex===3?'#4c776d':'#73976d';ctx.lineWidth=22;
     ctx.beginPath();
-    ctx.moveTo(cw*.49,ch*.75);
-    ctx.bezierCurveTo(cw*.63,ch*.71,cw*.78,ch*.78,cw*.90,ch*.73);
-    ctx.bezierCurveTo(cw*.97,ch*.71,cw*1.02,ch*.72,cw*1.05,ch*.74);ctx.stroke();
+    ctx.moveTo(cw*.52,ch*.73);
+    ctx.bezierCurveTo(cw*.65,ch*.69,cw*.78,ch*.75,cw*.91,ch*.69);
+    ctx.bezierCurveTo(cw*.98,ch*.67,cw*1.02,ch*.69,cw*1.05,ch*.71);ctx.stroke();
 
     // Moving water lines make the crossing feel alive.
     ctx.strokeStyle=sceneIndex===3?'rgba(222,244,238,.42)':'rgba(238,255,251,.70)';ctx.lineWidth=1.6;
     for(let i=0;i<15;i++){
-      const yy=ch*(.765+i*.018);
+      const yy=ch*(.735+i*.018);
       const travel=reduceMotion?0:((t*24+i*71)%190)-90;
-      const x=cw*.50+travel;
+      const x=cw*.52+travel;
       ctx.beginPath();ctx.moveTo(x,yy);ctx.quadraticCurveTo(x+35,yy-3,x+70,yy);ctx.quadraticCurveTo(x+105,yy+3,x+145,yy);ctx.stroke();
     }
 
     // Road from the sand path to the near ferry terminal.
     ctx.strokeStyle=sceneIndex===3?'#303a37':'#555a55';ctx.lineWidth=30;ctx.lineCap='round';
-    ctx.beginPath();ctx.moveTo(cw*.50,ch*1.01);ctx.bezierCurveTo(cw*.54,ch*.96,cw*.57,ch*.91,nearBank.x,nearBank.y);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cw*.50,ch*1.01);ctx.bezierCurveTo(cw*.53,ch*.96,cw*.57,ch*.91,nearBank.x,nearBank.y);ctx.stroke();
     ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.78)':'rgba(255,225,145,.98)';ctx.lineWidth=2.5;ctx.setLineDash([15,11]);
-    ctx.beginPath();ctx.moveTo(cw*.50,ch*1.01);ctx.bezierCurveTo(cw*.54,ch*.96,cw*.57,ch*.91,nearBank.x,nearBank.y);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(cw*.50,ch*1.01);ctx.bezierCurveTo(cw*.53,ch*.96,cw*.57,ch*.91,nearBank.x,nearBank.y);ctx.stroke();ctx.setLineDash([]);
 
     // Road from the far ferry terminal into the neighborhood.
     ctx.strokeStyle=sceneIndex===3?'#303a37':'#555a55';ctx.lineWidth=30;
-    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*.92,ch*.67,cw*.98,ch*.63,cw*1.04,ch*.61);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*.93,ch*.65,cw*.99,ch*.61,cw*1.04,ch*.59);ctx.stroke();
     ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.78)':'rgba(255,225,145,.98)';ctx.lineWidth=2.5;ctx.setLineDash([15,11]);
-    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*.92,ch*.67,cw*.98,ch*.63,cw*1.04,ch*.61);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*.93,ch*.65,cw*.99,ch*.61,cw*1.04,ch*.59);ctx.stroke();ctx.setLineDash([]);
 
     // Wooden ferry docks. The near dock visibly receives the sand path; the far dock faces the houses.
     function drawFerryDock(p,far=false){
@@ -611,11 +612,11 @@ function drawWorld(dt){
     // The ferry itself: hull, upper deck, windows, rail and a tiny light.
     ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);
     ctx.fillStyle=sceneIndex===3?'#263b37':'#59645f';
-    ctx.beginPath();ctx.moveTo(-43,0);ctx.lineTo(43,0);ctx.lineTo(33,18);ctx.lineTo(-31,18);ctx.closePath();ctx.fill();
-    ctx.fillStyle=sceneIndex===3?'#d0d9d2':'#eee6d1';ctx.fillRect(-31,-22,62,22);
+    ctx.beginPath();ctx.moveTo(-43,0);ctx.lineTo(52,0);ctx.lineTo(40,21);ctx.lineTo(-38,21);ctx.closePath();ctx.fill();
+    ctx.fillStyle=sceneIndex===3?'#d0d9d2':'#eee6d1';ctx.fillRect(-38,-25,76,25);
     ctx.fillStyle=sceneIndex===3?'#6fa7a2':'#6d9da1';
-    for(let i=0;i<5;i++)ctx.fillRect(-25+i*12,-17,8,8);
-    ctx.strokeStyle=sceneIndex===3?'#e0e9e4':'#b8b9ad';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-35,-24);ctx.lineTo(35,-24);ctx.stroke();
+    for(let i=0;i<6;i++)ctx.fillRect(-31+i*12,-19,9,9);
+    ctx.strokeStyle=sceneIndex===3?'#e0e9e4':'#b8b9ad';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-43,-27);ctx.lineTo(43,-27);ctx.stroke();
     ctx.fillStyle='#d45e4f';ctx.fillRect(24,-31,4,7);
     ctx.fillStyle='#ffe9a2';ctx.beginPath();ctx.arc(0,-29,3,0,Math.PI*2);ctx.fill();
     // Fender/buoy details.
@@ -660,20 +661,7 @@ function drawWorld(dt){
   // These features are deliberately large, recognizable silhouettes: roads,
   // utility poles, a developed shoreline, a dock, boats and a growing neighborhood.
   if(growingWorld){
-    // Main road network: the earlier footpath becomes a real paved road.
-    ctx.save();
-    ctx.strokeStyle=sceneIndex===3?'rgba(48,57,55,.92)':'rgba(91,92,83,.92)';
-    ctx.lineWidth=establishedWorld?42:30;
-    ctx.beginPath();
-    ctx.moveTo(cw*.22,ch*.98);
-    ctx.bezierCurveTo(cw*.32,ch*.91,cw*.40,ch*.86,cw*.50,ch*.82);
-    ctx.stroke();
-    ctx.strokeStyle=sceneIndex===3?'rgba(240,213,137,.72)':'rgba(255,224,145,.94)';
-    ctx.lineWidth=2.6;ctx.setLineDash([18,14]);
-    ctx.beginPath();
-    ctx.moveTo(cw*.22,ch*.98);
-    ctx.bezierCurveTo(cw*.32,ch*.91,cw*.40,ch*.86,cw*.50,ch*.82);
-    ctx.stroke();ctx.setLineDash([]);
+    // The sand path remains the pedestrian approach; the ferry handles the water crossing.
 
     // Utility poles make the settlement feel connected to an actual town.
     ctx.strokeStyle=sceneIndex===3?'rgba(53,70,65,.82)':'rgba(91,82,66,.82)';ctx.lineWidth=4;
@@ -713,7 +701,7 @@ function drawWorld(dt){
         ctx.strokeStyle='rgba(238,255,249,.45)';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(x,y+9,24,4,0,0,Math.PI*2);ctx.stroke();
       });
 
-      // A larger neighborhood appears beyond the bridge: homes, a shop and a street.
+      // A larger neighborhood appears beyond the ferry: homes, a shop and a street.
       const homes=[
         [.79,.585,28,'#9b6d4d'],[.84,.57,34,'#8c6549'],[.90,.59,25,'#a17450'],[.955,.565,31,'#8f694f'],
         [.82,.63,22,'#7f6753'],[.875,.625,27,'#986e50']
@@ -829,5 +817,6 @@ update();
 <script>
 (()=>{const unlock=document.getElementById("worldUnlock"),close=document.getElementById("closeWorldUnlock");if(!unlock||!close)return;function show(){if(worldTier!==5||localStorage.getItem("wherefits_tier5_seen"))return;setTimeout(()=>{const k=unlock.querySelector(".world-unlock-kicker"),h=unlock.querySelector("h2"),p=unlock.querySelector("p");if(k)k.textContent="75% · LIFE TAKES SHAPE";if(h)h.textContent="LIFE TAKES SHAPE";if(p)p.textContent="You've reached a new chapter. The quiet landscape is becoming a place: a growing town, roads, a marina, and more life around the water.";unlock.classList.add("show");unlock.setAttribute("aria-hidden","false")},700)}function hide(){unlock.classList.remove("show");unlock.setAttribute("aria-hidden","true");localStorage.setItem("wherefits_tier5_seen","1")}close.addEventListener("click",hide);unlock.addEventListener("click",e=>{if(e.target===unlock)hide()});show()})();
 </script>
+<!-- WHEREFITS_FERRY_CROSSING_036 -->
 </body>
 </html>
