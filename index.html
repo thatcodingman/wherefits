@@ -523,18 +523,18 @@ function drawWorld(dt){
     // Tier 2 geography: a visible river comes down from the mountains, reaches a real road bridge,
     // passes a small lived-in settlement, and continues toward the lake. Keep the scene in the open
     // side margins so the new world is visible instead of hiding behind the dashboard.
-    const riverTopX=cw*.70, riverTopY=ch*.46;
-    const riverMidX=cw*.79, riverMidY=ch*.61;
-    const riverBottomX=cw*.86, riverBottomY=ch*.78;
+    const riverTopX=cw*.91, riverTopY=ch*.47;
+    const riverMidX=cw*.92, riverMidY=ch*.60;
+    const riverBottomX=cw*.92, riverBottomY=ch*.78;
     ctx.save();
     ctx.fillStyle=sceneIndex===3?'rgba(37,101,112,.9)':'rgba(65,177,191,.78)';
     ctx.beginPath();
-    ctx.moveTo(riverTopX-5,riverTopY);
-    ctx.bezierCurveTo(riverTopX-20,riverTopY+55,riverMidX-45,riverMidY-30,riverMidX-24,riverMidY+10);
-    ctx.bezierCurveTo(riverMidX-5,riverMidY+48,riverBottomX-36,riverBottomY-55,riverBottomX-26,riverBottomY);
-    ctx.lineTo(riverBottomX+30,riverBottomY);
-    ctx.bezierCurveTo(riverBottomX+25,riverBottomY-50,riverMidX+24,riverMidY+48,riverMidX+14,riverMidY+6);
-    ctx.bezierCurveTo(riverMidX+2,riverMidY-36,riverTopX+23,riverTopY+52,riverTopX+8,riverTopY);
+    ctx.moveTo(riverTopX-18,riverTopY);
+    ctx.bezierCurveTo(riverTopX-34,riverTopY+55,riverMidX-34,riverMidY-30,riverMidX-28,riverMidY+10);
+    ctx.bezierCurveTo(riverMidX-22,riverMidY+48,riverBottomX-30,riverBottomY-55,riverBottomX-34,riverBottomY);
+    ctx.lineTo(riverBottomX+34,riverBottomY);
+    ctx.bezierCurveTo(riverBottomX+30,riverBottomY-50,riverMidX+32,riverMidY+48,riverMidX+28,riverMidY+6);
+    ctx.bezierCurveTo(riverMidX+20,riverMidY-36,riverTopX+34,riverTopY+52,riverTopX+18,riverTopY);
     ctx.closePath();ctx.fill();
     // Animated current lines make the river read as flowing water.
     ctx.strokeStyle=sceneIndex===3?'rgba(186,231,230,.48)':'rgba(224,250,244,.68)';ctx.lineWidth=1.5;
@@ -553,19 +553,19 @@ function drawWorld(dt){
 
     // A recognizable public-road bridge sits fully in the open right margin.
     // Keep it outside the dashboard footprint so the user can actually read it as a bridge.
-    const bridgeY=ch*.665, bx1=cw*.775, bx2=cw*.985;
+    const bridgeY=ch*.705, bx1=cw*.825, bx2=cw*.985;
     ctx.save();
     // Approach road from the settlement.
     ctx.strokeStyle=sceneIndex===3?'rgba(58,60,58,.96)':'rgba(91,88,79,.95)';ctx.lineWidth=34;
     ctx.beginPath();
-    ctx.moveTo(cw*.91,ch*.565);
-    ctx.quadraticCurveTo(cw*.87,ch*.61,cw*.82,bridgeY);
+    ctx.moveTo(cw*.91,ch*.585);
+    ctx.quadraticCurveTo(cw*.89,ch*.64,cw*.84,bridgeY);
     ctx.lineTo(cw*.99,bridgeY+2);
     ctx.stroke();
     ctx.strokeStyle=sceneIndex===3?'rgba(244,218,137,.74)':'rgba(255,223,137,.98)';ctx.lineWidth=2.8;ctx.setLineDash([14,10]);
     ctx.beginPath();
-    ctx.moveTo(cw*.91,ch*.565);
-    ctx.quadraticCurveTo(cw*.87,ch*.61,cw*.82,bridgeY);
+    ctx.moveTo(cw*.91,ch*.585);
+    ctx.quadraticCurveTo(cw*.89,ch*.64,cw*.84,bridgeY);
     ctx.lineTo(cw*.99,bridgeY+2);
     ctx.stroke();ctx.setLineDash([]);
 
@@ -585,6 +585,13 @@ function drawWorld(dt){
     [cw*.82,cw*.915].forEach(x=>{
       ctx.beginPath();ctx.moveTo(x,bridgeY+16);ctx.lineTo(x,bridgeY+72);ctx.stroke();
     });
+    // A broad blue channel is intentionally visible beneath the deck so the crossing
+    // reads as a real bridge over water, not a road floating through the scenery.
+    ctx.save();
+    ctx.fillStyle=sceneIndex===3?'rgba(31,94,104,.74)':'rgba(64,173,187,.68)';
+    ctx.beginPath();ctx.moveTo(bx1-4,bridgeY+24);ctx.lineTo(bx2+2,bridgeY+24);ctx.lineTo(bx2+2,bridgeY+82);ctx.lineTo(bx1-4,bridgeY+82);ctx.closePath();ctx.fill();
+    ctx.restore();
+
     // Strong water shadow/reflection.
     ctx.strokeStyle='rgba(26,76,78,.30)';ctx.lineWidth=10;
     ctx.beginPath();ctx.moveTo(bx1+10,bridgeY+39);ctx.lineTo(bx2-4,bridgeY+41);ctx.stroke();
@@ -631,13 +638,13 @@ function drawWorld(dt){
     ctx.strokeStyle=sceneIndex===3?'rgba(198,238,235,.62)':'rgba(231,253,249,.82)';ctx.lineWidth=2;
     for(let i=0;i<5;i++){
       const y=bridgeY+27+i*9;
-      ctx.beginPath();ctx.moveTo(cw*.80,y);ctx.quadraticCurveTo(cw*.87,y-3,cw*.95,y);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cw*.84,y);ctx.quadraticCurveTo(cw*.91,y-3,cw*.985,y);ctx.stroke();
     }
     ctx.restore();
 
 // Settlement is placed above and to the right of the bridge, fully in the visible margin.
     const village=[
-      [0.86,.515,31],[0.93,.49,27],[0.975,.525,24],[0.79,.545,22]
+      [0.86,.535,31],[0.93,.505,27],[0.975,.54,24],[0.79,.57,22]
     ];
     village.forEach(([xp,yp,size],i)=>{
       const x=cw*xp,y=ch*yp;
