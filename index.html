@@ -6,7 +6,7 @@
 <title>WhereFits — Build a life that fits you.</title>
 <meta name="description" content="WhereFits helps you turn the life you want into a plan, today's moves, and steady progress.">
 <style>
-:root{--bg:#f3f1e8;--panel:rgba(255,254,248,.82);--text:#263431;--muted:#61716b;--line:rgba(38,52,49,.11);--accent:#679f89;--accent2:#7dafc0;--gold:#d6b66a;--sky:#dceef0;--shadow:0 20px 55px rgba(47,67,61,.12);--radius:22px}
+:root{--bg:#f3f1e8;--panel:rgba(255,254,248,.82);--text:#20332f;--muted:#536c65;--line:rgba(32,51,47,.11);--accent:#36a77e;--accent2:#3aaec2;--gold:#f0c45f;--sky:#c9edf4;--shadow:0 20px 55px rgba(30,67,59,.14);--radius:22px}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:transparent}
 body{overflow-x:hidden}button,input,textarea{font:inherit}button{cursor:pointer}
 #world{position:fixed;inset:0;overflow:hidden;background:#dceef0;z-index:0}
@@ -101,10 +101,10 @@ const fireflies=Array.from({length:26},(_,i)=>({x:(i*43%97)/100,y:.58+(i*29%35)/
 function resizeCanvas(){dpr=Math.min(2,window.devicePixelRatio||1);cw=window.innerWidth;ch=window.innerHeight;canvas.width=Math.floor(cw*dpr);canvas.height=Math.floor(ch*dpr);ctx.setTransform(dpr,0,0,dpr,0,0)}
 function lerp(a,b,t){return a+(b-a)*t}
 function sceneColors(){
-  if(sceneIndex===0)return {top:"#bfe3ee",mid:"#e9f2e7",low:"#d2e0cc",sun:"#ffe8a6",hill:"#88a98d",hill2:"#6f9078",water:"#8fc8d0"};
-  if(sceneIndex===1)return {top:"#8fd0e8",mid:"#dceee7",low:"#c6dbca",sun:"#fff0b4",hill:"#73977d",hill2:"#5c8069",water:"#72b8c3"};
-  if(sceneIndex===2)return {top:"#e4b6a0",mid:"#f3d8ae",low:"#c8d9c0",sun:"#ffd08c",hill:"#8b9870",hill2:"#687d62",water:"#8eb6b5"};
-  return {top:"#263d57",mid:"#526d76",low:"#203b3a",sun:"#f5e4ba",hill:"#334e46",hill2:"#243b34",water:"#315c63"};
+  if(sceneIndex===0)return {top:"#a9e0ee",mid:"#dff4ed",low:"#c6e5cf",sun:"#ffe59a",hill:"#5f9b7a",hill2:"#3f7d62",water:"#58b9c9",ridge:"#7db99a"};
+  if(sceneIndex===1)return {top:"#73cce7",mid:"#ccefe5",low:"#a8d7b8",sun:"#fff0a8",hill:"#4f9a73",hill2:"#287457",water:"#35a8bd",ridge:"#70b991"};
+  if(sceneIndex===2)return {top:"#eeaa8d",mid:"#f8d2a2",low:"#c8dfbd",sun:"#ffd078",hill:"#668f68",hill2:"#3d7054",water:"#58a7b0",ridge:"#a7a56d"};
+  return {top:"#182f4a",mid:"#355a69",low:"#1e473e",sun:"#f8e6b7",hill:"#2f6a58",hill2:"#1f5144",water:"#246f7b",ridge:"#527f72"};
 }
 function roundedCloud(x,y,s,alpha){
   ctx.save();
@@ -163,43 +163,54 @@ function drawWorld(dt){
     roundedCloud(cl.x*cw,cl.y*ch,cl.s,sceneIndex===3?.13:.58);
   });
 
-  // MOUNTAIN RANGES — irregular ridgelines, layered depth, rock faces and snow.
-  function mountainRange(points,fill,base){
-    ctx.fillStyle=fill;ctx.beginPath();ctx.moveTo(0,base);
-    points.forEach((p,i)=>ctx.lineTo(p.x*cw,p.y*ch));
-    ctx.lineTo(cw,base);ctx.closePath();ctx.fill();
+  // MOUNTAINS — broad, rounded ridges instead of triangular peaks.
+  function roundedRange(fill, base, offset, scale, alpha){
+    ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle=fill;ctx.beginPath();
+    const y0=ch*base;
+    ctx.moveTo(0,y0);
+    const anchors=[
+      [-.08,.72],[.06,.60],[.18,.63],[.29,.51],[.40,.59],[.52,.49],[.63,.57],[.74,.47],[.86,.56],[1.02,.48],[1.10,.64]
+    ];
+    for(let i=0;i<anchors.length-1;i++){
+      const [x1,y1]=anchors[i],[x2,y2]=anchors[i+1];
+      const mx=(x1+x2)/2;
+      const lift=Math.sin(i*1.7+offset)*.018*scale;
+      ctx.bezierCurveTo((mx-.055)*cw,(y1+lift)*ch,mx*cw,(y2-lift)*ch,(x2)*cw,(y2)*ch);
+    }
+    ctx.lineTo(cw,y0);ctx.lineTo(0,y0);ctx.closePath();ctx.fill();ctx.restore();
   }
-  const back=[];
-  for(let i=0;i<=28;i++){
-    const x=i/28, wave=Math.sin(i*1.73)*.018+Math.sin(i*.43+1.7)*.022;
-    const peaks=[.55,.50,.53,.42,.49,.46,.39,.47,.44,.51,.40,.48,.43,.52,.41,.46,.38,.49,.44,.52,.42,.48,.40,.50,.43,.51,.45,.53,.50];
-    back.push({x,y:peaks[i]+wave});
-  }
-  mountainRange(back,sceneIndex===3?"#3d5554":"#9db6ad",ch*.72);
+  roundedRange(sceneIndex===3?"#3a6b61":c.hill, .73, .7, 1, .95);
+  roundedRange(sceneIndex===3?"#245448":c.hill2, .80, 1.4, 1.15, .98);
 
-  const front=[];
-  for(let i=0;i<=32;i++){
-    const x=i/32;
-    const wave=Math.sin(i*1.31+.8)*.012+Math.sin(i*.57)*.018;
-    const peaks=[.64,.58,.61,.50,.56,.46,.55,.43,.52,.48,.57,.41,.50,.45,.54,.39,.49,.44,.55,.42,.51,.47,.57,.43,.52,.46,.56,.41,.50,.45,.55,.48,.62];
-    front.push({x,y:peaks[i]+wave});
-  }
-  mountainRange(front,sceneIndex===3?"#2c4743":"#78967e",ch*.79);
-
-  // Mountain facets: restrained diagonal planes give the ridges depth without looking like triangles.
-  ctx.save();ctx.globalAlpha=sceneIndex===3?.20:.16;
-  for(let i=0;i<9;i++){
-    const px=(.08+i*.105)*cw, py=ch*(.52-(i%3)*.035);
-    ctx.fillStyle=i%2?"#d9e3d7":"#526f64";ctx.beginPath();
-    ctx.moveTo(px,py);ctx.lineTo(px+cw*.055,py+ch*.15);ctx.lineTo(px+cw*.11,py+ch*.30);ctx.lineTo(px+cw*.045,py+ch*.12);ctx.closePath();ctx.fill();
-  }
+  // Rounded mountain faces: curved highlight bands follow the ridges.
+  ctx.save();ctx.globalAlpha=sceneIndex===3?.24:.24;
+  const ridgeBands=[
+    [.10,.61,.19,.73],[.30,.52,.39,.73],[.51,.50,.60,.72],[.72,.48,.82,.72],[.91,.51,1.02,.73]
+  ];
+  ridgeBands.forEach((r,i)=>{
+    const [x1,y1,x2,y2]=r;ctx.fillStyle=i%2?c.ridge:"#d9efdf";ctx.beginPath();
+    ctx.moveTo(x1*cw,y1*ch);
+    ctx.bezierCurveTo((x1+.025)*cw,(y1-.035)*ch,(x1+.06)*cw,(y1-.045)*ch,(x1+.10)*cw,(y1-.012)*ch);
+    ctx.bezierCurveTo((x1+.14)*cw,(y1+.02)*ch,(x2-.03)*cw,(y2-.09)*ch,x2*cw,y2*ch);
+    ctx.lineTo((x2-.025)*cw,(y2-.01)*ch);
+    ctx.bezierCurveTo((x1+.08)*cw,(y1+.02)*ch,(x1+.04)*cw,(y1+.01)*ch,x1*cw,(y1+.03)*ch);
+    ctx.closePath();ctx.fill();
+  });
   ctx.restore();
 
-  // Snow/light on the higher peaks.
-  ctx.save();ctx.globalAlpha=sceneIndex===3?.55:.58;ctx.fillStyle="#edf0e7";
-  const snowPeaks=[[.22,.43,.045],[.40,.39,.055],[.57,.41,.048],[.76,.38,.052]];
-  snowPeaks.forEach(([x,y,w])=>{
-    ctx.beginPath();ctx.moveTo(x*cw,y*ch);ctx.lineTo((x-w)*cw,(y+.075)*ch);ctx.lineTo((x-w*.35)*cw,(y+.055)*ch);ctx.lineTo((x+.02)*cw,(y+.09)*ch);ctx.lineTo((x+w)*cw,(y+.075)*ch);ctx.closePath();ctx.fill();
+  // Distant atmospheric ridges give the mountains depth.
+  ctx.save();ctx.globalAlpha=.28;ctx.fillStyle=sceneIndex===3?"#183f42":"#a8d3c3";ctx.beginPath();
+  ctx.moveTo(0,ch*.64);ctx.bezierCurveTo(cw*.16,ch*.56,cw*.26,ch*.60,cw*.38,ch*.57);
+  ctx.bezierCurveTo(cw*.51,ch*.54,cw*.62,ch*.61,cw*.76,ch*.55);
+  ctx.bezierCurveTo(cw*.88,ch*.51,cw*.96,ch*.59,cw,ch*.54);ctx.lineTo(cw,ch*.72);ctx.lineTo(0,ch*.72);ctx.closePath();ctx.fill();ctx.restore();
+
+  // Soft snow/light accents on only the highest rounded ridges.
+  ctx.save();ctx.globalAlpha=sceneIndex===3?.38:.55;ctx.fillStyle="#f5f1dd";
+  [[.30,.515,.055],[.52,.495,.06],[.74,.475,.06]].forEach(([x,y,w])=>{
+    ctx.beginPath();ctx.moveTo(x*cw,y*ch);
+    ctx.bezierCurveTo((x-w*.55)*cw,(y+.025)*ch,(x-w*.72)*cw,(y+.045)*ch,(x-w)*cw,(y+.07)*ch);
+    ctx.bezierCurveTo((x-w*.4)*cw,(y+.055)*ch,(x+w*.4)*cw,(y+.06)*ch,(x+w)*cw,(y+.07)*ch);
+    ctx.bezierCurveTo((x+w*.62)*cw,(y+.025)*ch,(x+w*.28)*cw,(y+.012)*ch,x*cw,y*ch);ctx.closePath();ctx.fill();
   });
   ctx.restore();
 
@@ -246,11 +257,11 @@ function drawWorld(dt){
 
   // Visible wind: soft airborne seed/leaves plus stronger moving ribbons.
   if(!reduceMotion && sceneIndex!==3){
-    ctx.save();ctx.globalAlpha=.22;ctx.strokeStyle="rgba(255,255,255,.9)";ctx.lineWidth=1.4;
-    for(let i=0;i<13;i++){
-      const y=ch*(.38+i*.026)+Math.sin(t*1.7+i)*5;
+    ctx.save();ctx.globalAlpha=.32;ctx.strokeStyle="rgba(255,255,255,.95)";ctx.lineWidth=1.8;
+    for(let i=0;i<9;i++){
+      const y=ch*(.30+i*.040)+Math.sin(t*1.7+i)*9;
       const travel=(t*95+i*173)%(cw+340)-170;
-      const len=95+(i%5)*32;
+      const len=150+(i%5)*38;
       ctx.beginPath();ctx.moveTo(travel,y);ctx.bezierCurveTo(travel+len*.25,y-8,travel+len*.68,y+7,travel+len,y-1);ctx.stroke();
     }
     ctx.restore();
@@ -260,6 +271,15 @@ function drawWorld(dt){
       const x=((t*38+i*97)%(cw+80))-40;
       const y=ch*(.57+((i*17)%36)/100)+Math.sin(t*1.8+i)*12;
       ctx.beginPath();ctx.arc(x,y,1.4+(i%3)*.45,0,Math.PI*2);ctx.fill();
+    }
+    ctx.restore();
+    // A second, faster layer of leaves makes the wind feel continuous rather than decorative.
+    ctx.save();
+    for(let i=0;i<22;i++){
+      const x=((t*120+i*83)%(cw+120))-60;
+      const y=ch*(.52+((i*23)%35)/100)+Math.sin(t*2.4+i)*14;
+      ctx.globalAlpha=.35+(i%3)*.08;ctx.fillStyle=i%2?"#f4d89a":"#d7efc8";
+      ctx.beginPath();ctx.ellipse(x,y,5,2.2,Math.sin(t*2+i),0,Math.PI*2);ctx.fill();
     }
     ctx.restore();
   }
@@ -303,7 +323,7 @@ function drawWorld(dt){
     [.78,.87,.15,.085],[.90,.86,.22,.12],[.97,.85,.27,.145]
   ];
   edgeTrees.forEach((tr,i)=>{
-    const sway=reduceMotion?0:Math.sin(t*1.15+i)*8;
+    const sway=reduceMotion?0:Math.sin(t*1.7+i)*13 + Math.sin(t*.7+i)*5;
     drawTree(cw*tr[0]+sway,ch*tr[1],ch*tr[2],cw*tr[3],c.hill2,c.hill);
   });
 
