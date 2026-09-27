@@ -6,7 +6,7 @@
 <title>WhereFits — Build a life that fits you.</title>
 <meta name="description" content="WhereFits helps you turn the life you want into a plan, today's moves, and steady progress.">
 <style>
-:root{--bg:#f3f1e8;--panel:rgba(255,254,248,.82);--text:#263431;--muted:#61716b;--line:rgba(38,52,49,.11);--accent:#6faF98;--accent2:#7dafc0;--gold:#d6b66a;--sky:#dceef0;--shadow:0 20px 55px rgba(47,67,61,.12);--radius:22px}
+:root{--bg:#f3f1e8;--panel:rgba(255,254,248,.82);--text:#263431;--muted:#61716b;--line:rgba(38,52,49,.11);--accent:#679f89;--accent2:#7dafc0;--gold:#d6b66a;--sky:#dceef0;--shadow:0 20px 55px rgba(47,67,61,.12);--radius:22px}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:var(--bg)}
 body{overflow-x:hidden}button,input,textarea{font:inherit}button{cursor:pointer}
 #world{position:fixed;inset:0;overflow:hidden;background:#dceef0;z-index:-5}
@@ -45,7 +45,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:20px}
 .top-actions{display:flex;gap:8px}.ghost{border:1px solid var(--line);background:rgba(255,254,248,.82);color:var(--text);padding:10px 13px;border-radius:12px;box-shadow:0 5px 18px rgba(47,67,61,.06)}
 .hero{padding:58px 0 36px;max-width:790px;text-shadow:0 2px 22px rgba(0,0,0,.2)}.eyebrow{color:var(--accent);font-size:12px;font-weight:750;letter-spacing:.16em;text-transform:uppercase}
 h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:13px 0 18px}.hero p{font-size:18px;line-height:1.65;color:#53635e;max-width:650px;margin:0}
-.dashboard{display:grid;grid-template-columns:1.55fr .9fr;gap:16px;margin-top:20px}.card{background:linear-gradient(145deg,rgba(255,254,249,.93),rgba(250,250,244,.84));border:1px solid rgba(38,52,49,.10);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.dashboard{display:grid;grid-template-columns:1.55fr .9fr;gap:16px;margin-top:20px}.card{background:linear-gradient(145deg,rgba(255,254,249,.76),rgba(250,250,244,.66));border:1px solid rgba(38,52,49,.12);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .card.pad{padding:22px}.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:18px}.kicker{font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
 .card h2{font-size:24px;letter-spacing:-.025em;margin:6px 0 0}.date{color:var(--muted);font-size:13px}.moves{display:grid;gap:10px}
 .move{display:grid;grid-template-columns:26px 1fr auto;align-items:center;gap:11px;padding:14px;border:1px solid rgba(255,255,255,.075);border-radius:16px;background:rgba(111,175,152,.045);transition:.2s}.move:hover{transform:translateY(-1px);background:rgba(255,255,255,.045)}
@@ -134,12 +134,20 @@ function drawWorld(dt){
   // water
   ctx.fillStyle=c.water;ctx.fillRect(0,ch*.63,cw,ch*.37);
   ctx.save();ctx.globalAlpha=.22;for(let y=ch*.66;y<ch*.87;y+=18){const shift=Math.sin(t*1.2+y*.02)*10;ctx.strokeStyle="#fff";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0+shift,y);ctx.lineTo(cw*.55+shift,y);ctx.stroke()}ctx.restore();
-  // path
-  ctx.fillStyle="rgba(230,211,165,.82)";ctx.beginPath();ctx.moveTo(cw*.48,ch);ctx.lineTo(cw*.52,ch);ctx.lineTo(cw*.505,ch*.64);ctx.lineTo(cw*.495,ch*.64);ctx.closePath();ctx.fill();
-  // trees
-  trees.forEach((tr,i)=>{const sway=reduceMotion?0:Math.sin(t*.8+tr.phase)*2;drawTree(tr.x*cw+sway,ch*.86,tr.h*ch,tr.w*cw,c.hill2,c.hill)});
-  // distant settlement lights
+  // landscape edges: meadow, shoreline, rocks, grass, flowers and a small fence
+  ctx.fillStyle="rgba(113,146,112,.55)";ctx.beginPath();ctx.moveTo(0,ch*.72);ctx.quadraticCurveTo(cw*.12,ch*.68,cw*.23,ch*.75);ctx.lineTo(cw*.23,ch);ctx.lineTo(0,ch);ctx.closePath();ctx.fill();
+  ctx.fillStyle="rgba(151,174,135,.46)";ctx.beginPath();ctx.moveTo(cw*.77,ch*.74);ctx.quadraticCurveTo(cw*.88,ch*.68,cw,ch*.73);ctx.lineTo(cw,ch);ctx.lineTo(cw*.77,ch);ctx.closePath();ctx.fill();
+  ctx.save();ctx.globalAlpha=.22;ctx.strokeStyle="#fff";ctx.lineWidth=1.2;
+  for(let i=0;i<14;i++){const y=ch*(.69+i*.014),off=Math.sin(t*1.1+i*.7)*18;ctx.beginPath();ctx.moveTo(cw*.56+off,y);ctx.lineTo(cw*.98+off,y);ctx.stroke()}ctx.restore();
+  ctx.fillStyle="rgba(230,211,165,.86)";ctx.beginPath();ctx.moveTo(cw*.48,ch);ctx.lineTo(cw*.52,ch);ctx.lineTo(cw*.505,ch*.64);ctx.lineTo(cw*.495,ch*.64);ctx.closePath();ctx.fill();
+  const rocks=[[cw*.055,ch*.78,22,12],[cw*.12,ch*.84,14,9],[cw*.90,ch*.79,25,13],[cw*.95,ch*.87,15,10],[cw*.045,ch*.91,10,7]];
+  rocks.forEach(([x,y,rx,ry],i)=>{ctx.fillStyle=i%2?"rgba(104,119,111,.65)":"rgba(128,139,127,.58)";ctx.beginPath();ctx.ellipse(x,y,rx,ry,-.15,0,Math.PI*2);ctx.fill()});
+  ctx.save();ctx.strokeStyle="rgba(70,111,79,.58)";ctx.lineWidth=1.2;
+  for(let i=0;i<70;i++){const side=i%2===0,x=side?((i*71)%260):(cw-((i*53)%260)),y=ch*(.76+((i*17)%23)/100),sway=reduceMotion?0:Math.sin(t*1.5+i)*3;ctx.beginPath();ctx.moveTo(x,y+10);ctx.quadraticCurveTo(x+sway,y-5,x+sway*1.5,y-14);ctx.stroke()}ctx.restore();
+  for(let i=0;i<24;i++){const side=i%2===0,x=side?((i*83)%250):(cw-((i*61)%250)),y=ch*(.79+((i*11)%17)/100);ctx.fillStyle=i%3===0?"rgba(255,245,211,.9)":"rgba(247,236,219,.78)";ctx.beginPath();ctx.arc(x,y,2.2,0,Math.PI*2);ctx.fill()}
+  ctx.strokeStyle="rgba(110,91,67,.42)";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cw*.86,ch*.82);ctx.lineTo(cw*.99,ch*.69);ctx.moveTo(cw*.89,ch*.80);ctx.lineTo(cw*.89,ch*.71);ctx.moveTo(cw*.94,ch*.76);ctx.lineTo(cw*.94,ch*.70);ctx.moveTo(cw*.98,ch*.71);ctx.lineTo(cw*.98,ch*.67);ctx.stroke();
   const lights=Math.min(10,2+progressMoves*2);for(let i=0;i<lights;i++){const x=cw*(.68+i*.025),y=ch*(.58+(i%3)*.018);ctx.fillStyle=sceneIndex===3?"#ffe7a2":"rgba(255,231,162,.72)";ctx.fillRect(x,y,4,3)}
+  trees.forEach((tr,i)=>{const sway=reduceMotion?0:Math.sin(t*.8+tr.phase)*2;drawTree(tr.x*cw+sway,ch*.86,tr.h*ch,tr.w*cw,c.hill2,c.hill)});
   // birds
   if(sceneIndex!==3){birds.forEach((b,i)=>{const bx=((b.x+t*b.v)%1.15-.05)*cw,by=b.y*ch+Math.sin(t*1.3+i)*4;ctx.strokeStyle="rgba(47,75,70,.55)";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(bx,by,7,Math.PI+.3,Math.PI*2-.3);ctx.arc(bx+10,by,7,.3,Math.PI-.3);ctx.stroke()})}
   // fireflies appear more as today's moves are completed
@@ -149,6 +157,7 @@ let last=performance.now(),raf=0;
 function frame(now){const dt=Math.min(50,now-last);last=now;drawWorld(dt);if(!reduceMotion)raf=requestAnimationFrame(frame)}
 function setScene(){document.getElementById("worldBadge").textContent="Your world · "+sceneLabels[scenes[sceneIndex]];drawWorld(16)}
 document.getElementById("themePulse").addEventListener("click",()=>{sceneIndex=(sceneIndex+1)%scenes.length;setScene()});
+if(!reduceMotion){window.addEventListener("pointermove",e=>{const px=(e.clientX/cw-.5)*2,py=(e.clientY/ch-.5)*2;canvas.style.transform=`translate(${px*-2}px,${py*-1}px) scale(1.004)`})}
 window.addEventListener("resize",resizeCanvas);
 resizeCanvas();setScene();frame(performance.now());
 document.querySelectorAll(".nav-btn").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));btn.classList.add("active")}));
