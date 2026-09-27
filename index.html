@@ -64,7 +64,7 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 </head>
 <body>
 <div id="world" aria-hidden="true"><canvas id="worldCanvas"></canvas><div class="world-ui-layer"></div><div class="world-badge" id="worldBadge">Your world · first signs</div></div><div class="overlay"></div>
-<div class="world-unlock" id="worldUnlock" aria-hidden="true"><div class="world-unlock-card"><div class="world-unlock-icon">🌿</div><div class="world-unlock-kicker">10% · First signs</div><h2>The world is starting to change.</h2><p>You've made your first meaningful progress. More life is beginning to appear around you.</p><button type="button" id="closeWorldUnlock">Explore the world</button></div></div>
+<div class="world-unlock" id="worldUnlock" aria-hidden="true"><div class="world-unlock-card"><div class="world-unlock-icon">🌿</div><div class="world-unlock-kicker">10% · FIRST SIGNS</div><h2>The world is starting to change.</h2><p>Your first meaningful progress has opened up the landscape. More life is appearing, and there's a little more waiting ahead.</p><button type="button" id="closeWorldUnlock">Explore the world</button></div></div>
 <main class="shell">
 <header><a class="brand" href="#" aria-label="WhereFits home"><div class="logo"></div><div><strong>WHEREFITS</strong><span>Build a life that fits you.</span></div></a><div class="top-actions"><button class="ghost" id="resetDemo">Reset demo</button><button class="ghost" id="themePulse">Change scene</button><button class="ghost" id="worldMotion">Pause world</button></div></header>
 <section class="hero"><div class="eyebrow">Your life, one move at a time</div><h1>Build a life that fits you.</h1><p>WhereFits turns the things you want to change into a clear plan, a few meaningful moves today, and a place to see your progress.</p></section>
@@ -194,9 +194,9 @@ function drawWorld(dt){
   }
   // Tier 0 gets three readable mountain depths: pale distant ridges, a mid range,
   // and a richer near range. The silhouettes stay broad and rounded.
-  roundedRange(sceneIndex===3?"#355f59":(firstSigns?"#91b8a5":"#a7c7bd"), .67, .25, .90, startingWorld?.82:.76);
-  roundedRange(sceneIndex===3?"#2f6559":(firstSigns?"#4c9b76":c.hill), .75, .7, 1, .98);
-  roundedRange(sceneIndex===3?"#214d43":(firstSigns?"#2f805f":c.hill2), .84, 1.4, 1.15, .99);
+  roundedRange(sceneIndex===3?"#355f59":(firstSigns?"#86b5a0":"#a7c7bd"), .67, .25, .90, startingWorld?.82:.78);
+  roundedRange(sceneIndex===3?"#2f6559":(firstSigns?"#438d6f":c.hill), .75, .7, 1, .98);
+  roundedRange(sceneIndex===3?"#214d43":(firstSigns?"#2b765b":c.hill2), .84, 1.4, 1.15, .99);
 
   // Curved mountain-face shadows and highlights make the ridges read as terrain.
   ctx.save();
@@ -382,7 +382,7 @@ function drawWorld(dt){
 
   // Tier 0 lower-left meadow: this is a real foreground zone, not a few strokes.
   ctx.save();
-  for(let i=0;i<(startingWorld?68:firstSigns?108:92);i++){
+  for(let i=0;i<(startingWorld?68:firstSigns?118:92);i++){
     const x=cw*(.005+((i*47)%46)/100), base=ch*(.81+((i*23)%17)/100);
     const h=20+(i%9)*6, sway=reduceMotion?0:Math.sin(t*2.4+i*.55)*10+Math.sin(t*1.1+i)*4;
     ctx.strokeStyle=i%5===0?'rgba(43,97,61,.94)':i%3===0?'rgba(66,119,69,.86)':'rgba(91,142,82,.80)';
@@ -394,7 +394,7 @@ function drawWorld(dt){
     }
   }
   // Broad leaves and low plants break up the flat green surface.
-  for(let i=0;i<(startingWorld?15:firstSigns?30:24);i++){
+  for(let i=0;i<(startingWorld?15:firstSigns?34:24);i++){
     const x=cw*(.008+((i*31)%41)/100), y=ch*(.89+((i*11)%10)/100);
     ctx.fillStyle=i%3===0?'rgba(45,105,63,.82)':i%2?'rgba(62,123,70,.78)':'rgba(91,145,79,.72)';
     ctx.beginPath();ctx.ellipse(x,y,15+(i%4)*4,6+(i%3)*2,(-.65+(i%5)*.3),0,Math.PI*2);ctx.fill();
@@ -404,7 +404,7 @@ function drawWorld(dt){
     }
   }
   // A few taller meadow clumps create foreground depth.
-  for(let i=0;i<(startingWorld?7:firstSigns?11:13);i++){
+  for(let i=0;i<(startingWorld?7:firstSigns?13:13);i++){
     const x=cw*(.025+((i*59)%42)/100), y=ch*(.985-((i*7)%9)/100);
     const sway=reduceMotion?0:Math.sin(t*2+i)*9;
     ctx.strokeStyle='rgba(37,88,54,.88)';ctx.lineWidth=2.2;
@@ -435,20 +435,47 @@ function drawWorld(dt){
     if(sceneIndex===3){ctx.fillStyle="#ffe6a2";ctx.fillRect(x+5,y-5,3,3)}
   }
 
-  // Tier 1: a tiny distant cabin and a simple footbridge are the first signs of a life taking shape.
+  // Tier 1: first human signs are deliberately placed in open landscape so the reward is visible.
   if(firstSigns){
-    const hx=cw*.34, hy=ch*.625;
-    ctx.fillStyle=sceneIndex===3?"#233d38":"#8a6b4d";
-    ctx.fillRect(hx,hy-13,30,13);
-    ctx.beginPath();ctx.moveTo(hx-4,hy-13);ctx.lineTo(hx+15,hy-27);ctx.lineTo(hx+34,hy-13);ctx.closePath();ctx.fill();
-    ctx.fillStyle=sceneIndex===3?"#ffe5a2":"#d8a55f";ctx.fillRect(hx+12,hy-9,7,9);
-    ctx.fillStyle="rgba(255,255,255,.28)";ctx.fillRect(hx+4,hy-10,5,5);
-    ctx.strokeStyle=sceneIndex===3?"#765f48":"#8c7457";ctx.lineWidth=4;
-    ctx.beginPath();ctx.moveTo(cw*.43,ch*.695);ctx.quadraticCurveTo(cw*.49,ch*.67,cw*.55,ch*.695);ctx.stroke();
-    ctx.lineWidth=1.5;ctx.strokeStyle="rgba(255,245,218,.5)";
-    for(let i=0;i<6;i++){const xx=cw*(.43+i*.024);const yy=ch*(.695+Math.abs(i-2.5)*.006);ctx.beginPath();ctx.moveTo(xx,yy-5);ctx.lineTo(xx+7,yy+5);ctx.stroke()}
-    // A small path fork points toward the new cabin.
-    ctx.strokeStyle="rgba(222,196,143,.9)";ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(cw*.50,ch*.72);ctx.quadraticCurveTo(cw*.43,ch*.67,cw*.36,ch*.63);ctx.stroke();
+    // A small distant cabin sits on the right horizon, outside the main UI cards.
+    const hx=cw*.875, hy=ch*.655;
+    ctx.save();
+    ctx.fillStyle=sceneIndex===3?"#27463f":"#9a704b";
+    ctx.fillRect(hx-20,hy-18,40,18);
+    ctx.beginPath();ctx.moveTo(hx-25,hy-18);ctx.quadraticCurveTo(hx,hy-39,hx+25,hy-18);ctx.closePath();ctx.fill();
+    ctx.fillStyle=sceneIndex===3?"#ffe7a3":"#d9a35e";ctx.fillRect(hx-5,hy-12,10,12);
+    ctx.fillStyle=sceneIndex===3?"#f5df9d":"rgba(255,247,220,.82)";ctx.fillRect(hx-15,hy-12,6,6);ctx.fillRect(hx+9,hy-12,6,6);
+    // tiny chimney + drifting smoke
+    ctx.fillStyle=sceneIndex===3?"#31534b":"#765d49";ctx.fillRect(hx+10,hy-30,5,12);
+    if(!reduceMotion){
+      ctx.strokeStyle=sceneIndex===3?"rgba(220,236,226,.28)":"rgba(255,255,255,.38)";ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(hx+13,hy-31);ctx.bezierCurveTo(hx+8,hy-42,hx+21,hy-45,hx+16,hy-56);ctx.stroke();
+    }
+    ctx.restore();
+
+    // First little footbridge crossing the near shoreline.
+    const bx1=cw*.70, bx2=cw*.79, by=ch*.745;
+    ctx.save();
+    ctx.strokeStyle=sceneIndex===3?"#695843":"#8b6b4d";ctx.lineWidth=7;
+    ctx.beginPath();ctx.moveTo(bx1,by);ctx.quadraticCurveTo((bx1+bx2)/2,by-11,bx2,by);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?"#a18b67":"#c7a77b";ctx.lineWidth=2;
+    for(let i=0;i<6;i++){const x=bx1+i*(bx2-bx1)/5;const yy=by-((Math.sin(i/5*Math.PI))*11);ctx.beginPath();ctx.moveTo(x,yy-6);ctx.lineTo(x,yy+6);ctx.stroke()}
+    ctx.restore();
+
+    // A visible fork from the main path points toward the cabin.
+    ctx.save();ctx.strokeStyle=sceneIndex===3?"rgba(211,186,137,.66)":"rgba(224,198,148,.92)";ctx.lineWidth=6;
+    ctx.beginPath();ctx.moveTo(cw*.555,ch*.74);ctx.quadraticCurveTo(cw*.69,ch*.70,cw*.86,ch*.66);ctx.stroke();
+    ctx.restore();
+
+    // A couple of extra shoreline reeds and lily pads are the first signs of a richer ecosystem.
+    ctx.save();
+    for(let i=0;i<6;i++){
+      const x=cw*(.73+i*.045), y=ch*(.73+((i%2)*.012));
+      ctx.strokeStyle=sceneIndex===3?"rgba(101,151,116,.7)":"rgba(54,119,78,.72)";ctx.lineWidth=1.8;
+      ctx.beginPath();ctx.moveTo(x,y+18);ctx.quadraticCurveTo(x-3,y+3,x+Math.sin(t*2+i)*5,y-6);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x+6,y+18);ctx.quadraticCurveTo(x+8,y+7,x+9,y-2);ctx.stroke();
+    }
+    ctx.restore();
   }
 
   // Large framing trees: only at the edges so they don't hide the interface.
