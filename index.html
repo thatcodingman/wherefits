@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WhereFits — Build a life that fits you.</title>
+<meta name="description" content="WhereFits helps you turn the life you want into a plan, today's moves, and steady progress.">
+<style>
+:root{--bg:#071019;--panel:rgba(11,23,34,.78);--text:#eef6f4;--muted:#9eb0b0;--line:rgba(255,255,255,.1);--accent:#8ee3c1;--accent2:#7bc9e8;--gold:#f3d48a;--shadow:0 24px 80px rgba(0,0,0,.34);--radius:22px}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:var(--bg)}
+body{overflow-x:hidden}button,input,textarea{font:inherit}button{cursor:pointer}
+#world{position:fixed;inset:0;overflow:hidden;background:radial-gradient(circle at 50% 8%,rgba(123,201,232,.2),transparent 30%),linear-gradient(180deg,#10283b 0%,#0a1824 55%,#071019 100%);z-index:-5}
+.sky-glow{position:absolute;width:70vw;height:70vw;max-width:900px;max-height:900px;left:50%;top:0;transform:translateX(-50%);background:radial-gradient(circle,rgba(142,227,193,.12),transparent 62%);filter:blur(8px)}
+.moon{position:absolute;width:92px;height:92px;border-radius:50%;right:12%;top:12%;background:rgba(243,212,138,.85);box-shadow:0 0 60px rgba(243,212,138,.18)}
+.cloud{position:absolute;left:-25vw;width:340px;height:58px;border-radius:100px;background:rgba(255,255,255,.055);filter:blur(3px);animation:drift 48s linear infinite}
+.cloud:before,.cloud:after{content:"";position:absolute;border-radius:50%;background:inherit}.cloud:before{width:100px;height:100px;left:60px;top:-48px}.cloud:after{width:145px;height:145px;left:150px;top:-72px}
+.c1{top:18%;animation-duration:55s}.c2{top:31%;transform:scale(.7);animation-duration:72s;animation-delay:-31s}.c3{top:48%;transform:scale(.5);animation-duration:85s;animation-delay:-12s}
+@keyframes drift{from{transform:translateX(-20vw)}to{transform:translateX(135vw)}}
+.stars{position:absolute;inset:0;opacity:.75;background-image:radial-gradient(circle at 12% 18%,#fff 0 1px,transparent 1.5px),radial-gradient(circle at 27% 10%,#fff 0 1px,transparent 1.5px),radial-gradient(circle at 43% 22%,#fff 0 1px,transparent 1.5px),radial-gradient(circle at 68% 14%,#fff 0 1px,transparent 1.5px),radial-gradient(circle at 83% 25%,#fff 0 1px,transparent 1.5px),radial-gradient(circle at 91% 8%,#fff 0 1px,transparent 1.5px);animation:twinkle 5s ease-in-out infinite alternate}
+@keyframes twinkle{to{opacity:.35}}
+.hill{position:absolute;left:-5%;width:110%;border-radius:50% 50% 0 0/100% 100% 0 0}.h1{height:42vh;bottom:-27vh;background:#0b2025;transform:rotate(-2deg)}.h2{height:34vh;bottom:-25vh;background:#0b171d;transform:rotate(2deg)}
+.path{position:absolute;bottom:-3%;left:50%;width:180px;height:48vh;transform:translateX(-50%) perspective(300px) rotateX(8deg);background:linear-gradient(90deg,transparent,#173b3d 48%,transparent);clip-path:polygon(42% 0,58% 0,100% 100%,0 100%);opacity:.65}
+.fireflies{position:absolute;inset:0}.fireflies i{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--accent);box-shadow:0 0 16px var(--accent);opacity:.5;animation:float 6s ease-in-out infinite alternate}
+.fireflies i:nth-child(1){left:18%;top:63%;animation-delay:-1s}.fireflies i:nth-child(2){left:31%;top:72%;animation-delay:-3s}.fireflies i:nth-child(3){left:72%;top:65%;animation-delay:-2s}.fireflies i:nth-child(4){left:84%;top:74%;animation-delay:-4s}
+@keyframes float{to{transform:translateY(-30px);opacity:1}}
+.overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(3,8,13,.22),rgba(3,8,13,.54));z-index:-4}
+.shell{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:24px 0 70px}
+header{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:12px;color:var(--text);text-decoration:none}.logo{width:42px;height:42px;border:1px solid rgba(142,227,193,.4);border-radius:14px;display:grid;place-items:center;background:rgba(142,227,193,.08);box-shadow:0 0 28px rgba(142,227,193,.08)}
+.logo:before{content:"";width:17px;height:17px;border:2px solid var(--accent);border-radius:50%;box-shadow:8px 0 0 -5px var(--accent)}
+.brand strong{font-size:18px;letter-spacing:.08em}.brand span{display:block;color:var(--muted);font-size:11px;margin-top:2px;letter-spacing:.04em}
+.top-actions{display:flex;gap:8px}.ghost{border:1px solid var(--line);background:rgba(8,17,25,.45);color:var(--text);padding:10px 13px;border-radius:12px}
+.hero{padding:54px 0 30px;max-width:760px}.eyebrow{color:var(--accent);font-size:12px;font-weight:750;letter-spacing:.16em;text-transform:uppercase}
+h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:13px 0 18px}.hero p{font-size:18px;line-height:1.65;color:#bfd0cf;max-width:650px;margin:0}
+.dashboard{display:grid;grid-template-columns:1.55fr .9fr;gap:16px;margin-top:20px}.card{background:linear-gradient(145deg,rgba(15,29,41,.88),rgba(8,18,27,.78));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.card.pad{padding:22px}.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:18px}.kicker{font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.card h2{font-size:24px;letter-spacing:-.025em;margin:6px 0 0}.date{color:var(--muted);font-size:13px}.moves{display:grid;gap:10px}
+.move{display:grid;grid-template-columns:26px 1fr auto;align-items:center;gap:11px;padding:14px;border:1px solid rgba(255,255,255,.075);border-radius:16px;background:rgba(255,255,255,.025);transition:.2s}.move:hover{transform:translateY(-1px);background:rgba(255,255,255,.045)}
+.check{width:22px;height:22px;border-radius:50%;border:1px solid rgba(142,227,193,.55);background:transparent;color:transparent;display:grid;place-items:center}.move.done{opacity:.6}.move.done .check{background:var(--accent);color:#071019}.move.done .move-title{text-decoration:line-through}
+.move-title{font-weight:650}.move-meta{font-size:12px;color:var(--muted);margin-top:3px}.tag{font-size:10px;padding:5px 7px;border-radius:8px;background:rgba(142,227,193,.08);color:var(--accent)}
+.goal-visual{height:190px;display:grid;place-items:center;position:relative;overflow:hidden;border-radius:18px;background:radial-gradient(circle at 50% 30%,rgba(142,227,193,.1),transparent 58%)}
+.ring{width:142px;height:142px;border-radius:50%;background:conic-gradient(var(--accent) 0 72%,rgba(255,255,255,.08) 72% 100%);display:grid;place-items:center;position:relative;box-shadow:0 0 45px rgba(142,227,193,.08)}.ring:after{content:"";position:absolute;inset:10px;background:#0d1d28;border-radius:50%}.ring strong{position:relative;z-index:1;font-size:34px}.goal-copy{position:absolute;text-align:center;bottom:17px;left:0;right:0;color:var(--muted);font-size:12px}
+.statline{display:flex;justify-content:space-between;margin:15px 0 6px;color:var(--muted);font-size:13px}.statline b{color:var(--text)}.progress{height:8px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;width:72%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:inherit}
+.journal{min-height:280px;display:flex;flex-direction:column}.journal textarea{flex:1;min-height:135px;resize:vertical;background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:15px;color:var(--text);padding:14px;outline:none}.journal textarea:focus{border-color:rgba(142,227,193,.55);box-shadow:0 0 0 3px rgba(142,227,193,.07)}
+.mini-row{display:flex;gap:9px;align-items:center;margin-top:12px}.primary{border:0;background:var(--accent);color:#071019;font-weight:750;padding:11px 15px;border-radius:12px}.primary:hover{filter:brightness(1.04)}.saved{font-size:12px;color:var(--accent);opacity:0;transition:.2s}.saved.show{opacity:1}
+.bottom-nav{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:16px;padding:9px}.nav-btn{border:1px solid transparent;background:transparent;color:var(--muted);border-radius:14px;padding:12px 7px;font-size:12px}.nav-btn:hover,.nav-btn.active{background:rgba(255,255,255,.05);border-color:var(--line);color:var(--text)}
+.quote{margin-top:16px;padding:19px 22px;color:#c8d8d7;font-size:14px;border-left:2px solid var(--accent);background:rgba(255,255,255,.025);border-radius:0 15px 15px 0}footer{padding-top:25px;color:rgba(190,205,204,.55);font-size:11px;text-align:center}
+@media(max-width:820px){.dashboard{grid-template-columns:1fr}.hero{padding-top:38px}.bottom-nav{grid-template-columns:repeat(3,1fr)}}@media(max-width:560px){.shell{width:min(100% - 20px,1180px)}header{align-items:flex-start}.top-actions .ghost:nth-child(2){display:none}.hero p{font-size:16px}.card.pad{padding:17px}.move{grid-template-columns:26px 1fr}.move .tag{display:none}.moon{right:5%;width:64px;height:64px}.bottom-nav{grid-template-columns:repeat(2,1fr)}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="world" aria-hidden="true"><div class="sky-glow"></div><div class="stars"></div><div class="moon"></div><div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div><div class="path"></div><div class="hill h1"></div><div class="hill h2"></div><div class="fireflies"><i></i><i></i><i></i><i></i></div></div><div class="overlay"></div>
+<main class="shell">
+<header><a class="brand" href="#" aria-label="WhereFits home"><div class="logo"></div><div><strong>WHEREFITS</strong><span>Build a life that fits you.</span></div></a><div class="top-actions"><button class="ghost" id="resetDemo">Reset demo</button><button class="ghost" id="themePulse">Change scene</button></div></header>
+<section class="hero"><div class="eyebrow">Your life, one move at a time</div><h1>Build a life that fits you.</h1><p>WhereFits turns the things you want to change into a clear plan, a few meaningful moves today, and a place to see your progress.</p></section>
+<section class="dashboard">
+<div class="card pad"><div class="card-head"><div><div class="kicker">Today</div><h2>Your moves</h2></div><div class="date" id="todayDate"></div></div>
+<div class="moves" id="moves">
+<div class="move" data-move="1"><button class="check" aria-label="Complete move">✓</button><div><div class="move-title">Save $75 toward your moving fund</div><div class="move-meta">Money · recurring Friday move</div></div><span class="tag">TODAY</span></div>
+<div class="move" data-move="2"><button class="check" aria-label="Complete move">✓</button><div><div class="move-title">Research one neighborhood you could live in</div><div class="move-meta">Home · 15 minutes</div></div><span class="tag">TODAY</span></div>
+<div class="move" data-move="3"><button class="check" aria-label="Complete move">✓</button><div><div class="move-title">Write down one thing you want from your next job</div><div class="move-meta">Career · 5 minutes</div></div><span class="tag">TODAY</span></div>
+</div><div class="quote">You don't have to change your whole life today. <strong>Just make the next useful move.</strong></div></div>
+<div class="card pad"><div class="card-head"><div><div class="kicker">Current goal</div><h2>Move toward a new chapter</h2></div></div><div class="goal-visual"><div class="ring"><strong>72%</strong></div><div class="goal-copy">$5,820 of $8,000 moving fund</div></div><div class="statline"><span>Progress</span><b>$5,820 / $8,000</b></div><div class="progress"><i></i></div><div class="statline"><span>Milestones</span><b>3 of 5</b></div></div>
+<div class="card pad journal"><div class="card-head"><div><div class="kicker">Journal</div><h2>What's on your mind?</h2></div><div class="date">Today</div></div><textarea id="journal" placeholder="Write a few words about today..."></textarea><div class="mini-row"><button class="primary" id="saveJournal">Save entry</button><span class="saved" id="saved">Saved locally</span></div></div>
+<div class="card pad"><div class="card-head"><div><div class="kicker">Journey</div><h2>Keep building</h2></div></div><div class="statline"><span>Today's moves</span><b id="moveCount">0 / 3</b></div><div class="progress"><i id="moveProgress" style="width:0%"></i></div><div class="statline"><span>Current streak</span><b>1 day</b></div><div class="quote">When life gets messy, your plan doesn't disappear. Come back, adjust, and keep going.</div></div>
+</section>
+<nav class="card bottom-nav" aria-label="Main navigation"><button class="nav-btn active">Today</button><button class="nav-btn">Plan</button><button class="nav-btn">Journal</button><button class="nav-btn">Progress</button><button class="nav-btn">Reminders</button><button class="nav-btn">Explore</button></nav>
+<footer>WhereFits · Your life. Your plan. Your next move.</footer>
+</main>
+<script>
+const key="wherefits001",state=JSON.parse(localStorage.getItem(key)||"{}"),dateEl=document.getElementById("todayDate");
+dateEl.textContent=new Intl.DateTimeFormat(undefined,{weekday:"short",month:"short",day:"numeric"}).format(new Date());
+const journal=document.getElementById("journal");journal.value=state.journal||"";
+if(state.done)Object.keys(state.done).forEach(k=>{const el=document.querySelector(`[data-move="${k}"]`);if(el)el.classList.toggle("done",state.done[k])});
+function update(){const all=[...document.querySelectorAll(".move")],done=all.filter(x=>x.classList.contains("done")).length;document.getElementById("moveCount").textContent=`${done} / ${all.length}`;document.getElementById("moveProgress").style.width=(done/all.length*100)+"%";state.done={};all.forEach(x=>state.done[x.dataset.move]=x.classList.contains("done"));localStorage.setItem(key,JSON.stringify(state))}
+document.querySelectorAll(".check").forEach(btn=>btn.addEventListener("click",()=>{btn.closest(".move").classList.toggle("done");update()}));
+document.getElementById("saveJournal").addEventListener("click",()=>{state.journal=journal.value;localStorage.setItem(key,JSON.stringify(state));const s=document.getElementById("saved");s.classList.add("show");setTimeout(()=>s.classList.remove("show"),1600)});
+document.getElementById("resetDemo").addEventListener("click",()=>{localStorage.removeItem(key);location.reload()});
+document.getElementById("themePulse").addEventListener("click",()=>{document.getElementById("world").style.filter="hue-rotate(18deg) saturate(1.08)";setTimeout(()=>document.getElementById("world").style.filter="",900)});
+document.querySelectorAll(".nav-btn").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));btn.classList.add("active")}));
+update();
+</script>
+</body>
+</html>
