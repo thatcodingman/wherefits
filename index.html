@@ -562,64 +562,112 @@ function drawWorld(dt){
     ctx.beginPath();ctx.moveTo(cw*.67,ch*.615);ctx.quadraticCurveTo(cw*.73,ch*.65,bx1,bridgeY);ctx.stroke();
     ctx.beginPath();ctx.moveTo(bx2,bridgeY);ctx.quadraticCurveTo(cw*.985,ch*.66,cw*1.05,ch*.61);ctx.stroke();ctx.setLineDash([]);
 
-    // THE BRIDGE: oversized and high contrast so the brain reads it immediately.
-    ctx.strokeStyle=sceneIndex===3?'#394541':'#4a514d';ctx.lineWidth=48;
-    ctx.beginPath();ctx.moveTo(bx1,bridgeY);ctx.lineTo(bx2,bridgeY+1);ctx.stroke();
+    // MOVABLE BRIDGE: the sand path reaches the near bank, then two real
+    // retractable bridge leaves slide apart from the center of the waterway.
+    // The houses sit on the far bank, so the bridge is actually the connection.
+    const A={x:cw*.575,y:ch*.785};
+    const B={x:cw*.905,y:ch*.675};
+    const C={x:(A.x+B.x)/2,y:(A.y+B.y)/2};
 
-    // Bridge deck edge.
-    ctx.strokeStyle=sceneIndex===3?'#242e2b':'#353c38';ctx.lineWidth=5;
-    ctx.beginPath();ctx.moveTo(bx1,bridgeY-23);ctx.lineTo(bx2,bridgeY-21);ctx.stroke();
-    ctx.strokeStyle=sceneIndex===3?'#eef2e8':'#f7f5e9';ctx.lineWidth=4;
-    ctx.beginPath();ctx.moveTo(bx1,bridgeY-16);ctx.lineTo(bx2,bridgeY-15);ctx.moveTo(bx1,bridgeY+17);ctx.lineTo(bx2,bridgeY+18);ctx.stroke();
+    // Animation cycle: closed -> opening -> fully open -> closing -> closed.
+    const bridgeClock=(t%24)/24;
+    let openAmt=0;
+    if(bridgeClock<.33) openAmt=0;
+    else if(bridgeClock<.46){const q=(bridgeClock-.33)/.13;openAmt=q*q*(3-2*q)}
+    else if(bridgeClock<.66) openAmt=1;
+    else if(bridgeClock<.79){const q=(bridgeClock-.66)/.13;openAmt=1-q*q*(3-2*q)}
+    else openAmt=0;
+    const gap=.24*openAmt;
+    const leftEnd={x:C.x+(A.x-C.x)*gap,y:C.y+(A.y-C.y)*gap};
+    const rightStart={x:C.x+(B.x-C.x)*gap,y:C.y+(B.y-C.y)*gap};
+    const bridgeClosed=openAmt<.05;
 
-    // Repeating rail posts create the unmistakable bridge silhouette.
-    for(let i=0;i<=10;i++){
-      const x=bx1+i*(bx2-bx1)/10;
-      ctx.strokeStyle=sceneIndex===3?'#dbe3dc':'#edf0e7';ctx.lineWidth=3;
-      ctx.beginPath();ctx.moveTo(x,bridgeY-18);ctx.lineTo(x,bridgeY+17);ctx.stroke();
+    ctx.save();
+
+    // Approach road from the sand path to the near bridge end.
+    ctx.strokeStyle=sceneIndex===3?'#343f3c':'#5b5b54';ctx.lineWidth=25;
+    ctx.beginPath();ctx.moveTo(cw*.50,ch*.985);ctx.quadraticCurveTo(cw*.53,ch*.88,A.x,A.y);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(244,216,139,.72)':'rgba(255,225,145,.96)';ctx.lineWidth=2.4;ctx.setLineDash([14,11]);
+    ctx.beginPath();ctx.moveTo(cw*.50,ch*.985);ctx.quadraticCurveTo(cw*.53,ch*.88,A.x,A.y);ctx.stroke();ctx.setLineDash([]);
+
+    // Far-bank road runs naturally from the far bridge end toward the homes.
+    ctx.strokeStyle=sceneIndex===3?'#343f3c':'#5b5b54';ctx.lineWidth=25;
+    ctx.beginPath();ctx.moveTo(B.x,B.y);ctx.quadraticCurveTo(cw*.94,ch*.625,cw*.985,ch*.585);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(244,216,139,.72)':'rgba(255,225,145,.96)';ctx.lineWidth=2.4;ctx.setLineDash([14,11]);
+    ctx.beginPath();ctx.moveTo(B.x,B.y);ctx.quadraticCurveTo(cw*.94,ch*.625,cw*.985,ch*.585);ctx.stroke();ctx.setLineDash([]);
+
+    // Mechanical support towers live at the center gap.
+    ctx.strokeStyle=sceneIndex===3?'#65736d':'#70776f';ctx.lineWidth=8;
+    [C.x-9,C.x+9].forEach(x=>{ctx.beginPath();ctx.moveTo(x,C.y+12);ctx.lineTo(x,C.y-43);ctx.stroke()});
+    ctx.strokeStyle=sceneIndex===3?'#c7d4cd':'#d6d7ce';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(C.x-15,C.y-43);ctx.lineTo(C.x+15,C.y-43);ctx.stroke();
+
+    // Draw one retractable bridge leaf.
+    function drawLeaf(p1,p2,dir){
+      const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.hypot(dx,dy),nx=-dy/len,ny=dx/len;
+      ctx.save();
+      ctx.strokeStyle=sceneIndex===3?'#303b38':'#424944';ctx.lineWidth=30;ctx.lineCap='butt';
+      ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke();
+      ctx.strokeStyle=sceneIndex===3?'#e4ebe6':'#f0eee5';ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(p1.x+nx*12,p1.y+ny*12);ctx.lineTo(p2.x+nx*12,p2.y+ny*12);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(p1.x-nx*12,p1.y-ny*12);ctx.lineTo(p2.x-nx*12,p2.y-ny*12);ctx.stroke();
+
+      // Rail posts.
+      for(let q=.08;q<.97;q+=.12){
+        const x=p1.x+dx*q,y=p1.y+dy*q;
+        ctx.strokeStyle=sceneIndex===3?'#dce5df':'#e6e8df';ctx.lineWidth=2.5;
+        ctx.beginPath();ctx.moveTo(x+nx*11,y+ny*11);ctx.lineTo(x+nx*11,y+ny*34);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(x-nx*11,y-ny*11);ctx.lineTo(x-nx*11,y-ny*34);ctx.stroke();
+      }
+
+      // Center-facing warning chevrons make the moving ends obvious.
+      const ex=p2.x,ey=p2.y;
+      ctx.fillStyle=bridgeClosed?'#e6c568':'#df7657';
+      ctx.beginPath();ctx.arc(ex,ey,5,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+    drawLeaf(A,leftEnd,1);
+    drawLeaf(rightStart,B,-1);
+
+    // Visible water gap beneath the opening bridge.
+    if(openAmt>.02){
+      ctx.strokeStyle=sceneIndex===3?'rgba(218,241,235,.7)':'rgba(239,255,250,.86)';ctx.lineWidth=2;
+      const gx1=leftEnd.x,gy1=leftEnd.y,gx2=rightStart.x,gy2=rightStart.y;
+      for(let i=0;i<4;i++){
+        const q=(i+1)/5, x=gx1+(gx2-gx1)*q, y=gy1+(gy2-gy1)*q+16+i*6;
+        ctx.beginPath();ctx.ellipse(x,y,18+i*7,3,0,0,Math.PI*2);ctx.stroke();
+      }
     }
 
-    // Concrete piers visibly meet the water.
-    [0.22,0.60,0.86].forEach(q=>{
-      const x=bx1+q*(bx2-bx1);
-      ctx.fillStyle=sceneIndex===3?'#687871':'#707a73';
-      ctx.fillRect(x-7,bridgeY+17,14,waterTop-bridgeY-10);
-      ctx.fillStyle=sceneIndex===3?'#82958c':'#87938b';
-      ctx.fillRect(x-11,waterTop-2,22,6);
-      ctx.strokeStyle=sceneIndex===3?'rgba(222,245,237,.5)':'rgba(246,255,247,.75)';ctx.lineWidth=1.5;
-      for(let k=0;k<3;k++){ctx.beginPath();ctx.ellipse(x,waterTop+7+k*6,18+k*7,2.5+k*.5,0,0,Math.PI*2);ctx.stroke();}
-    });
-
-    // Streetlights and small signs make it feel like infrastructure people actually use.
-    [0.16,0.46,0.76].forEach(q=>{
-      const x=bx1+q*(bx2-bx1);
-      ctx.strokeStyle=sceneIndex===3?'#53615a':'#60655e';ctx.lineWidth=3;
-      ctx.beginPath();ctx.moveTo(x,bridgeY-20);ctx.lineTo(x,bridgeY-54);ctx.quadraticCurveTo(x+10,bridgeY-61,x+16,bridgeY-54);ctx.stroke();
-      ctx.fillStyle=sceneIndex===3?'#f7d889':'#fff1ad';ctx.beginPath();ctx.arc(x+16,bridgeY-54,4,0,Math.PI*2);ctx.fill();
-    });
-    ctx.fillStyle=sceneIndex===3?'#345f70':'#2d7186';ctx.fillRect(bx1+8,bridgeY-76,54,25);
-    ctx.fillStyle='#f7f7eb';ctx.font='800 10px system-ui';ctx.textAlign='center';ctx.fillText('RIVER RD',bx1+35,bridgeY-59);
-
-    // Moving traffic. Cars are deliberately large enough to be readable at a glance.
-    const traffic=[{phase:.08,v:.028,dir:1,color:'#d65e4d'},{phase:.53,v:.022,dir:-1,color:'#e0b348'},{phase:.82,v:.018,dir:1,color:'#4b91a7'}];
+    // Traffic only moves when the bridge is safely closed. When it opens,
+    // the cars wait on their respective sides instead of driving into the gap.
+    const traffic=[
+      {phase:.10,dir:1,color:'#d65e4d'},
+      {phase:.58,dir:-1,color:'#e0b348'},
+      {phase:.82,dir:1,color:'#4b91a7'}
+    ];
     traffic.forEach((car,i)=>{
-      let q=(car.phase+t*car.v*car.dir)%1;if(q<0)q+=1;
-      const x=bx1+q*(bx2-bx1), y=bridgeY-7+(i%2)*12;
+      let q=(car.phase+t*.018*car.dir)%1;if(q<0)q+=1;
+      if(!bridgeClosed){
+        q=car.dir>0?.43:.57;
+      }
+      const x=A.x+(B.x-A.x)*q,y=A.y+(B.y-A.y)*q-7+(i%2)*11;
       ctx.save();ctx.translate(x,y);ctx.scale(car.dir,1);
-      ctx.fillStyle=car.color;ctx.fillRect(-14,-6,28,11);
-      ctx.beginPath();ctx.moveTo(-9,-6);ctx.lineTo(-4,-12);ctx.lineTo(8,-12);ctx.lineTo(12,-6);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#d9ecee';ctx.fillRect(-3,-10,10,4);ctx.fillStyle='#252c2a';
-      ctx.beginPath();ctx.arc(-8,5,3.2,0,Math.PI*2);ctx.arc(8,5,3.2,0,Math.PI*2);ctx.fill();ctx.restore();
+      ctx.fillStyle=car.color;ctx.fillRect(-13,-6,26,10);
+      ctx.beginPath();ctx.moveTo(-8,-6);ctx.lineTo(-3,-11);ctx.lineTo(8,-11);ctx.lineTo(11,-6);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#d9ecee';ctx.fillRect(-2,-9,9,4);ctx.fillStyle='#252c2a';
+      ctx.beginPath();ctx.arc(-7,4,3,0,Math.PI*2);ctx.arc(7,4,3,0,Math.PI*2);ctx.fill();ctx.restore();
     });
 
-    // Dedicated pedestrian/bike lane and a moving cyclist.
-    ctx.strokeStyle=sceneIndex===3?'#dce7df':'#f0f2e7';ctx.lineWidth=4;
-    ctx.beginPath();ctx.moveTo(bx1+4,bridgeY+10);ctx.lineTo(bx2-4,bridgeY+11);ctx.stroke();
-    const bikeX=bx1+(bx2-bx1)*(.34+Math.sin(t*.32)*.18);
-    ctx.save();ctx.translate(bikeX,bridgeY-25);ctx.strokeStyle=sceneIndex===3?'#e1e9e1':'#40564f';ctx.lineWidth=2.2;
-    ctx.beginPath();ctx.arc(-7,8,5,0,Math.PI*2);ctx.arc(7,8,5,0,Math.PI*2);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(-7,8);ctx.lineTo(0,0);ctx.lineTo(7,8);ctx.lineTo(-2,8);ctx.moveTo(0,0);ctx.lineTo(4,-8);ctx.stroke();
-    ctx.beginPath();ctx.arc(4,-12,3,0,Math.PI*2);ctx.stroke();ctx.restore();
+    // Small pedestrian lane follows the bridge.
+    ctx.strokeStyle=sceneIndex===3?'#dce7df':'#f0f2e7';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(A.x+4,A.y+12);ctx.lineTo(leftEnd.x+4,leftEnd.y+12);ctx.moveTo(rightStart.x+4,rightStart.y+12);ctx.lineTo(B.x+4,B.y+12);ctx.stroke();
+
+    // A tiny status lamp gives the animation a natural reason to pause.
+    ctx.fillStyle=bridgeClosed?'#63b879':'#df7357';ctx.beginPath();ctx.arc(C.x,C.y-53,5,0,Math.PI*2);ctx.fill();
+    if(!reduceMotion && !bridgeClosed){ctx.shadowColor='#df7357';ctx.shadowBlur=12;ctx.beginPath();ctx.arc(C.x,C.y-53,5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0}
+
+    ctx.restore();
 
     // A few birds cross the open space above the bridge.
     if(!reduceMotion){
