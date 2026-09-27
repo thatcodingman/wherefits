@@ -97,11 +97,20 @@ const scenes=["morning","day","sunset","night"],sceneLabels={morning:"quiet morn
 const canvas=document.getElementById("worldCanvas"),ctx=canvas.getContext("2d"),reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let cw=0,ch=0,dpr=1,worldTime=0,progressMoves=0;
 // Tier 0 is our locked starting-world build. Later tiers will be selected automatically from this same percentage.
-const worldProgress=Math.max(Number(state.worldProgress||0),25);
+// World progression is driven by the person's real plan progress.
+// The demo starts at the displayed goal progress (about 72.75%) so the scenery
+// matches the percentage the user can actually see on screen. A future backend
+// can replace state.worldProgress with the same percentage from the user's goals.
+const worldProgress=Math.min(100,Math.max(0,Number.isFinite(Number(state.worldProgress))?Number(state.worldProgress):72.75));
 function getWorldTier(p){if(p>=100)return 7;if(p>=90)return 6;if(p>=75)return 5;if(p>=60)return 4;if(p>=40)return 3;if(p>=25)return 2;if(p>=10)return 1;return 0;}
 const worldTier=getWorldTier(worldProgress);
 const tier1=worldTier>=1;
 const tier2=worldTier>=2;
+const tier3=worldTier>=3;
+const tier4=worldTier>=4;
+const tier5=worldTier>=5;
+const tier6=worldTier>=6;
+const tier7=worldTier>=7;
 const clouds=[{x:.08,y:.16,s:1.0,v:.00024},{x:.46,y:.23,s:.76,v:.00016},{x:.78,y:.13,s:.84,v:.00020},{x:.30,y:.34,s:.60,v:.00013}];
 const trees=Array.from({length:34},(_,i)=>({x:(i/33)*1.08-.04,h:.10+((i*37)%11)/100,w:.035+((i*17)%7)/300,phase:i*.7}));
 const birds=Array.from({length:5},(_,i)=>({x:.1+i*.2,y:.18+(i%2)*.08,v:.018+i*.004}));
@@ -144,7 +153,12 @@ function drawWorld(dt){
   const startingWorld=worldTier===0;
   const firstSigns=worldTier===1;
   const horizonOpens=worldTier===2;
-  const mountainShift=startingWorld?.11:(firstSigns?.04:(horizonOpens?-.035:0));
+  const growingWorld=worldTier>=3;
+  const establishedWorld=worldTier>=4;
+  const lifeTakesShape=worldTier>=5;
+  const thrivingWorld=worldTier>=6;
+  const matureWorld=worldTier>=7;
+  const mountainShift=startingWorld?.11:(firstSigns?.04:(horizonOpens?-.035:(growingWorld?-.055:0)));
   ctx.clearRect(0,0,cw,ch);
 
   // SKY — intentionally simple and large so the world reads immediately.
@@ -626,15 +640,126 @@ function drawWorld(dt){
     [[.82,.61,.055],[.87,.64,.045],[.98,.61,.06]].forEach(([xp,yp,h])=>drawTree(cw*xp,ch*yp,ch*h,cw*.026,'#2d7157','#4f9b70'));
   }
 
+  // TIER 3–4: the landscape starts functioning like a real place.
+  // These features are deliberately large, recognizable silhouettes: roads,
+  // utility poles, a developed shoreline, a dock, boats and a growing neighborhood.
+  if(growingWorld){
+    // Main road network: the earlier footpath becomes a real paved road.
+    ctx.save();
+    ctx.strokeStyle=sceneIndex===3?'rgba(48,57,55,.92)':'rgba(91,92,83,.92)';
+    ctx.lineWidth=establishedWorld?42:30;
+    ctx.beginPath();
+    ctx.moveTo(cw*.50,ch*.98);
+    ctx.bezierCurveTo(cw*.54,ch*.86,cw*.63,ch*.78,cw*.79,ch*.68);
+    ctx.bezierCurveTo(cw*.86,ch*.64,cw*.91,ch*.61,cw*.95,ch*.58);
+    ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(240,213,137,.72)':'rgba(255,224,145,.94)';
+    ctx.lineWidth=2.6;ctx.setLineDash([18,14]);
+    ctx.beginPath();
+    ctx.moveTo(cw*.50,ch*.98);
+    ctx.bezierCurveTo(cw*.54,ch*.86,cw*.63,ch*.78,cw*.79,ch*.68);
+    ctx.bezierCurveTo(cw*.86,ch*.64,cw*.91,ch*.61,cw*.95,ch*.58);
+    ctx.stroke();ctx.setLineDash([]);
+
+    // Utility poles make the settlement feel connected to an actual town.
+    ctx.strokeStyle=sceneIndex===3?'rgba(53,70,65,.82)':'rgba(91,82,66,.82)';ctx.lineWidth=4;
+    for(let i=0;i<(establishedWorld?6:4);i++){
+      const x=cw*(.74+i*.045), y=ch*(.66-i*.014);
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-ch*.11);ctx.stroke();
+      ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-cw*.025,y-ch*.095);ctx.lineTo(x+cw*.025,y-ch*.095);ctx.stroke();ctx.lineWidth=4;
+    }
+    ctx.lineWidth=1.5;ctx.strokeStyle=sceneIndex===3?'rgba(205,225,218,.22)':'rgba(70,74,68,.32)';
+    ctx.beginPath();ctx.moveTo(cw*.74,ch*.55);ctx.quadraticCurveTo(cw*.84,ch*.51,cw*.965,ch*.55);ctx.stroke();
+    ctx.restore();
+
+    if(establishedWorld){
+      // A real dock projects into the lake from the developed shoreline.
+      const dockX=cw*.73, dockY=ch*.755;
+      ctx.save();
+      ctx.strokeStyle=sceneIndex===3?'#5d5d53':'#8a6c4c';ctx.lineWidth=12;
+      ctx.beginPath();ctx.moveTo(dockX,dockY);ctx.lineTo(dockX+cw*.115,dockY+ch*.025);ctx.stroke();
+      ctx.strokeStyle=sceneIndex===3?'#a99a77':'#c9a77b';ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(dockX,dockY-5);ctx.lineTo(dockX+cw*.115,dockY+ch*.02);ctx.stroke();
+      for(let i=0;i<5;i++){
+        const x=dockX+cw*.022+i*cw*.022, y=dockY+ch*.004+i*ch*.004;
+        ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+15);ctx.stroke();
+      }
+      ctx.restore();
+
+      // Two small boats create unmistakable life on the water.
+      const boats=[{x:.78,y:.805,v:.009,c:'#d36d52'},{x:.87,y:.84,v:-.006,c:'#e0b455'},{x:.70,y:.87,v:.004,c:'#6e98a1'}];
+      boats.forEach((b,i)=>{
+        let q=(b.x+t*b.v)%1;if(q<0)q+=1;
+        const x=cw*(.66+q*.30), y=ch*b.y+Math.sin(t*1.2+i)*3;
+        ctx.save();ctx.translate(x,y);
+        ctx.fillStyle=b.c;ctx.beginPath();ctx.moveTo(-18,0);ctx.lineTo(18,0);ctx.lineTo(10,8);ctx.lineTo(-12,8);ctx.closePath();ctx.fill();
+        if(i===0){ctx.strokeStyle='#f0e5c9';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-19);ctx.lineTo(11,-4);ctx.closePath();ctx.stroke()}
+        else {ctx.strokeStyle='#e8eee8';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-1);ctx.lineTo(0,-15);ctx.stroke()}
+        ctx.restore();
+        ctx.strokeStyle='rgba(238,255,249,.45)';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(x,y+9,24,4,0,0,Math.PI*2);ctx.stroke();
+      });
+
+      // A larger neighborhood appears beyond the bridge: homes, a shop and a street.
+      const homes=[
+        [.79,.585,28,'#9b6d4d'],[.84,.57,34,'#8c6549'],[.90,.59,25,'#a17450'],[.955,.565,31,'#8f694f'],
+        [.82,.63,22,'#7f6753'],[.875,.625,27,'#986e50']
+      ];
+      homes.forEach(([xp,yp,size,color],i)=>{
+        const x=cw*xp,y=ch*yp;
+        ctx.save();ctx.fillStyle=sceneIndex===3?'#2e4b43':color;ctx.fillRect(x-size*.5,y-size*.55,size,size*.55);
+        ctx.beginPath();ctx.moveTo(x-size*.62,y-size*.55);ctx.lineTo(x,y-size*.98);ctx.lineTo(x+size*.62,y-size*.55);ctx.closePath();ctx.fill();
+        ctx.fillStyle=sceneIndex===3?'#ffe4a2':'#f7dfad';ctx.fillRect(x-size*.22,y-size*.34,size*.16,size*.16);ctx.fillRect(x+size*.08,y-size*.31,size*.14,size*.14);
+        ctx.restore();
+      });
+      // Small storefront.
+      ctx.save();const sx=cw*.925,sy=ch*.625;ctx.fillStyle=sceneIndex===3?'#3b5750':'#b06f51';ctx.fillRect(sx-28,sy-25,56,25);ctx.fillStyle=sceneIndex===3?'#263e39':'#ead7b2';ctx.fillRect(sx-23,sy-20,46,9);ctx.fillStyle='#5e7669';ctx.fillRect(sx-16,sy-8,12,8);ctx.fillRect(sx+5,sy-8,12,8);ctx.restore();
+    }
+  }
+
+  // TIER 5 — 75%: "Life takes shape." This is the first deliberately dramatic
+  // transformation. A town, marina, traffic and a public green space appear.
+  if(lifeTakesShape){
+    // Larger town block in the far distance.
+    ctx.save();
+    const town=[
+      [.24,.57,52,.10],[.30,.56,74,.13],[.36,.55,44,.09],[.42,.57,64,.12],
+      [.48,.55,86,.15],[.55,.57,52,.10],[.61,.56,68,.12],[.67,.58,42,.08]
+    ];
+    town.forEach(([xp,yp,h,w],i)=>{
+      const x=cw*xp,y=ch*yp;
+      ctx.fillStyle=sceneIndex===3?'#274840':i%3===0?'#667e75':'#708b80';
+      ctx.fillRect(x,y-h,w*cw*.035,h);
+      if(i%2===0){ctx.fillStyle=sceneIndex===3?'#ffe1a0':'rgba(255,236,170,.75)';for(let r=0;r<2;r++)for(let k=0;k<2;k++)ctx.fillRect(x+5+k*9,y-h+12+r*11,4,4)}
+    });
+    ctx.restore();
+
+    // A public park: lawn, a walking loop and a few visible people.
+    ctx.save();ctx.fillStyle=sceneIndex===3?'rgba(44,91,70,.72)':'rgba(103,151,103,.78)';ctx.beginPath();ctx.ellipse(cw*.36,ch*.72,cw*.115,ch*.055,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(236,226,184,.78)';ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(cw*.36,ch*.72,cw*.075,ch*.032,0,0,Math.PI*2);ctx.stroke();
+    for(let i=0;i<4;i++){const px=cw*(.31+i*.035),py=ch*(.705+(i%2)*.026);ctx.fillStyle='#4e6d61';ctx.beginPath();ctx.arc(px,py-6,4,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#4e6d61';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(px,py-2);ctx.lineTo(px,py+9);ctx.moveTo(px,py+2);ctx.lineTo(px-5,py+6);ctx.moveTo(px,py+2);ctx.lineTo(px+5,py+6);ctx.stroke()}
+    ctx.restore();
+
+    // Marina lights and a small sailboat at the new shoreline.
+    ctx.save();ctx.strokeStyle=sceneIndex===3?'#c6d8cf':'#8b7050';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(cw*.57,ch*.80);ctx.lineTo(cw*.70,ch*.84);ctx.stroke();
+    ctx.strokeStyle='#f2d77f';ctx.lineWidth=3;for(let i=0;i<6;i++){const x=cw*(.58+i*.021),y=ch*(.802+i*.006);ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y-13);ctx.stroke();ctx.fillStyle='#ffe8a3';ctx.beginPath();ctx.arc(x,y-16,2.4,0,Math.PI*2);ctx.fill()}
+    const sx=cw*(.61+Math.sin(t*.03)*.02),sy=ch*.835;ctx.fillStyle='#eee8d5';ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx,sy-38);ctx.lineTo(sx+25,sy-5);ctx.closePath();ctx.fill();ctx.fillStyle='#7c6451';ctx.beginPath();ctx.moveTo(sx-18,sy);ctx.lineTo(sx+20,sy);ctx.lineTo(sx+11,sy+9);ctx.lineTo(sx-12,sy+9);ctx.closePath();ctx.fill();ctx.restore();
+
+    // More traffic makes the road feel used rather than decorative.
+    for(let i=0;i<4;i++){
+      const q=(i*.24+t*(.012+i*.002))%1,x=cw*(.51+q*.44),y=ch*(.93-q*.19);
+      ctx.save();ctx.translate(x,y);ctx.fillStyle=i%2?'#4d8493':'#c9654e';ctx.fillRect(-11,-5,22,9);ctx.fillStyle='#d9eceb';ctx.fillRect(-4,-8,9,4);ctx.fillStyle='#27322f';ctx.beginPath();ctx.arc(-7,5,2.8,0,Math.PI*2);ctx.arc(7,5,2.8,0,Math.PI*2);ctx.fill();ctx.restore();
+    }
+  }
+
   // Large framing trees: only at the edges so they don't hide the interface.
-  const edgeTrees=startingWorld?[[.05,.88,.14,.075],[.93,.88,.14,.075]]:firstSigns?[[.035,.87,.19,.10],[.13,.88,.14,.08],[.87,.88,.15,.085],[.965,.86,.21,.12]]:horizonOpens?[[.025,.87,.22,.12],[.10,.87,.19,.105],[.20,.88,.17,.09],[.79,.87,.18,.10],[.90,.86,.24,.13],[.985,.85,.28,.15]]:[[.045,.86,.24,.13],[.12,.87,.18,.105],[.22,.86,.14,.08],[.78,.87,.15,.085],[.90,.86,.22,.12],[.97,.85,.27,.145]];
+  const edgeTrees=startingWorld?[[.05,.88,.14,.075],[.93,.88,.14,.075]]:firstSigns?[[.035,.87,.19,.10],[.13,.88,.14,.08],[.87,.88,.15,.085],[.965,.86,.21,.12]]:horizonOpens?[[.025,.87,.22,.12],[.10,.87,.19,.105],[.20,.88,.17,.09],[.79,.87,.18,.10],[.90,.86,.24,.13],[.985,.85,.28,.15]]:lifeTakesShape?[[.025,.86,.25,.14],[.11,.87,.20,.11],[.19,.87,.16,.09],[.79,.87,.17,.09],[.89,.86,.24,.13],[.985,.85,.29,.16]]:[[.045,.86,.24,.13],[.12,.87,.18,.105],[.22,.86,.14,.08],[.78,.87,.15,.085],[.90,.86,.22,.12],[.97,.85,.27,.145]];
   edgeTrees.forEach((tr,i)=>{
     const sway=reduceMotion?0:Math.sin(t*1.7+i)*13 + Math.sin(t*.7+i)*5;
     drawTree(cw*tr[0]+sway,ch*tr[1],ch*tr[2],cw*tr[3],c.hill2,c.hill);
   });
 
   // A few distant trees along the horizon.
-  for(let i=0;i<(startingWorld?7:firstSigns?11:horizonOpens?26:18);i++){
+  for(let i=0;i<(startingWorld?7:firstSigns?11:horizonOpens?26:growingWorld?34:18);i++){
     const x=cw*(.22+(i/17)*.58),base=ch*(.68-((i%3)*.006));
     drawTree(x,base,ch*(.08+(i%4)*.012),cw*.035,c.hill2,c.hill);
   }
@@ -670,7 +795,11 @@ let worldPaused=false;
 if(worldTier===0)document.getElementById("worldBadge").textContent="Your world · starting point";
 if(worldTier===1)document.getElementById("worldBadge").textContent="Your world · first signs";
 if(worldTier===2)document.getElementById("worldBadge").textContent="Your world · the horizon opens";
-if(worldTier>=3)document.getElementById("worldBadge").textContent="Your world · growing";
+if(worldTier===3)document.getElementById("worldBadge").textContent="Your world · taking shape";
+if(worldTier===4)document.getElementById("worldBadge").textContent="Your world · established";
+if(worldTier===5)document.getElementById("worldBadge").textContent="Your world · life takes shape";
+if(worldTier===6)document.getElementById("worldBadge").textContent="Your world · thriving";
+if(worldTier===7)document.getElementById("worldBadge").textContent="Your world · fully alive";
 document.getElementById("themePulse").addEventListener("click",()=>{sceneIndex=(sceneIndex+1)%scenes.length;setScene()});
 document.getElementById("worldMotion").addEventListener("click",e=>{
   worldPaused=!worldPaused;
@@ -684,7 +813,7 @@ document.querySelectorAll(".nav-btn").forEach(btn=>btn.addEventListener("click",
 update();
 </script>
 <script>
-(()=>{const unlock=document.getElementById("worldUnlock"),close=document.getElementById("closeWorldUnlock");if(!unlock||!close)return;function show(){if(worldTier!==2||localStorage.getItem("wherefits_tier2_seen"))return;setTimeout(()=>{const k=unlock.querySelector(".world-unlock-kicker"),h=unlock.querySelector("h2"),p=unlock.querySelector("p");if(k)k.textContent="25% · THE HORIZON OPENS";if(h)h.textContent="THE HORIZON OPENS";if(p)p.textContent="You've made enough progress for the world to open up. New mountains, water, paths, and places are appearing ahead.";unlock.classList.add("show");unlock.setAttribute("aria-hidden","false")},700)}function hide(){unlock.classList.remove("show");unlock.setAttribute("aria-hidden","true");localStorage.setItem("wherefits_tier2_seen","1")}close.addEventListener("click",hide);unlock.addEventListener("click",e=>{if(e.target===unlock)hide()});show()})();
+(()=>{const unlock=document.getElementById("worldUnlock"),close=document.getElementById("closeWorldUnlock");if(!unlock||!close)return;function show(){if(worldTier!==5||localStorage.getItem("wherefits_tier5_seen"))return;setTimeout(()=>{const k=unlock.querySelector(".world-unlock-kicker"),h=unlock.querySelector("h2"),p=unlock.querySelector("p");if(k)k.textContent="75% · LIFE TAKES SHAPE";if(h)h.textContent="LIFE TAKES SHAPE";if(p)p.textContent="You've reached a new chapter. The quiet landscape is becoming a place: a growing town, roads, a marina, and more life around the water.";unlock.classList.add("show");unlock.setAttribute("aria-hidden","false")},700)}function hide(){unlock.classList.remove("show");unlock.setAttribute("aria-hidden","true");localStorage.setItem("wherefits_tier5_seen","1")}close.addEventListener("click",hide);unlock.addEventListener("click",e=>{if(e.target===unlock)hide()});show()})();
 </script>
 </body>
 </html>
