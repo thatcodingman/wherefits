@@ -36,16 +36,16 @@ body{overflow-x:hidden}button,input,textarea{font:inherit}button{cursor:pointer}
 .fireflies{position:absolute;inset:0}.fireflies i{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--accent);box-shadow:0 0 16px var(--accent);opacity:.5;animation:float 6s ease-in-out infinite alternate}
 .fireflies i:nth-child(1){left:18%;top:63%;animation-delay:-1s}.fireflies i:nth-child(2){left:31%;top:72%;animation-delay:-3s}.fireflies i:nth-child(3){left:72%;top:65%;animation-delay:-2s}.fireflies i:nth-child(4){left:84%;top:74%;animation-delay:-4s}
 @keyframes float{to{transform:translateY(-30px);opacity:1}}
-.overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.02) 48%,rgba(30,64,48,.10) 100%);z-index:1;pointer-events:none}
-.shell{position:relative;z-index:2;width:min(1180px,calc(100% - 32px));margin:0 auto;padding:24px 0 70px}
+.overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.00),rgba(255,255,255,.00) 48%,rgba(30,64,48,.05) 100%);z-index:1;pointer-events:none}
+.shell{position:relative;z-index:2;width:min(1040px,calc(100% - 32px));margin:0 auto;padding:24px 0 70px}
 header{display:flex;align-items:center;justify-content:space-between;gap:20px}
 .brand{display:flex;align-items:center;gap:12px;color:var(--text);text-decoration:none}.logo{width:42px;height:42px;border:1px solid rgba(111,175,152,.45);border-radius:14px;display:grid;place-items:center;background:rgba(111,175,152,.10);box-shadow:0 0 28px rgba(142,227,193,.08)}
 .logo:before{content:"";width:17px;height:17px;border:2px solid var(--accent);border-radius:50%;box-shadow:8px 0 0 -5px var(--accent)}
 .brand strong{font-size:18px;letter-spacing:.08em}.brand span{display:block;color:var(--muted);font-size:11px;margin-top:2px;letter-spacing:.04em}
 .top-actions{display:flex;gap:8px}.ghost{border:1px solid var(--line);background:rgba(255,254,248,.82);color:var(--text);padding:10px 13px;border-radius:12px;box-shadow:0 5px 18px rgba(47,67,61,.06)}
-.hero{padding:58px 0 36px;max-width:790px;text-shadow:0 2px 22px rgba(0,0,0,.2)}.eyebrow{color:var(--accent);font-size:12px;font-weight:750;letter-spacing:.16em;text-transform:uppercase}
+.hero{padding:54px 0 34px;max-width:760px;text-shadow:0 2px 22px rgba(0,0,0,.2)}.eyebrow{color:var(--accent);font-size:12px;font-weight:750;letter-spacing:.16em;text-transform:uppercase}
 h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:13px 0 18px}.hero p{font-size:18px;line-height:1.65;color:#53635e;max-width:650px;margin:0}
-.dashboard{display:grid;grid-template-columns:1.55fr .9fr;gap:16px;margin-top:20px}.card{background:linear-gradient(145deg,rgba(255,254,249,.58),rgba(250,250,244,.48));border:1px solid rgba(38,52,49,.12);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.dashboard{display:grid;grid-template-columns:1.55fr .9fr;gap:16px;margin-top:20px}.card{background:linear-gradient(145deg,rgba(255,254,249,.64),rgba(250,250,244,.54));border:1px solid rgba(38,52,49,.12);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .card.pad{padding:22px}.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:18px}.kicker{font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
 .card h2{font-size:24px;letter-spacing:-.025em;margin:6px 0 0}.date{color:var(--muted);font-size:13px}.moves{display:grid;gap:10px}
 .move{display:grid;grid-template-columns:26px 1fr auto;align-items:center;gap:11px;padding:14px;border:1px solid rgba(255,255,255,.075);border-radius:16px;background:rgba(111,175,152,.045);transition:.2s}.move:hover{transform:translateY(-1px);background:rgba(255,255,255,.045)}
@@ -87,6 +87,7 @@ dateEl.textContent=new Intl.DateTimeFormat(undefined,{weekday:"short",month:"sho
 const journal=document.getElementById("journal");journal.value=state.journal||"";
 if(state.done)Object.keys(state.done).forEach(k=>{const el=document.querySelector(`[data-move="${k}"]`);if(el)el.classList.toggle("done",state.done[k])});
 function update(){const all=[...document.querySelectorAll(".move")],done=all.filter(x=>x.classList.contains("done")).length;document.getElementById("moveCount").textContent=`${done} / ${all.length}`;document.getElementById("moveProgress").style.width=(done/all.length*100)+"%";state.done={};all.forEach(x=>state.done[x.dataset.move]=x.classList.contains("done"));localStorage.setItem(key,JSON.stringify(state));const w=document.getElementById("world");w.dataset.progress=done;document.querySelectorAll(".path-lights i").forEach((el,i)=>el.style.opacity=done>=i+1?".9":"0");document.querySelector(".path").style.opacity=done?String(.65+done*.07):".65";progressMoves=done;document.getElementById("worldBadge").textContent=done===0?"Your world · "+sceneLabels[scenes[sceneIndex]]:done===1?"Your world · the path is appearing":done===2?"Your world · momentum is building":"Your world · three moves made";document.getElementById("worldStatus").textContent=done===0?"THE WORLD CHANGES AS YOU MOVE":done===1?"ONE MOVE MADE · THE PATH IS APPEARING":done===2?"TWO MOVES MADE · MOMENTUM IS BUILDING":"THREE MOVES MADE · THE PATH IS LIT"
+}
 document.querySelectorAll(".check").forEach(btn=>btn.addEventListener("click",()=>{btn.closest(".move").classList.toggle("done");update()}));
 document.getElementById("saveJournal").addEventListener("click",()=>{state.journal=journal.value;localStorage.setItem(key,JSON.stringify(state));const s=document.getElementById("saved");s.classList.add("show");setTimeout(()=>s.classList.remove("show"),1600)});
 document.getElementById("resetDemo").addEventListener("click",()=>{localStorage.removeItem(key);location.reload()});
@@ -117,47 +118,146 @@ function drawTree(x,base,h,w,c1,c2){
 function drawWorld(dt){
   worldTime+=dt;const c=sceneColors(),t=worldTime*.001;
   ctx.clearRect(0,0,cw,ch);
-  const sky=ctx.createLinearGradient(0,0,0,ch);sky.addColorStop(0,c.top);sky.addColorStop(.52,c.mid);sky.addColorStop(1,c.low);ctx.fillStyle=sky;ctx.fillRect(0,0,cw,ch);
-  // soft atmospheric glow
-  const gx=sceneIndex===2?cw*.78:sceneIndex===1?cw*.52:cw*.72,gy=sceneIndex===3?ch*.16:ch*.18;
-  const glow=ctx.createRadialGradient(gx,gy,0,gx,gy,cw*.24);glow.addColorStop(0,"rgba(255,239,179,.55)");glow.addColorStop(1,"rgba(255,239,179,0)");ctx.fillStyle=glow;ctx.fillRect(0,0,cw,ch);
-  // sun/moon
-  ctx.save();ctx.globalAlpha=sceneIndex===3?.92:.9;ctx.fillStyle=c.sun;ctx.shadowColor=c.sun;ctx.shadowBlur=sceneIndex===3?25:45;ctx.beginPath();ctx.arc(gx,gy,sceneIndex===3?30:42,0,Math.PI*2);ctx.fill();ctx.restore();
-  if(sceneIndex===3){ctx.strokeStyle="rgba(255,255,255,.38)";ctx.lineWidth=1;for(let i=0;i<65;i++){const x=(i*97%1000)/1000*cw,y=(i*53%470)/470*ch*.58;ctx.fillStyle="rgba(255,255,255,.55)";ctx.fillRect(x,y,1.5,1.5)}}
-  // clouds drift continuously
-  clouds.forEach((cl,i)=>{const speed=reduceMotion?0:cl.v;cl.x=(cl.x+speed*dt*.01)%1.2-0.1;roundedCloud(cl.x*cw,cl.y*ch,cl.s,sceneIndex===3?.18:.48)});
-  // distant mountains
-  ctx.fillStyle=c.hill;ctx.beginPath();ctx.moveTo(0,ch*.58);
-  for(let i=0;i<=12;i++){const x=i*cw/12,y=ch*(.44+((i*31)%7)/100);ctx.lineTo(x,y)}ctx.lineTo(cw,ch*.72);ctx.lineTo(0,ch*.72);ctx.closePath();ctx.fill();
-  ctx.fillStyle=c.hill2;ctx.beginPath();ctx.moveTo(0,ch*.65);
-  for(let i=0;i<=16;i++){const x=i*cw/16,y=ch*(.53+((i*19)%9)/120);ctx.lineTo(x,y)}ctx.lineTo(cw,ch*.82);ctx.lineTo(0,ch*.82);ctx.closePath();ctx.fill();
-  // water
-  ctx.fillStyle=c.water;ctx.fillRect(0,ch*.63,cw,ch*.37);ctx.fillStyle="rgba(255,255,255,.12)";ctx.fillRect(0,ch*.645,cw,ch*.012);
-  ctx.save();ctx.globalAlpha=.22;for(let y=ch*.66;y<ch*.87;y+=18){const shift=Math.sin(t*1.2+y*.02)*10;ctx.strokeStyle="#fff";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0+shift,y);ctx.lineTo(cw*.55+shift,y);ctx.stroke()}ctx.restore();
-  // prominent side landscape framing
-  ctx.fillStyle="rgba(76,116,82,.62)";
-  ctx.beginPath();ctx.moveTo(0,ch*.70);ctx.quadraticCurveTo(cw*.12,ch*.62,cw*.25,ch*.73);ctx.lineTo(cw*.25,ch);ctx.lineTo(0,ch);ctx.closePath();ctx.fill();
-  ctx.fillStyle="rgba(94,133,91,.58)";
-  ctx.beginPath();ctx.moveTo(cw*.75,ch*.73);ctx.quadraticCurveTo(cw*.88,ch*.61,cw,ch*.69);ctx.lineTo(cw,ch);ctx.lineTo(cw*.75,ch);ctx.closePath();ctx.fill();
 
-  // landscape edges: meadow, shoreline, rocks, grass, flowers and a small fence
-  ctx.fillStyle="rgba(113,146,112,.55)";ctx.beginPath();ctx.moveTo(0,ch*.72);ctx.quadraticCurveTo(cw*.12,ch*.68,cw*.23,ch*.75);ctx.lineTo(cw*.23,ch);ctx.lineTo(0,ch);ctx.closePath();ctx.fill();
-  ctx.fillStyle="rgba(151,174,135,.46)";ctx.beginPath();ctx.moveTo(cw*.77,ch*.74);ctx.quadraticCurveTo(cw*.88,ch*.68,cw,ch*.73);ctx.lineTo(cw,ch);ctx.lineTo(cw*.77,ch);ctx.closePath();ctx.fill();
-  ctx.save();ctx.globalAlpha=.22;ctx.strokeStyle="#fff";ctx.lineWidth=1.2;
-  for(let i=0;i<14;i++){const y=ch*(.69+i*.014),off=Math.sin(t*1.1+i*.7)*18;ctx.beginPath();ctx.moveTo(cw*.56+off,y);ctx.lineTo(cw*.98+off,y);ctx.stroke()}ctx.restore();
-  ctx.fillStyle="rgba(230,211,165,.86)";ctx.beginPath();ctx.moveTo(cw*.48,ch);ctx.lineTo(cw*.52,ch);ctx.lineTo(cw*.505,ch*.64);ctx.lineTo(cw*.495,ch*.64);ctx.closePath();ctx.fill();
-  const rocks=[[cw*.055,ch*.78,22,12],[cw*.12,ch*.84,14,9],[cw*.90,ch*.79,25,13],[cw*.95,ch*.87,15,10],[cw*.045,ch*.91,10,7]];
-  rocks.forEach(([x,y,rx,ry],i)=>{ctx.fillStyle=i%2?"rgba(104,119,111,.65)":"rgba(128,139,127,.58)";ctx.beginPath();ctx.ellipse(x,y,rx,ry,-.15,0,Math.PI*2);ctx.fill()});
-  ctx.save();ctx.strokeStyle="rgba(70,111,79,.58)";ctx.lineWidth=1.2;
-  for(let i=0;i<70;i++){const side=i%2===0,x=side?((i*71)%260):(cw-((i*53)%260)),y=ch*(.76+((i*17)%23)/100),sway=reduceMotion?0:Math.sin(t*1.5+i)*3;ctx.beginPath();ctx.moveTo(x,y+10);ctx.quadraticCurveTo(x+sway,y-5,x+sway*1.5,y-14);ctx.stroke()}ctx.restore();
-  for(let i=0;i<24;i++){const side=i%2===0,x=side?((i*83)%250):(cw-((i*61)%250)),y=ch*(.79+((i*11)%17)/100);ctx.fillStyle=i%3===0?"rgba(255,245,211,.9)":"rgba(247,236,219,.78)";ctx.beginPath();ctx.arc(x,y,2.2,0,Math.PI*2);ctx.fill()}
-  ctx.strokeStyle="rgba(110,91,67,.42)";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cw*.86,ch*.82);ctx.lineTo(cw*.99,ch*.69);ctx.moveTo(cw*.89,ch*.80);ctx.lineTo(cw*.89,ch*.71);ctx.moveTo(cw*.94,ch*.76);ctx.lineTo(cw*.94,ch*.70);ctx.moveTo(cw*.98,ch*.71);ctx.lineTo(cw*.98,ch*.67);ctx.stroke();
-  const lights=Math.min(10,2+progressMoves*2);for(let i=0;i<lights;i++){const x=cw*(.68+i*.025),y=ch*(.58+(i%3)*.018);ctx.fillStyle=sceneIndex===3?"#ffe7a2":"rgba(255,231,162,.72)";ctx.fillRect(x,y,4,3)}
-  trees.forEach((tr,i)=>{const sway=reduceMotion?0:Math.sin(t*.8+tr.phase)*2;drawTree(tr.x*cw+sway,ch*.86,tr.h*ch,tr.w*cw,c.hill2,c.hill)});
-  // birds
-  if(sceneIndex!==3){birds.forEach((b,i)=>{const bx=((b.x+t*b.v)%1.15-.05)*cw,by=b.y*ch+Math.sin(t*1.3+i)*4;ctx.strokeStyle="rgba(47,75,70,.55)";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(bx,by,7,Math.PI+.3,Math.PI*2-.3);ctx.arc(bx+10,by,7,.3,Math.PI-.3);ctx.stroke()})}
-  // fireflies appear more as today's moves are completed
-  const active=Math.min(fireflies.length,progressMoves*7);for(let i=0;i<active;i++){const f=fireflies[i],fx=f.x*cw,fy=f.y*ch+Math.sin(t*f.v+f.p)*10;ctx.fillStyle="rgba(255,235,145,.9)";ctx.shadowColor="#ffe99c";ctx.shadowBlur=10;ctx.beginPath();ctx.arc(fx,fy,2.2,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0}
+  // SKY — intentionally simple and large so the world reads immediately.
+  const sky=ctx.createLinearGradient(0,0,0,ch);
+  sky.addColorStop(0,c.top);sky.addColorStop(.46,c.mid);sky.addColorStop(1,c.low);
+  ctx.fillStyle=sky;ctx.fillRect(0,0,cw,ch);
+
+  // Sun / moon and atmospheric glow.
+  const gx=sceneIndex===2?cw*.78:sceneIndex===1?cw*.52:cw*.72;
+  const gy=sceneIndex===3?ch*.15:sceneIndex===2?ch*.25:ch*.17;
+  const glow=ctx.createRadialGradient(gx,gy,0,gx,gy,cw*.27);
+  glow.addColorStop(0,"rgba(255,239,179,.58)");glow.addColorStop(1,"rgba(255,239,179,0)");
+  ctx.fillStyle=glow;ctx.fillRect(0,0,cw,ch);
+  ctx.save();ctx.globalAlpha=sceneIndex===3?.94:.95;ctx.fillStyle=c.sun;ctx.shadowColor=c.sun;ctx.shadowBlur=sceneIndex===3?26:50;
+  ctx.beginPath();ctx.arc(gx,gy,sceneIndex===3?31:45,0,Math.PI*2);ctx.fill();ctx.restore();
+
+  // Stars at night.
+  if(sceneIndex===3){
+    for(let i=0;i<95;i++){
+      const x=(i*137%997)/997*cw,y=(i*71%430)/430*ch*.53;
+      const a=.28+.25*Math.sin(t*1.4+i);
+      ctx.fillStyle=`rgba(255,255,255,${a})`;ctx.fillRect(x,y,1.5,1.5);
+    }
+  }
+
+  // Big drifting clouds — clearly visible against the sky.
+  clouds.forEach((cl,i)=>{
+    const speed=reduceMotion?0:cl.v;
+    cl.x=(cl.x+speed*dt*.01)%1.22-.11;
+    roundedCloud(cl.x*cw,cl.y*ch,cl.s,sceneIndex===3?.13:.58);
+  });
+
+  // DISTANT HORIZON — large, unmistakable mountain shapes.
+  ctx.fillStyle=c.hill;
+  ctx.beginPath();ctx.moveTo(0,ch*.55);
+  const peaks1=[.55,.43,.50,.36,.48,.32,.49,.40,.53,.37,.51,.43,.55];
+  peaks1.forEach((v,i)=>ctx.lineTo(i*cw/(peaks1.length-1),ch*v));
+  ctx.lineTo(cw,ch*.70);ctx.lineTo(0,ch*.70);ctx.closePath();ctx.fill();
+
+  ctx.fillStyle=c.hill2;
+  ctx.beginPath();ctx.moveTo(0,ch*.64);
+  const peaks2=[.64,.56,.61,.49,.60,.46,.62,.52,.64,.50,.62,.54,.65,.57,.65];
+  peaks2.forEach((v,i)=>ctx.lineTo(i*cw/(peaks2.length-1),ch*v));
+  ctx.lineTo(cw,ch*.78);ctx.lineTo(0,ch*.78);ctx.closePath();ctx.fill();
+
+  // Thin atmospheric horizon line so the transition is visible.
+  ctx.fillStyle="rgba(255,255,255,.25)";ctx.fillRect(0,ch*.64,cw,2);
+
+  // FOREGROUND WORLD: left = meadow, right = lake.
+  ctx.fillStyle=sceneIndex===3?"#29453b":"#789a78";
+  ctx.beginPath();ctx.moveTo(0,ch*.67);ctx.quadraticCurveTo(cw*.16,ch*.59,cw*.42,ch*.70);ctx.lineTo(cw*.53,ch);ctx.lineTo(0,ch);ctx.closePath();ctx.fill();
+
+  // Lake occupies the right side instead of the entire bottom, making it unmistakable.
+  ctx.fillStyle=c.water;ctx.beginPath();ctx.moveTo(cw*.47,ch*.70);ctx.quadraticCurveTo(cw*.70,ch*.62,cw,ch*.68);ctx.lineTo(cw,ch);ctx.lineTo(cw*.53,ch);ctx.closePath();ctx.fill();
+  ctx.fillStyle="rgba(255,255,255,.18)";ctx.fillRect(cw*.55,ch*.705,cw*.45,2);
+  ctx.save();ctx.globalAlpha=.30;ctx.strokeStyle="#fff";ctx.lineWidth=1.2;
+  for(let i=0;i<16;i++){
+    const y=ch*(.73+i*.015),len=cw*(.13+((i*17)%10)/100),x=cw*(.62+((i*23)%27)/100),shift=reduceMotion?0:Math.sin(t*1.35+i)*9;
+    ctx.beginPath();ctx.moveTo(x+shift,y);ctx.lineTo(Math.min(cw,x+len)+shift,y);ctx.stroke();
+  }
+  ctx.restore();
+
+  // A visible path starts in the foreground and leads to the horizon.
+  ctx.fillStyle=sceneIndex===3?"rgba(208,184,137,.68)":"rgba(222,196,143,.92)";
+  ctx.beginPath();
+  ctx.moveTo(cw*.40,ch);ctx.lineTo(cw*.60,ch);
+  ctx.lineTo(cw*.515,ch*.64);ctx.lineTo(cw*.485,ch*.64);ctx.closePath();ctx.fill();
+  ctx.fillStyle="rgba(255,244,205,.34)";ctx.beginPath();ctx.moveTo(cw*.485,ch*.64);ctx.lineTo(cw*.515,ch*.64);ctx.lineTo(cw*.505,ch*.64);ctx.closePath();ctx.fill();
+
+  // Shoreline and foreground meadow details.
+  ctx.strokeStyle="rgba(238,245,218,.52)";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cw*.47,ch*.70);ctx.quadraticCurveTo(cw*.73,ch*.63,cw,ch*.68);ctx.stroke();
+
+  // Rocks.
+  const rocks=[[.055,.78,27,15],[.13,.88,17,10],[.28,.82,13,8],[.89,.80,28,15],[.95,.90,18,11]];
+  rocks.forEach(([xp,yp,rx,ry],i)=>{ctx.fillStyle=i%2?"rgba(103,120,110,.78)":"rgba(132,143,130,.82)";ctx.beginPath();ctx.ellipse(cw*xp,ch*yp,rx,ry,-.15,0,Math.PI*2);ctx.fill()});
+
+  // Grass tufts that visibly move.
+  ctx.save();ctx.strokeStyle=sceneIndex===3?"rgba(106,145,103,.75)":"rgba(66,111,73,.72)";ctx.lineWidth=1.5;
+  for(let i=0;i<95;i++){
+    const x=(i*73%47)/100*cw,y=ch*(.74+((i*19)%25)/100),sway=reduceMotion?0:Math.sin(t*1.7+i*.8)*3;
+    ctx.beginPath();ctx.moveTo(x,y+13);ctx.quadraticCurveTo(x+sway,y-2,x+sway*1.5,y-14);ctx.stroke();
+  }
+  ctx.restore();
+
+  // Flowers.
+  for(let i=0;i<34;i++){
+    const x=(i*91%48)/100*cw,y=ch*(.78+((i*13)%18)/100);
+    ctx.fillStyle=i%3===0?"rgba(255,242,204,.95)":"rgba(246,232,220,.82)";
+    ctx.beginPath();ctx.arc(x,y,2.4,0,Math.PI*2);ctx.fill();
+  }
+
+  // Fence near the lake.
+  ctx.strokeStyle="rgba(102,82,60,.52)";ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(cw*.78,ch*.82);ctx.lineTo(cw*.98,ch*.71);ctx.stroke();
+  for(let i=0;i<4;i++){const x=cw*(.80+i*.06),y=ch*(.81-i*.032);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-ch*.09);ctx.stroke()}
+
+  // Distant little homes/lights establish a place beyond the path.
+  for(let i=0;i<7;i++){
+    const x=cw*(.29+i*.065),y=ch*(.615-(i%2)*.008);
+    ctx.fillStyle=sceneIndex===3?"rgba(30,51,47,.9)":"rgba(73,99,82,.70)";
+    ctx.fillRect(x,y-7,15,8);
+    ctx.beginPath();ctx.moveTo(x-2,y-7);ctx.lineTo(x+7,y-14);ctx.lineTo(x+17,y-7);ctx.closePath();ctx.fill();
+    if(sceneIndex===3){ctx.fillStyle="#ffe6a2";ctx.fillRect(x+5,y-5,3,3)}
+  }
+
+  // Large framing trees: only at the edges so they don't hide the interface.
+  const edgeTrees=[
+    [.045,.86,.24,.13],[.12,.87,.18,.105],[.22,.86,.14,.08],
+    [.78,.87,.15,.085],[.90,.86,.22,.12],[.97,.85,.27,.145]
+  ];
+  edgeTrees.forEach((tr,i)=>{
+    const sway=reduceMotion?0:Math.sin(t*.75+i)*2.5;
+    drawTree(cw*tr[0]+sway,ch*tr[1],ch*tr[2],cw*tr[3],c.hill2,c.hill);
+  });
+
+  // A few distant trees along the horizon.
+  for(let i=0;i<18;i++){
+    const x=cw*(.22+(i/17)*.58),base=ch*(.68-((i%3)*.006));
+    drawTree(x,base,ch*(.08+(i%4)*.012),cw*.035,c.hill2,c.hill);
+  }
+
+  // Birds crossing the open sky.
+  if(sceneIndex!==3){
+    birds.forEach((b,i)=>{
+      const bx=((b.x+t*b.v)%1.18-.08)*cw,by=b.y*ch+Math.sin(t*1.25+i)*5;
+      ctx.strokeStyle="rgba(47,75,70,.60)";ctx.lineWidth=1.6;ctx.beginPath();
+      ctx.arc(bx,by,8,Math.PI+.28,Math.PI*2-.28);ctx.arc(bx+12,by,8,.28,Math.PI-.28);ctx.stroke();
+    });
+  }
+
+  // Progress lights along the path + fireflies around the meadow.
+  const lights=Math.min(10,2+progressMoves*2);
+  for(let i=0;i<lights;i++){
+    const p=i/(lights+1),x=lerp(cw*.495,cw*.50,p)+Math.sin(p*5)*cw*.035,y=lerp(ch*.65,ch*.96,p);
+    ctx.fillStyle="#ffe7a2";ctx.shadowColor="#ffe7a2";ctx.shadowBlur=12;ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+  }
+  const active=Math.min(fireflies.length,progressMoves*7);
+  for(let i=0;i<active;i++){
+    const f=fireflies[i],fx=f.x*cw*.48,fy=f.y*ch+Math.sin(t*f.v+f.p)*10;
+    ctx.fillStyle="rgba(255,235,145,.95)";ctx.shadowColor="#ffe99c";ctx.shadowBlur=10;ctx.beginPath();ctx.arc(fx,fy,2.3,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+  }
 }
 let last=performance.now(),raf=0;
 function frame(now){const dt=Math.min(50,now-last);last=now;drawWorld(dt);if(!reduceMotion)raf=requestAnimationFrame(frame)}
