@@ -37,7 +37,7 @@ body{overflow-x:hidden}button,input,textarea{font:inherit}button{cursor:pointer}
 .fireflies i:nth-child(1){left:18%;top:63%;animation-delay:-1s}.fireflies i:nth-child(2){left:31%;top:72%;animation-delay:-3s}.fireflies i:nth-child(3){left:72%;top:65%;animation-delay:-2s}.fireflies i:nth-child(4){left:84%;top:74%;animation-delay:-4s}
 @keyframes float{to{transform:translateY(-30px);opacity:1}}
 .overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.00),rgba(255,255,255,.00) 48%,rgba(30,64,48,.05) 100%);z-index:1;pointer-events:none}
-.shell{position:relative;z-index:2;width:min(1040px,calc(100% - 32px));margin:0 auto;padding:24px 0 70px}
+.shell{position:relative;z-index:2;width:min(920px,calc(100% - 32px));margin:0 auto;padding:24px 0 70px}
 header{display:flex;align-items:center;justify-content:space-between;gap:20px}
 .brand{display:flex;align-items:center;gap:12px;color:var(--text);text-decoration:none}.logo{width:42px;height:42px;border:1px solid rgba(111,175,152,.45);border-radius:14px;display:grid;place-items:center;background:rgba(111,175,152,.10);box-shadow:0 0 28px rgba(142,227,193,.08)}
 .logo:before{content:"";width:17px;height:17px;border:2px solid var(--accent);border-radius:50%;box-shadow:8px 0 0 -5px var(--accent)}
@@ -504,114 +504,84 @@ function drawWorld(dt){
   // Tier 2: the horizon opens. These rewards are deliberately placed in
   // unobstructed right-side landscape so the user can actually see them.
   if(horizonOpens){
-    // Tier 2: replace the old fantasy waterfall with a believable river system.
-    // The river starts high in the mountains, runs downhill, passes under a road bridge,
-    // and finally empties into the lake. That gives the world a readable geography.
-    const riverTopX=cw*.675, riverTopY=ch*.505, riverBottomX=cw*.735, riverBottomY=ch*.735;
+    // Tier 2 geography: a visible river comes down from the mountains, reaches a real road bridge,
+    // passes a small lived-in settlement, and continues toward the lake. Keep the scene in the open
+    // side margins so the new world is visible instead of hiding behind the dashboard.
+    const riverTopX=cw*.70, riverTopY=ch*.46;
+    const riverMidX=cw*.79, riverMidY=ch*.61;
+    const riverBottomX=cw*.86, riverBottomY=ch*.78;
     ctx.save();
-    ctx.fillStyle=sceneIndex===3?"rgba(73,132,129,.82)":"rgba(72,177,190,.90)";
+    ctx.fillStyle=sceneIndex===3?'rgba(37,101,112,.9)':'rgba(65,177,191,.78)';
     ctx.beginPath();
-    ctx.moveTo(riverTopX-7,riverTopY);
-    ctx.bezierCurveTo(riverTopX-28,riverTopY+48,riverBottomX-36,riverBottomY-62,riverBottomX-19,riverBottomY);
-    ctx.lineTo(riverBottomX+25,riverBottomY);
-    ctx.bezierCurveTo(riverBottomX+12,riverBottomY-63,riverTopX+28,riverTopY+48,riverTopX+8,riverTopY);
+    ctx.moveTo(riverTopX-5,riverTopY);
+    ctx.bezierCurveTo(riverTopX-20,riverTopY+55,riverMidX-45,riverMidY-30,riverMidX-24,riverMidY+10);
+    ctx.bezierCurveTo(riverMidX-5,riverMidY+48,riverBottomX-36,riverBottomY-55,riverBottomX-26,riverBottomY);
+    ctx.lineTo(riverBottomX+30,riverBottomY);
+    ctx.bezierCurveTo(riverBottomX+25,riverBottomY-50,riverMidX+24,riverMidY+48,riverMidX+14,riverMidY+6);
+    ctx.bezierCurveTo(riverMidX+2,riverMidY-36,riverTopX+23,riverTopY+52,riverTopX+8,riverTopY);
     ctx.closePath();ctx.fill();
-    // River highlights make the downhill flow obvious.
-    ctx.strokeStyle=sceneIndex===3?"rgba(206,239,229,.42)":"rgba(239,255,249,.72)";ctx.lineCap="round";ctx.lineWidth=2;
-    for(let i=0;i<5;i++){
-      const off=(i-2)*8, sway=reduceMotion?0:Math.sin(t*1.5+i)*3;
-      ctx.beginPath();
-      ctx.moveTo(riverTopX+off,riverTopY+18+i*18);
-      ctx.bezierCurveTo(riverTopX-14+off+sway,riverTopY+45+i*24,riverBottomX+18+off-sway,riverBottomY-48+i*3,riverBottomX+off,riverBottomY-8+i*2);
-      ctx.stroke();
+    // Animated current lines make the river read as flowing water.
+    ctx.strokeStyle=sceneIndex===3?'rgba(186,231,230,.48)':'rgba(224,250,244,.68)';ctx.lineWidth=1.5;
+    for(let i=0;i<7;i++){
+      const p=(t*.055+i/7)%1;
+      const x=lerp(riverTopX,riverBottomX,p)+Math.sin(p*8+i)*12;
+      const y=lerp(riverTopY,riverBottomY,p);
+      ctx.beginPath();ctx.moveTo(x-16,y);ctx.quadraticCurveTo(x,y-3,x+16,y);ctx.stroke();
     }
-    // Little rapids where the river enters the lake.
-    ctx.globalAlpha=.55;ctx.strokeStyle="#f3fffa";ctx.lineWidth=1.5;
-    for(let i=0;i<4;i++){ctx.beginPath();ctx.ellipse(riverBottomX+3,riverBottomY+i*4,18+i*5,2.5+i*.5,0,0,Math.PI*2);ctx.stroke()}
+    // River mouth and ripples where it joins the lake.
+    ctx.strokeStyle=sceneIndex===3?'rgba(200,238,234,.55)':'rgba(239,255,247,.78)';ctx.lineWidth=1.5;
+    for(let i=0;i<5;i++){
+      ctx.beginPath();ctx.ellipse(riverBottomX+8,riverBottomY+4+i*7,24+i*7,3+i*.6,0,0,Math.PI*2);ctx.stroke();
+    }
     ctx.restore();
 
-    // A real road approaches from the settlement, crosses the river, and continues toward the lake.
-    const bridgeY=ch*.755, roadLeft=cw*.57, roadRight=cw*.91;
+    // A recognizable public-road bridge sits in the open right margin.
+    const bridgeY=ch*.665, bx1=cw*.76, bx2=cw*.975;
     ctx.save();
-    ctx.strokeStyle=sceneIndex===3?"rgba(58,57,52,.92)":"rgba(91,87,76,.86)";ctx.lineWidth=25;
-    ctx.beginPath();ctx.moveTo(roadLeft,bridgeY+18);ctx.quadraticCurveTo(cw*.68,bridgeY+2,cw*.78,bridgeY);ctx.quadraticCurveTo(cw*.84,bridgeY-3,roadRight,bridgeY+12);ctx.stroke();
-    // road edge lines
-    ctx.strokeStyle=sceneIndex===3?"rgba(214,202,166,.55)":"rgba(245,231,186,.9)";ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(roadLeft,bridgeY+7);ctx.quadraticCurveTo(cw*.68,bridgeY-9,cw*.78,bridgeY-7);ctx.quadraticCurveTo(cw*.84,bridgeY-10,roadRight,bridgeY+2);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(roadLeft,bridgeY+29);ctx.quadraticCurveTo(cw*.68,bridgeY+13,cw*.78,bridgeY+15);ctx.quadraticCurveTo(cw*.84,bridgeY+12,roadRight,bridgeY+24);ctx.stroke();
-    // dashed center line on the approach
-    ctx.strokeStyle=sceneIndex===3?"rgba(255,226,145,.72)":"rgba(255,224,130,.95)";ctx.lineWidth=2.5;
-    ctx.setLineDash([12,11]);
-    ctx.beginPath();ctx.moveTo(roadLeft+8,bridgeY+18);ctx.quadraticCurveTo(cw*.69,bridgeY+2,cw*.78,bridgeY+4);ctx.quadraticCurveTo(cw*.84,bridgeY+2,roadRight-5,bridgeY+14);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.restore();
-
-    // Bridge sits directly over the river: deck, supports, railings and a recognizable road surface.
-    const bx1=cw*.59,bx2=cw*.88,by=ch*.755,riverX=cw*.735;
-    ctx.save();
-    // concrete supports visible beneath the deck
-    ctx.strokeStyle=sceneIndex===3?"#55534c":"#77766f";ctx.lineWidth=8;
-    [riverX-.055*cw,riverX+.055*cw].forEach(x=>{ctx.beginPath();ctx.moveTo(x,by+7);ctx.lineTo(x,by+45);ctx.stroke()});
-    // concrete/steel bridge deck
-    ctx.strokeStyle=sceneIndex===3?"#4e514d":"#656a66";ctx.lineWidth=24;
-    ctx.beginPath();ctx.moveTo(bx1,by);ctx.lineTo(bx2,by);ctx.stroke();
-    // roadway center stripe
-    ctx.strokeStyle=sceneIndex===3?"#f2cf70":"#f5d57d";ctx.lineWidth=2.5;ctx.setLineDash([13,10]);
-    ctx.beginPath();ctx.moveTo(bx1,by);ctx.lineTo(bx2,by);ctx.stroke();ctx.setLineDash([]);
-    // metal guardrails
-    ctx.strokeStyle=sceneIndex===3?"#b6b8ae":"#d6d9cf";ctx.lineWidth=2.5;
-    ctx.beginPath();ctx.moveTo(bx1,by-10);ctx.lineTo(bx2,by-10);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(bx1,by+10);ctx.lineTo(bx2,by+10);ctx.stroke();
-    for(let i=0;i<12;i++){const x=bx1+i*(bx2-bx1)/11;ctx.beginPath();ctx.moveTo(x,by-13);ctx.lineTo(x,by+13);ctx.stroke()}
-    ctx.restore();
-
-    // Everyday life: a couple of small cars actually travel across the bridge.
-    const traffic=[{phase:0.18,v:.026,dir:1,color:"#d36f55"},{phase:.62,v:.020,dir:-1,color:"#e1b85d"},{phase:.84,v:.016,dir:1,color:"#6c9fb0"}];
+    // approach road from the settlement
+    ctx.strokeStyle=sceneIndex===3?'rgba(58,60,58,.94)':'rgba(91,88,79,.92)';ctx.lineWidth=30;
+    ctx.beginPath();ctx.moveTo(cw*.63,bridgeY+15);ctx.quadraticCurveTo(cw*.72,bridgeY-2,cw*.80,bridgeY);ctx.lineTo(cw*.99,bridgeY+2);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(244,218,137,.72)':'rgba(255,223,137,.95)';ctx.lineWidth=2.5;ctx.setLineDash([13,10]);
+    ctx.beginPath();ctx.moveTo(cw*.63,bridgeY+15);ctx.quadraticCurveTo(cw*.72,bridgeY-2,cw*.80,bridgeY);ctx.lineTo(cw*.99,bridgeY+2);ctx.stroke();ctx.setLineDash([]);
+    // bridge deck, supports, railings
+    ctx.strokeStyle=sceneIndex===3?'#565c59':'#626963';ctx.lineWidth=27;ctx.beginPath();ctx.moveTo(bx1,bridgeY);ctx.lineTo(bx2,bridgeY+2);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'#c7cec8':'#e0e3d9';ctx.lineWidth=2.8;
+    ctx.beginPath();ctx.moveTo(bx1,bridgeY-11);ctx.lineTo(bx2,bridgeY-9);ctx.moveTo(bx1,bridgeY+11);ctx.lineTo(bx2,bridgeY+13);ctx.stroke();
+    for(let i=0;i<10;i++){const x=bx1+i*(bx2-bx1)/9;ctx.beginPath();ctx.moveTo(x,bridgeY-14);ctx.lineTo(x,bridgeY+15);ctx.stroke();}
+    ctx.strokeStyle=sceneIndex===3?'#555b58':'#777970';ctx.lineWidth=7;
+    [cw*.805,cw*.875,cw*.94].forEach(x=>{ctx.beginPath();ctx.moveTo(x,bridgeY+12);ctx.lineTo(x,bridgeY+58);ctx.stroke()});
+    // visible bridge shadow/reflection below
+    ctx.strokeStyle='rgba(33,85,84,.28)';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(bx1+8,bridgeY+35);ctx.lineTo(bx2-5,bridgeY+37);ctx.stroke();
+    // Cars travel across it.
+    const traffic=[{phase:.12,v:.030,dir:1,color:'#d7664e'},{phase:.58,v:.022,dir:-1,color:'#e2b657'},{phase:.83,v:.018,dir:1,color:'#5c96a8'}];
     traffic.forEach((car,i)=>{
-      let q=(car.phase+t*car.v*car.dir)%1;if(q<0)q+=1;
-      const x=bx1+q*(bx2-bx1), y=by-8+(i%2)*15;
-      ctx.save();ctx.translate(x,y);ctx.scale(car.dir,1);
-      ctx.fillStyle=car.color;ctx.fillRect(-10,-4,20,7);
-      ctx.fillStyle=sceneIndex===3?"#263b3b":"#eef7ef";ctx.fillRect(-5,-7,9,4);
-      ctx.fillStyle="#202b2a";ctx.beginPath();ctx.arc(-6,4,3,0,Math.PI*2);ctx.arc(7,4,3,0,Math.PI*2);ctx.fill();
-      ctx.restore();
+      let q=(car.phase+t*car.v*car.dir)%1;if(q<0)q+=1;const x=bx1+q*(bx2-bx1),y=bridgeY-7+(i%2)*14;
+      ctx.save();ctx.translate(x,y);ctx.scale(car.dir,1);ctx.fillStyle=car.color;ctx.fillRect(-9,-4,18,7);ctx.fillStyle='#e9f3ee';ctx.fillRect(-4,-7,8,4);ctx.fillStyle='#222b2a';ctx.beginPath();ctx.arc(-6,4,2.8,0,Math.PI*2);ctx.arc(6,4,2.8,0,Math.PI*2);ctx.fill();ctx.restore();
     });
-
-    // A pedestrian on the sidewalk gives the bridge a human scale.
-    const personX=bx1+(bx2-bx1)*(.36+Math.sin(t*.18)*.08);
-    ctx.save();ctx.translate(personX,by-16);ctx.strokeStyle=sceneIndex===3?"#d5ded8":"#3e5550";ctx.lineWidth=2;
-    ctx.beginPath();ctx.arc(0,-7,3,0,Math.PI*2);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(0,-4);ctx.lineTo(0,6);ctx.moveTo(0,0);ctx.lineTo(-5,4);ctx.moveTo(0,0);ctx.lineTo(5,3);ctx.moveTo(0,6);ctx.lineTo(-4,12);ctx.moveTo(0,6);ctx.lineTo(4,12);ctx.stroke();
+    // Pedestrian/biker silhouette.
+    const personX=bx1+(bx2-bx1)*(.35+Math.sin(t*.35)*.14);
+    ctx.save();ctx.translate(personX,bridgeY-17);ctx.strokeStyle=sceneIndex===3?'#d7e0da':'#3f5650';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(0,-7,3,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(0,-4);ctx.lineTo(0,6);ctx.moveTo(0,0);ctx.lineTo(-5,4);ctx.moveTo(0,0);ctx.lineTo(5,3);ctx.moveTo(0,6);ctx.lineTo(-4,12);ctx.moveTo(0,6);ctx.lineTo(4,12);ctx.stroke();ctx.restore();
     ctx.restore();
 
-    // Small settlement in the open far-right horizon: more than the first cabin,
-    // but still distant enough to preserve the feeling of a developing world.
+    // Settlement is placed above and to the right of the bridge, fully in the visible margin.
     const village=[
-      [0.905,0.765,25],[0.965,0.745,20],[0.845,0.785,17]
+      [0.90,.585,31],[0.965,.57,25],[0.84,.605,22],[0.94,.625,19]
     ];
     village.forEach(([xp,yp,size],i)=>{
       const x=cw*xp,y=ch*yp;
       ctx.save();
-      ctx.fillStyle=sceneIndex===3?"#29483f":i===0?"#8a6248":"#927052";
-      ctx.fillRect(x-size/2,y-size*.55,size,size*.55);
-      ctx.beginPath();ctx.moveTo(x-size*.68,y-size*.55);ctx.quadraticCurveTo(x,y-size*1.02,x+size*.68,y-size*.55);ctx.closePath();ctx.fill();
-      // warm chimney smoke makes the settlement readable even at a distance
-      ctx.fillStyle=sceneIndex===3?"rgba(224,238,231,.25)":"rgba(255,255,255,.45)";
-      ctx.fillRect(x+size*.22,y-size*.88,3,9);
-      if(sceneIndex===3){
-        ctx.fillStyle="#ffe5a0";ctx.fillRect(x-size*.12,y-size*.32,size*.20,size*.18);
-      }else{
-        ctx.fillStyle="rgba(255,244,208,.82)";ctx.fillRect(x-size*.25,y-size*.31,size*.16,size*.16);
-      }
+      ctx.fillStyle=sceneIndex===3?'#2c4b43':i===0?'#8a6248':i===1?'#996f52':'#84634d';
+      ctx.fillRect(x-size/2,y-size*.56,size,size*.56);
+      ctx.beginPath();ctx.moveTo(x-size*.68,y-size*.56);ctx.quadraticCurveTo(x,y-size*1.04,x+size*.68,y-size*.56);ctx.closePath();ctx.fill();
+      ctx.fillStyle=sceneIndex===3?'#ffe0a0':'#fff0bf';ctx.fillRect(x-size*.24,y-size*.33,size*.17,size*.17);ctx.fillRect(x+size*.08,y-size*.30,size*.15,size*.15);
+      ctx.fillStyle=sceneIndex===3?'rgba(221,237,230,.30)':'rgba(255,255,255,.50)';ctx.fillRect(x+size*.22,y-size*.91,3,10);
       ctx.restore();
     });
-
-    // A little footpath now branches from the main route toward the new bridge.
-    ctx.save();
-    ctx.strokeStyle=sceneIndex===3?"rgba(204,179,133,.72)":"rgba(228,201,151,.95)";
-    ctx.lineWidth=6;
-    ctx.beginPath();ctx.moveTo(cw*.56,ch*.75);ctx.quadraticCurveTo(cw*.72,ch*.70,cw*.84,ch*.715);ctx.stroke();
-    ctx.restore();
+    // Small street and trees make the settlement read as inhabited rather than decorative blocks.
+    ctx.strokeStyle=sceneIndex===3?'rgba(92,97,88,.55)':'rgba(118,105,82,.68)';ctx.lineWidth=5;
+    ctx.beginPath();ctx.moveTo(cw*.80,ch*.635);ctx.quadraticCurveTo(cw*.86,ch*.60,cw*.95,ch*.60);ctx.stroke();
+    [[.82,.61,.055],[.87,.64,.045],[.98,.61,.06]].forEach(([xp,yp,h])=>drawTree(cw*xp,ch*yp,ch*h,cw*.026,'#2d7157','#4f9b70'));
   }
 
   // Large framing trees: only at the edges so they don't hide the interface.
