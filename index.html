@@ -101,7 +101,9 @@ let cw=0,ch=0,dpr=1,worldTime=0,progressMoves=0;
 // The demo starts at the displayed goal progress (about 72.75%) so the scenery
 // matches the percentage the user can actually see on screen. A future backend
 // can replace state.worldProgress with the same percentage from the user's goals.
-const worldProgress=Math.min(100,Math.max(0,Number.isFinite(Number(state.worldProgress))?Number(state.worldProgress):72.75));
+const demoProgressParam=new URLSearchParams(location.search).get("progress");
+const parsedDemoProgress=demoProgressParam===null?NaN:Number(demoProgressParam);
+const worldProgress=Math.min(100,Math.max(0,Number.isFinite(parsedDemoProgress)?parsedDemoProgress:(Number.isFinite(Number(state.worldProgress))?Number(state.worldProgress):72.75)));
 function getWorldTier(p){if(p>=100)return 7;if(p>=90)return 6;if(p>=75)return 5;if(p>=60)return 4;if(p>=40)return 3;if(p>=25)return 2;if(p>=10)return 1;return 0;}
 const worldTier=getWorldTier(worldProgress);
 const tier1=worldTier>=1;
@@ -551,19 +553,19 @@ function drawWorld(dt){
 
     // A recognizable public-road bridge sits fully in the open right margin.
     // Keep it outside the dashboard footprint so the user can actually read it as a bridge.
-    const bridgeY=ch*.705, bx1=cw*.825, bx2=cw*.985;
+    const bridgeY=ch*.665, bx1=cw*.775, bx2=cw*.985;
     ctx.save();
     // Approach road from the settlement.
     ctx.strokeStyle=sceneIndex===3?'rgba(58,60,58,.96)':'rgba(91,88,79,.95)';ctx.lineWidth=34;
     ctx.beginPath();
-    ctx.moveTo(cw*.90,ch*.60);
-    ctx.quadraticCurveTo(cw*.88,ch*.64,cw*.855,bridgeY);
+    ctx.moveTo(cw*.91,ch*.565);
+    ctx.quadraticCurveTo(cw*.87,ch*.61,cw*.82,bridgeY);
     ctx.lineTo(cw*.99,bridgeY+2);
     ctx.stroke();
     ctx.strokeStyle=sceneIndex===3?'rgba(244,218,137,.74)':'rgba(255,223,137,.98)';ctx.lineWidth=2.8;ctx.setLineDash([14,10]);
     ctx.beginPath();
-    ctx.moveTo(cw*.90,ch*.60);
-    ctx.quadraticCurveTo(cw*.88,ch*.64,cw*.855,bridgeY);
+    ctx.moveTo(cw*.91,ch*.565);
+    ctx.quadraticCurveTo(cw*.87,ch*.61,cw*.82,bridgeY);
     ctx.lineTo(cw*.99,bridgeY+2);
     ctx.stroke();ctx.setLineDash([]);
 
@@ -580,12 +582,19 @@ function drawWorld(dt){
     }
     // Concrete supports dropping toward the river/lake.
     ctx.strokeStyle=sceneIndex===3?'#69736f':'#707771';ctx.lineWidth=9;
-    [cw*.855,cw*.925].forEach(x=>{
+    [cw*.82,cw*.915].forEach(x=>{
       ctx.beginPath();ctx.moveTo(x,bridgeY+16);ctx.lineTo(x,bridgeY+72);ctx.stroke();
     });
     // Strong water shadow/reflection.
     ctx.strokeStyle='rgba(26,76,78,.30)';ctx.lineWidth=10;
     ctx.beginPath();ctx.moveTo(bx1+10,bridgeY+39);ctx.lineTo(bx2-4,bridgeY+41);ctx.stroke();
+    // High-contrast rail caps make the bridge read instantly at a glance.
+    ctx.strokeStyle=sceneIndex===3?'#b8c8c2':'#d8d8cc';ctx.lineWidth=5;
+    ctx.beginPath();ctx.moveTo(bx1,bridgeY-21);ctx.lineTo(bx2,bridgeY-19);ctx.stroke();
+    for(let i=0;i<7;i++){
+      const x=bx1+8+i*(bx2-bx1)/6;
+      ctx.fillStyle=i%2?'#d96a55':'#f0c86d';ctx.fillRect(x-2,bridgeY-25,4,7);
+    }
 
     // Moving traffic: large enough to read as cars at a glance.
     const traffic=[
@@ -603,6 +612,12 @@ function drawWorld(dt){
       ctx.fillStyle='#202927';ctx.beginPath();ctx.arc(-8,5,3.2,0,Math.PI*2);ctx.arc(8,5,3.2,0,Math.PI*2);ctx.fill();
       ctx.restore();
     });
+
+    // Small roadside signs at the bridge approaches.
+    ctx.save();
+    ctx.fillStyle=sceneIndex===3?'#c7d2cb':'#f1eee2';ctx.fillRect(bx1-16,bridgeY-34,4,19);ctx.fillRect(bx2-7,bridgeY-31,4,18);
+    ctx.fillStyle=sceneIndex===3?'#d86d58':'#c85e4e';ctx.fillRect(bx1-20,bridgeY-39,12,8);ctx.fillRect(bx2-11,bridgeY-36,12,8);
+    ctx.restore();
 
     // A pedestrian crossing the bridge.
     const personX=bx1+(bx2-bx1)*(.34+Math.sin(t*.35)*.14);
@@ -622,7 +637,7 @@ function drawWorld(dt){
 
 // Settlement is placed above and to the right of the bridge, fully in the visible margin.
     const village=[
-      [0.90,.585,31],[0.965,.57,25],[0.84,.605,22],[0.94,.625,19]
+      [0.86,.515,31],[0.93,.49,27],[0.975,.525,24],[0.79,.545,22]
     ];
     village.forEach(([xp,yp,size],i)=>{
       const x=cw*xp,y=ch*yp;
@@ -636,8 +651,8 @@ function drawWorld(dt){
     });
     // Small street and trees make the settlement read as inhabited rather than decorative blocks.
     ctx.strokeStyle=sceneIndex===3?'rgba(92,97,88,.55)':'rgba(118,105,82,.68)';ctx.lineWidth=5;
-    ctx.beginPath();ctx.moveTo(cw*.80,ch*.635);ctx.quadraticCurveTo(cw*.86,ch*.60,cw*.95,ch*.60);ctx.stroke();
-    [[.82,.61,.055],[.87,.64,.045],[.98,.61,.06]].forEach(([xp,yp,h])=>drawTree(cw*xp,ch*yp,ch*h,cw*.026,'#2d7157','#4f9b70'));
+    ctx.beginPath();ctx.moveTo(cw*.77,ch*.565);ctx.quadraticCurveTo(cw*.84,ch*.535,cw*.93,ch*.515);ctx.stroke();
+    [[.78,.545,.055],[.90,.50,.045],[.985,.55,.06]].forEach(([xp,yp,h])=>drawTree(cw*xp,ch*yp,ch*h,cw*.026,'#2d7157','#4f9b70'));
   }
 
   // TIER 3–4: the landscape starts functioning like a real place.
