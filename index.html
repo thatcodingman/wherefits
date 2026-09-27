@@ -37,7 +37,7 @@ body{overflow-x:hidden}button,input,textarea{font:inherit}button{cursor:pointer}
 .fireflies i:nth-child(1){left:18%;top:63%;animation-delay:-1s}.fireflies i:nth-child(2){left:31%;top:72%;animation-delay:-3s}.fireflies i:nth-child(3){left:72%;top:65%;animation-delay:-2s}.fireflies i:nth-child(4){left:84%;top:74%;animation-delay:-4s}
 @keyframes float{to{transform:translateY(-30px);opacity:1}}
 .overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.00),rgba(255,255,255,.00) 48%,rgba(30,64,48,.05) 100%);z-index:1;pointer-events:none}
-.shell{position:relative;z-index:2;width:min(920px,calc(100% - 32px));margin:0 auto;padding:24px 0 70px}
+.shell{position:relative;z-index:2;width:min(860px,calc(100% - 32px));margin:0 auto;padding:24px 0 70px}
 header{display:flex;align-items:center;justify-content:space-between;gap:20px}
 .brand{display:flex;align-items:center;gap:12px;color:var(--text);text-decoration:none}.logo{width:42px;height:42px;border:1px solid rgba(111,175,152,.45);border-radius:14px;display:grid;place-items:center;background:rgba(111,175,152,.10);box-shadow:0 0 28px rgba(142,227,193,.08)}
 .logo:before{content:"";width:17px;height:17px;border:2px solid var(--accent);border-radius:50%;box-shadow:8px 0 0 -5px var(--accent)}
@@ -45,7 +45,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:20px}
 .top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.ghost{border:1px solid var(--line);background:rgba(255,254,248,.82);color:var(--text);padding:10px 13px;border-radius:12px;box-shadow:0 5px 18px rgba(47,67,61,.06)}
 .hero{padding:54px 0 34px;max-width:760px;text-shadow:0 2px 22px rgba(0,0,0,.2)}.eyebrow{color:var(--accent);font-size:12px;font-weight:750;letter-spacing:.16em;text-transform:uppercase}
 h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:13px 0 18px}.hero p{font-size:18px;line-height:1.65;color:#53635e;max-width:650px;margin:0}
-.dashboard{display:grid;grid-template-columns:1.55fr .9fr;gap:16px;margin-top:20px}.card{background:linear-gradient(145deg,rgba(255,254,249,.58),rgba(250,250,244,.48));border:1px solid rgba(38,52,49,.12);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.dashboard{display:grid;grid-template-columns:1.55fr .9fr;gap:16px;margin-top:20px}.card{background:linear-gradient(145deg,rgba(255,254,249,.76),rgba(250,250,244,.68));border:1px solid rgba(38,52,49,.14);border-radius:var(--radius);box-shadow:0 18px 48px rgba(30,67,59,.16);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
 .card.pad{padding:22px}.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:18px}.kicker{font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
 .card h2{font-size:24px;letter-spacing:-.025em;margin:6px 0 0}.date{color:var(--muted);font-size:13px}.moves{display:grid;gap:10px}
 .move{display:grid;grid-template-columns:26px 1fr auto;align-items:center;gap:11px;padding:14px;border:1px solid rgba(255,255,255,.075);border-radius:16px;background:rgba(111,175,152,.045);transition:.2s}.move:hover{transform:translateY(-1px);background:rgba(255,255,255,.045)}
@@ -60,6 +60,10 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 .quote{margin-top:16px;padding:19px 22px;color:#53635e;font-size:14px;border-left:2px solid var(--accent);background:rgba(111,175,152,.045);border-radius:0 15px 15px 0}.world-status{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(142,227,193,.18);border-radius:999px;background:rgba(5,16,22,.28);color:rgba(190,225,217,.7);font-size:10px;letter-spacing:.13em;text-transform:uppercase;margin-bottom:14px}.world-status:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);animation:pulse 2.5s ease-in-out infinite}@keyframes pulse{50%{opacity:.35;transform:scale(.75)}}footer{padding-top:25px;color:rgba(79,94,87,.62);font-size:11px;text-align:center}
 .world-unlock{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:22px;background:rgba(14,35,31,.18);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .35s ease}.world-unlock.show{opacity:1;pointer-events:auto}.world-unlock-card{width:min(430px,calc(100vw - 32px));padding:28px;border-radius:24px;background:rgba(255,254,249,.92);border:1px solid rgba(255,255,255,.75);box-shadow:0 24px 80px rgba(30,60,50,.22);text-align:center}.world-unlock-icon{font-size:38px;margin-bottom:8px}.world-unlock-kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#3cae86;font-weight:800}.world-unlock-card h2{margin:8px 0 10px;font-size:28px;letter-spacing:-.04em}.world-unlock-card p{margin:0 auto 20px;max-width:340px;color:#596a65;line-height:1.55}.world-unlock-card button{border:0;background:#3caf88;color:white;font-weight:800;padding:12px 18px;border-radius:12px;cursor:pointer}.tier-badge{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);padding:7px 12px;border-radius:999px;background:rgba(255,254,249,.58);border:1px solid rgba(255,255,255,.55);color:#557069;font-size:10px;letter-spacing:.12em;text-transform:uppercase;backdrop-filter:blur(8px);z-index:2;white-space:nowrap}
 @media(max-width:820px){.dashboard{grid-template-columns:1fr}.hero{padding-top:38px}.bottom-nav{grid-template-columns:repeat(3,1fr)}}@media(max-width:560px){.shell{width:min(100% - 20px,1180px)}header{align-items:flex-start}.top-actions .ghost:nth-child(2){display:none}.hero p{font-size:16px}.card.pad{padding:17px}.move{grid-template-columns:26px 1fr}.move .tag{display:none}.moon{right:5%;width:64px;height:64px}.bottom-nav{grid-template-columns:repeat(2,1fr)}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* 029 — the world is a place, not wallpaper. */
+@media(min-width:900px){.shell{width:min(860px,calc(100% - 44px))}.dashboard{gap:18px}.card{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}}
+@media(max-width:760px){.shell{width:min(100% - 24px,860px)}.dashboard{grid-template-columns:1fr}.card{background:rgba(255,254,249,.78)}}
 </style>
 </head>
 <body>
@@ -520,125 +524,123 @@ function drawWorld(dt){
   // Tier 2: the horizon opens. These rewards are deliberately placed in
   // unobstructed right-side landscape so the user can actually see them.
   if(horizonOpens){
-    // Tier 2 geography: a clear real-world riverside crossing in the open right margin.
-    // The bridge is over existing water — no waterfall fantasy and no road under a house.
-    const bridgeY=ch*.705;
-    const bx1=cw*.825, bx2=cw*.995;
-    const waterTop=ch*.735, waterBottom=ch*.99;
+    // TIER 2 LANDMARK: a real riverside road crossing.  This is intentionally
+    // pushed into the open right margin so it reads as a place, not decoration.
+    const bridgeY=ch*.685;
+    const bx1=cw*.765, bx2=cw*1.035;
+    const waterTop=ch*.725;
 
     ctx.save();
-    // Broad water channel.
-    ctx.fillStyle=sceneIndex===3?'rgba(31,103,113,.92)':'rgba(59,174,190,.88)';
-    ctx.beginPath();
-    ctx.moveTo(cw*.78,waterTop+8);
-    ctx.bezierCurveTo(cw*.84,waterTop-6,cw*.91,waterTop+8,cw*.995,waterTop-2);
-    ctx.lineTo(cw*.995,waterBottom);ctx.lineTo(cw*.78,waterBottom);ctx.closePath();ctx.fill();
 
-    // Moving water lines.
-    ctx.strokeStyle=sceneIndex===3?'rgba(198,235,232,.46)':'rgba(229,252,247,.70)';ctx.lineWidth=1.5;
-    for(let i=0;i<10;i++){
-      const yy=waterTop+20+i*27, shift=((t*18+i*31)%70)-35;
-      ctx.beginPath();ctx.moveTo(cw*.80+shift,yy);
-      ctx.quadraticCurveTo(cw*.87+shift,yy-3,cw*.94+shift,yy);
-      ctx.quadraticCurveTo(cw*.965+shift,yy+3,cw*.995,yy);ctx.stroke();
+    // A broad river channel behind and below the bridge.
+    ctx.fillStyle=sceneIndex===3?'#205f6b':'#43adbf';
+    ctx.beginPath();
+    ctx.moveTo(cw*.70,waterTop);
+    ctx.bezierCurveTo(cw*.78,waterTop-13,cw*.90,waterTop+8,cw,waterTop-2);
+    ctx.lineTo(cw,ch);ctx.lineTo(cw*.70,ch);ctx.closePath();ctx.fill();
+
+    // Far bank + near bank make the water geography unmistakable.
+    ctx.strokeStyle=sceneIndex===3?'#507b70':'#7c9a6d';ctx.lineWidth=18;
+    ctx.beginPath();ctx.moveTo(cw*.70,waterTop);ctx.bezierCurveTo(cw*.80,waterTop-12,cw*.91,waterTop+7,cw,waterTop-2);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(216,239,232,.42)':'rgba(241,250,226,.72)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(cw*.70,waterTop+5);ctx.bezierCurveTo(cw*.82,waterTop-3,cw*.92,waterTop+12,cw,waterTop+5);ctx.stroke();
+
+    // Moving river texture.
+    ctx.strokeStyle=sceneIndex===3?'rgba(215,242,237,.36)':'rgba(235,255,249,.64)';ctx.lineWidth=1.5;
+    for(let i=0;i<13;i++){
+      const yy=waterTop+18+i*22;
+      const travel=reduceMotion?0:((t*22+i*47)%90)-45;
+      const x=cw*.72+travel;
+      ctx.beginPath();ctx.moveTo(x,yy);ctx.quadraticCurveTo(x+45,yy-4,x+88,yy);ctx.quadraticCurveTo(x+125,yy+4,x+175,yy);ctx.stroke();
     }
 
-    // Shoreline.
-    ctx.strokeStyle=sceneIndex===3?'rgba(84,105,84,.78)':'rgba(102,125,86,.82)';ctx.lineWidth=12;
-    ctx.beginPath();ctx.moveTo(cw*.78,waterTop+4);ctx.quadraticCurveTo(cw*.86,waterTop-5,cw*.995,waterTop);ctx.stroke();
+    // Road approaches from both banks. The visible right approach is intentionally clear.
+    ctx.strokeStyle=sceneIndex===3?'#313d39':'#565d58';ctx.lineWidth=34;
+    ctx.beginPath();ctx.moveTo(cw*.67,ch*.615);ctx.quadraticCurveTo(cw*.73,ch*.65,bx1,bridgeY);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bx2,bridgeY);ctx.quadraticCurveTo(cw*.985,ch*.66,cw*1.05,ch*.61);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(247,220,143,.78)':'rgba(255,226,145,.98)';ctx.lineWidth=2.7;ctx.setLineDash([15,10]);
+    ctx.beginPath();ctx.moveTo(cw*.67,ch*.615);ctx.quadraticCurveTo(cw*.73,ch*.65,bx1,bridgeY);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bx2,bridgeY);ctx.quadraticCurveTo(cw*.985,ch*.66,cw*1.05,ch*.61);ctx.stroke();ctx.setLineDash([]);
 
-    // Short road approach. It ends at the bridge; it does not pass under the houses.
-    ctx.strokeStyle=sceneIndex===3?'rgba(47,54,51,.98)':'rgba(72,76,70,.98)';ctx.lineWidth=30;
-    ctx.beginPath();ctx.moveTo(cw*.78,ch*.635);ctx.quadraticCurveTo(cw*.805,ch*.66,cw*.835,bridgeY);ctx.stroke();
-    ctx.strokeStyle=sceneIndex===3?'rgba(242,215,137,.78)':'rgba(255,226,145,.98)';ctx.lineWidth=2.5;ctx.setLineDash([13,9]);
-    ctx.beginPath();ctx.moveTo(cw*.78,ch*.635);ctx.quadraticCurveTo(cw*.805,ch*.66,cw*.835,bridgeY);ctx.stroke();ctx.setLineDash([]);
-
-    // THE BRIDGE — isolated, thick and high-contrast.
-    ctx.strokeStyle=sceneIndex===3?'#444e4b':'#505955';ctx.lineWidth=38;
+    // THE BRIDGE: oversized and high contrast so the brain reads it immediately.
+    ctx.strokeStyle=sceneIndex===3?'#394541':'#4a514d';ctx.lineWidth=48;
     ctx.beginPath();ctx.moveTo(bx1,bridgeY);ctx.lineTo(bx2,bridgeY+1);ctx.stroke();
 
-    // Guardrails.
-    ctx.strokeStyle=sceneIndex===3?'#d9e1da':'#edf0e6';ctx.lineWidth=4;
-    ctx.beginPath();ctx.moveTo(bx1,bridgeY-15);ctx.lineTo(bx2,bridgeY-14);ctx.moveTo(bx1,bridgeY+15);ctx.lineTo(bx2,bridgeY+16);ctx.stroke();
-    ctx.lineWidth=3;
-    for(let i=0;i<=9;i++){const x=bx1+i*(bx2-bx1)/9;ctx.beginPath();ctx.moveTo(x,bridgeY-16);ctx.lineTo(x,bridgeY+16);ctx.stroke();}
+    // Bridge deck edge.
+    ctx.strokeStyle=sceneIndex===3?'#242e2b':'#353c38';ctx.lineWidth=5;
+    ctx.beginPath();ctx.moveTo(bx1,bridgeY-23);ctx.lineTo(bx2,bridgeY-21);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'#eef2e8':'#f7f5e9';ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(bx1,bridgeY-16);ctx.lineTo(bx2,bridgeY-15);ctx.moveTo(bx1,bridgeY+17);ctx.lineTo(bx2,bridgeY+18);ctx.stroke();
 
-    // Supports visibly reach down into the water.
-    ctx.strokeStyle=sceneIndex===3?'#69756f':'#707872';ctx.lineWidth=9;
-    [0.22,0.66].forEach(q=>{const x=bx1+q*(bx2-bx1);ctx.beginPath();ctx.moveTo(x,bridgeY+16);ctx.lineTo(x,waterTop+34);ctx.stroke();});
+    // Repeating rail posts create the unmistakable bridge silhouette.
+    for(let i=0;i<=10;i++){
+      const x=bx1+i*(bx2-bx1)/10;
+      ctx.strokeStyle=sceneIndex===3?'#dbe3dc':'#edf0e7';ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(x,bridgeY-18);ctx.lineTo(x,bridgeY+17);ctx.stroke();
+    }
 
-    // Streetlights.
-    ctx.strokeStyle=sceneIndex===3?'#4d5853':'#5c625d';ctx.lineWidth=3;
-    [0.18,0.52,0.82].forEach(q=>{
+    // Concrete piers visibly meet the water.
+    [0.22,0.60,0.86].forEach(q=>{
       const x=bx1+q*(bx2-bx1);
-      ctx.beginPath();ctx.moveTo(x,bridgeY-17);ctx.lineTo(x,bridgeY-48);ctx.quadraticCurveTo(x+8,bridgeY-54,x+14,bridgeY-48);ctx.stroke();
-      ctx.fillStyle=sceneIndex===3?'#f2d78e':'#fff1ad';ctx.beginPath();ctx.arc(x+14,bridgeY-48,3.5,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=sceneIndex===3?'#687871':'#707a73';
+      ctx.fillRect(x-7,bridgeY+17,14,waterTop-bridgeY-10);
+      ctx.fillStyle=sceneIndex===3?'#82958c':'#87938b';
+      ctx.fillRect(x-11,waterTop-2,22,6);
+      ctx.strokeStyle=sceneIndex===3?'rgba(222,245,237,.5)':'rgba(246,255,247,.75)';ctx.lineWidth=1.5;
+      for(let k=0;k<3;k++){ctx.beginPath();ctx.ellipse(x,waterTop+7+k*6,18+k*7,2.5+k*.5,0,0,Math.PI*2);ctx.stroke();}
     });
 
-    // Road centerline + reflectors.
-    ctx.strokeStyle=sceneIndex===3?'rgba(246,228,169,.82)':'rgba(255,229,153,.98)';ctx.lineWidth=2.5;ctx.setLineDash([12,8]);
-    ctx.beginPath();ctx.moveTo(bx1+3,bridgeY+7);ctx.lineTo(bx2-3,bridgeY+8);ctx.stroke();ctx.setLineDash([]);
-    for(let i=0;i<8;i++){const x=bx1+8+i*(bx2-bx1)/7;ctx.fillStyle=i%2?'#d95f4c':'#e9bd57';ctx.fillRect(x-2,bridgeY-22,4,7);}
+    // Streetlights and small signs make it feel like infrastructure people actually use.
+    [0.16,0.46,0.76].forEach(q=>{
+      const x=bx1+q*(bx2-bx1);
+      ctx.strokeStyle=sceneIndex===3?'#53615a':'#60655e';ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(x,bridgeY-20);ctx.lineTo(x,bridgeY-54);ctx.quadraticCurveTo(x+10,bridgeY-61,x+16,bridgeY-54);ctx.stroke();
+      ctx.fillStyle=sceneIndex===3?'#f7d889':'#fff1ad';ctx.beginPath();ctx.arc(x+16,bridgeY-54,4,0,Math.PI*2);ctx.fill();
+    });
+    ctx.fillStyle=sceneIndex===3?'#345f70':'#2d7186';ctx.fillRect(bx1+8,bridgeY-76,54,25);
+    ctx.fillStyle='#f7f7eb';ctx.font='800 10px system-ui';ctx.textAlign='center';ctx.fillText('RIVER RD',bx1+35,bridgeY-59);
 
-    // Named road sign.
-    ctx.fillStyle=sceneIndex===3?'#3d6874':'#2e6e89';ctx.fillRect(bx1-7,bridgeY-60,34,20);
-    ctx.fillStyle='#f6f7ed';ctx.font='700 8px system-ui';ctx.textAlign='center';ctx.fillText('RIVER RD',bx1+10,bridgeY-47);
-
-    // Moving cars.
-    const traffic=[{phase:.10,v:.030,dir:1,color:'#d35e4b'},{phase:.56,v:.022,dir:-1,color:'#e0b04c'},{phase:.82,v:.018,dir:1,color:'#4b91a7'}];
+    // Moving traffic. Cars are deliberately large enough to be readable at a glance.
+    const traffic=[{phase:.08,v:.028,dir:1,color:'#d65e4d'},{phase:.53,v:.022,dir:-1,color:'#e0b348'},{phase:.82,v:.018,dir:1,color:'#4b91a7'}];
     traffic.forEach((car,i)=>{
       let q=(car.phase+t*car.v*car.dir)%1;if(q<0)q+=1;
-      const x=bx1+q*(bx2-bx1), y=bridgeY-7+(i%2)*13;
+      const x=bx1+q*(bx2-bx1), y=bridgeY-7+(i%2)*12;
       ctx.save();ctx.translate(x,y);ctx.scale(car.dir,1);
-      ctx.fillStyle=car.color;ctx.fillRect(-12,-5,24,9);
-      ctx.beginPath();ctx.moveTo(-7,-5);ctx.lineTo(-3,-10);ctx.lineTo(7,-10);ctx.lineTo(11,-5);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#d9ecee';ctx.fillRect(-2,-8,8,4);ctx.fillStyle='#222a28';
-      ctx.beginPath();ctx.arc(-7,5,3,0,Math.PI*2);ctx.arc(7,5,3,0,Math.PI*2);ctx.fill();ctx.restore();
+      ctx.fillStyle=car.color;ctx.fillRect(-14,-6,28,11);
+      ctx.beginPath();ctx.moveTo(-9,-6);ctx.lineTo(-4,-12);ctx.lineTo(8,-12);ctx.lineTo(12,-6);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#d9ecee';ctx.fillRect(-3,-10,10,4);ctx.fillStyle='#252c2a';
+      ctx.beginPath();ctx.arc(-8,5,3.2,0,Math.PI*2);ctx.arc(8,5,3.2,0,Math.PI*2);ctx.fill();ctx.restore();
     });
 
-    // Pedestrian/bike lane.
-    ctx.strokeStyle=sceneIndex===3?'rgba(218,227,218,.80)':'rgba(244,244,231,.90)';ctx.lineWidth=4;
-    ctx.beginPath();ctx.moveTo(bx1+2,bridgeY+12);ctx.lineTo(bx2-2,bridgeY+13);ctx.stroke();
+    // Dedicated pedestrian/bike lane and a moving cyclist.
+    ctx.strokeStyle=sceneIndex===3?'#dce7df':'#f0f2e7';ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(bx1+4,bridgeY+10);ctx.lineTo(bx2-4,bridgeY+11);ctx.stroke();
+    const bikeX=bx1+(bx2-bx1)*(.34+Math.sin(t*.32)*.18);
+    ctx.save();ctx.translate(bikeX,bridgeY-25);ctx.strokeStyle=sceneIndex===3?'#e1e9e1':'#40564f';ctx.lineWidth=2.2;
+    ctx.beginPath();ctx.arc(-7,8,5,0,Math.PI*2);ctx.arc(7,8,5,0,Math.PI*2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(-7,8);ctx.lineTo(0,0);ctx.lineTo(7,8);ctx.lineTo(-2,8);ctx.moveTo(0,0);ctx.lineTo(4,-8);ctx.stroke();
+    ctx.beginPath();ctx.arc(4,-12,3,0,Math.PI*2);ctx.stroke();ctx.restore();
 
-    // Pedestrian.
-    const personX=bx1+(bx2-bx1)*(.35+Math.sin(t*.35)*.12);
-    ctx.save();ctx.translate(personX,bridgeY-22);ctx.strokeStyle=sceneIndex===3?'#dce5df':'#3d514b';ctx.lineWidth=2.3;
-    ctx.beginPath();ctx.arc(0,-7,3.5,0,Math.PI*2);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(0,-3);ctx.lineTo(0,7);ctx.moveTo(0,0);ctx.lineTo(-6,4);ctx.moveTo(0,0);ctx.lineTo(6,3);ctx.moveTo(0,7);ctx.lineTo(-4,13);ctx.moveTo(0,7);ctx.lineTo(4,13);ctx.stroke();ctx.restore();
+    // A few birds cross the open space above the bridge.
+    if(!reduceMotion){
+      for(let i=0;i<3;i++){
+        const x=((t*38+i*155)%(cw*.32))+cw*.68;
+        const y=ch*(.49+i*.035)+Math.sin(t*1.5+i)*8;
+        ctx.strokeStyle=sceneIndex===3?'rgba(222,237,231,.65)':'rgba(73,104,94,.62)';ctx.lineWidth=2;
+        ctx.beginPath();ctx.moveTo(x-7,y);ctx.quadraticCurveTo(x,y-6,x+7,y);ctx.stroke();
+      }
+    }
 
-    // Ripples around bridge supports.
-    ctx.strokeStyle=sceneIndex===3?'rgba(206,239,235,.60)':'rgba(236,255,249,.82)';ctx.lineWidth=1.8;
-    [0.22,0.66].forEach(q=>{const x=bx1+q*(bx2-bx1), y=waterTop+34;for(let k=0;k<3;k++){ctx.beginPath();ctx.ellipse(x,y+5+k*7,14+k*7,2.5+k*.5,0,0,Math.PI*2);ctx.stroke();}});
-    ctx.restore();
-
-// Settlement is placed above and to the right of the bridge, fully in the visible margin.
-    const village=[
-      [0.86,.535,31],[0.93,.505,27],[0.975,.54,24],[0.79,.57,22]
-    ];
+    // Settlement stays above the road/bridge, with a clean separation.
+    const village=[[.87,.515,32],[.94,.49,28],[.985,.525,24]];
     village.forEach(([xp,yp,size],i)=>{
       const x=cw*xp,y=ch*yp;
-      ctx.save();
       ctx.fillStyle=sceneIndex===3?'#2c4b43':i===0?'#8a6248':i===1?'#996f52':'#84634d';
       ctx.fillRect(x-size/2,y-size*.56,size,size*.56);
       ctx.beginPath();ctx.moveTo(x-size*.68,y-size*.56);ctx.quadraticCurveTo(x,y-size*1.04,x+size*.68,y-size*.56);ctx.closePath();ctx.fill();
       ctx.fillStyle=sceneIndex===3?'#ffe0a0':'#fff0bf';ctx.fillRect(x-size*.24,y-size*.33,size*.17,size*.17);ctx.fillRect(x+size*.08,y-size*.30,size*.15,size*.15);
-      ctx.fillStyle=sceneIndex===3?'rgba(221,237,230,.30)':'rgba(255,255,255,.50)';ctx.fillRect(x+size*.22,y-size*.91,3,10);
-      ctx.restore();
     });
-    // Small street and trees make the settlement read as inhabited rather than decorative blocks.
-    ctx.strokeStyle=sceneIndex===3?'rgba(92,97,88,.55)':'rgba(118,105,82,.68)';ctx.lineWidth=5;
-    ctx.beginPath();ctx.moveTo(cw*.77,ch*.565);ctx.quadraticCurveTo(cw*.84,ch*.535,cw*.93,ch*.515);ctx.stroke();
-    [[.78,.545,.055],[.90,.50,.045],[.985,.55,.06]].forEach(([xp,yp,h])=>drawTree(cw*xp,ch*yp,ch*h,cw*.026,'#2d7157','#4f9b70'));
 
-    // Final bridge silhouette pass: keep the deck readable in the open water margin.
-    ctx.save();
-    ctx.strokeStyle=sceneIndex===3?"rgba(38,47,44,.98)":"rgba(55,61,57,.98)";ctx.lineWidth=5;
-    ctx.beginPath();ctx.moveTo(bx1,bridgeY-22);ctx.lineTo(bx2,bridgeY-20);ctx.stroke();
-    ctx.strokeStyle=sceneIndex===3?"rgba(231,238,230,.92)":"rgba(244,244,233,.98)";ctx.lineWidth=3;
-    for(let i=0;i<9;i++){
-      const x=bx1+i*(bx2-bx1)/8;
-      ctx.beginPath();ctx.moveTo(x,bridgeY-20);ctx.lineTo(x,bridgeY-2);ctx.stroke();
-    }
     ctx.restore();
   }
 
