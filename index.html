@@ -499,168 +499,146 @@ function drawWorld(dt){
 
   }
 
-  // Tier 2: the horizon opens. The sand path now leads to a real ferry terminal.
-  // The water crossing is deliberately horizontal so it reads as a ferry route,
-  // not as a bridge or road drawn across the lake.
+  // TIER 2+: FERRY CROSSING — a recognizable piece of infrastructure in the world.
+  // The crossing lives in the lower-right open landscape so the dashboard does not
+  // completely cover it. The path ends at a terminal; it never becomes a bridge.
   if(ferryCrossing){
     ctx.save();
 
-    // Water bay: a clear body of water separates the two terminals.
-    const nearBank={x:cw*.57,y:ch*.84};
-    const farBank={x:cw*.91,y:ch*.79};
+    const nearBank={x:cw*.70,y:ch*.885};
+    const farBank={x:cw*.985,y:ch*.705};
     const dx=farBank.x-nearBank.x, dy=farBank.y-nearBank.y;
     const crossingLen=Math.hypot(dx,dy);
     const ux=dx/crossingLen, uy=dy/crossingLen;
-    const nx=-uy, ny=ux;
 
-    ctx.fillStyle=sceneIndex===3?'#245f69':'#43aebb';
+    // A broad bay makes the water route unmistakable.
+    ctx.fillStyle=sceneIndex===3?'#245f69':'#42adbc';
     ctx.beginPath();
-    ctx.moveTo(cw*.50,ch*.70);
-    ctx.bezierCurveTo(cw*.62,ch*.67,cw*.78,ch*.72,cw*.98,ch*.69);
-    ctx.lineTo(cw*1.04,ch*1.03);ctx.lineTo(cw*.50,ch*1.03);ctx.closePath();ctx.fill();
+    ctx.moveTo(cw*.54,ch*.735);
+    ctx.bezierCurveTo(cw*.68,ch*.705,cw*.82,ch*.72,cw*1.04,ch*.675);
+    ctx.lineTo(cw*1.06,ch*1.05);ctx.lineTo(cw*.54,ch*1.05);ctx.closePath();ctx.fill();
 
-    // Shoreline bands keep the water visually grounded.
-    ctx.strokeStyle=sceneIndex===3?'#4c776d':'#73976d';ctx.lineWidth=20;
-    ctx.beginPath();
-    ctx.moveTo(cw*.50,ch*.70);
-    ctx.bezierCurveTo(cw*.63,ch*.67,cw*.80,ch*.72,cw*.98,ch*.69);
-    ctx.stroke();
+    // Shoreline / beach edges.
+    ctx.strokeStyle=sceneIndex===3?'#507b70':'#7fa16f';ctx.lineWidth=24;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(cw*.54,ch*.735);ctx.bezierCurveTo(cw*.68,ch*.705,cw*.84,ch*.72,cw*1.03,ch*.675);ctx.stroke();
 
-    // Animated water lines.
-    ctx.strokeStyle=sceneIndex===3?'rgba(222,244,238,.42)':'rgba(238,255,251,.70)';ctx.lineWidth=1.5;
-    for(let i=0;i<17;i++){
-      const yy=ch*(.735+i*.016);
-      const travel=reduceMotion?0:((t*25+i*83)%230)-110;
-      const x=cw*.50+travel;
-      ctx.beginPath();
-      ctx.moveTo(x,yy);ctx.quadraticCurveTo(x+32,yy-3,x+65,yy);ctx.quadraticCurveTo(x+100,yy+3,x+135,yy);ctx.stroke();
+    // Water movement.
+    ctx.strokeStyle=sceneIndex===3?'rgba(220,244,237,.42)':'rgba(239,255,252,.72)';ctx.lineWidth=1.6;
+    for(let i=0;i<20;i++){
+      const yy=ch*(.755+i*.014);
+      const travel=reduceMotion?0:((t*28+i*71)%260)-120;
+      const x=cw*.55+travel;
+      ctx.beginPath();ctx.moveTo(x,yy);ctx.quadraticCurveTo(x+30,yy-3,x+62,yy);ctx.quadraticCurveTo(x+94,yy+3,x+130,yy);ctx.stroke();
     }
 
-    // Near approach: the sand road ends at a ferry terminal, not at the water.
-    ctx.strokeStyle=sceneIndex===3?'#303a37':'#555a55';ctx.lineWidth=27;ctx.lineCap='round';
-    ctx.beginPath();
-    ctx.moveTo(cw*.50,ch*1.02);
-    ctx.bezierCurveTo(cw*.51,ch*.96,cw*.53,ch*.90,nearBank.x,nearBank.y);
-    ctx.stroke();
-    ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.78)':'rgba(255,225,145,.98)';ctx.lineWidth=2.4;ctx.setLineDash([15,11]);
-    ctx.beginPath();ctx.moveTo(cw*.50,ch*1.02);ctx.bezierCurveTo(cw*.51,ch*.96,cw*.53,ch*.90,nearBank.x,nearBank.y);ctx.stroke();ctx.setLineDash([]);
+    // Near-side road/path terminates at the ferry terminal.
+    ctx.strokeStyle=sceneIndex===3?'#303a37':'#565a55';ctx.lineWidth=29;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(cw*.49,ch*1.05);ctx.bezierCurveTo(cw*.53,ch*.99,cw*.62,ch*.94,nearBank.x,nearBank.y);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.8)':'rgba(255,225,145,.98)';ctx.lineWidth=2.6;ctx.setLineDash([16,12]);
+    ctx.beginPath();ctx.moveTo(cw*.49,ch*1.05);ctx.bezierCurveTo(cw*.53,ch*.99,cw*.62,ch*.94,nearBank.x,nearBank.y);ctx.stroke();ctx.setLineDash([]);
 
-    // Far-side road rises from the terminal toward the houses.
-    ctx.strokeStyle=sceneIndex===3?'#303a37':'#555a55';ctx.lineWidth=24;
-    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*.93,ch*.73,cw*.97,ch*.65,cw*1.03,ch*.60);ctx.stroke();
-    ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.78)':'rgba(255,225,145,.98)';ctx.lineWidth=2.2;ctx.setLineDash([13,10]);
-    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*.93,ch*.73,cw*.97,ch*.65,cw*1.03,ch*.60);ctx.stroke();ctx.setLineDash([]);
+    // Far-side road heads away from the dock toward the neighborhood.
+    ctx.strokeStyle=sceneIndex===3?'#303a37':'#565a55';ctx.lineWidth=24;
+    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*1.0,ch*.66,cw*1.02,ch*.62,cw*1.045,ch*.58);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.8)':'rgba(255,225,145,.98)';ctx.lineWidth=2.3;ctx.setLineDash([13,10]);
+    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*1.0,ch*.66,cw*1.02,ch*.62,cw*1.045,ch*.58);ctx.stroke();ctx.setLineDash([]);
 
-    // Real ferry terminals: platforms with ramps, posts, shelter and a sign.
+    // Large, unmistakable ferry terminals.
     function drawTerminal(p,far=false){
       ctx.save();
-      const dir=far?-1:1;
       const angle=Math.atan2(dy,dx);
-      ctx.translate(p.x,p.y);
-      ctx.rotate(angle);
+      ctx.translate(p.x,p.y);ctx.rotate(angle);
 
-      // Shore platform / loading apron.
-      ctx.fillStyle=sceneIndex===3?'#675f50':'#8f6d4d';
-      ctx.fillRect(-18,-27,74,54);
-      ctx.fillStyle=sceneIndex===3?'#aa9c7c':'#c39a6a';
-      ctx.fillRect(-12,-21,62,42);
+      // Large loading apron.
+      ctx.fillStyle=sceneIndex===3?'#655f53':'#8e6a4a';ctx.fillRect(-24,-34,94,68);
+      ctx.fillStyle=sceneIndex===3?'#a89b7e':'#c39a68';ctx.fillRect(-18,-28,82,56);
+      // Black/yellow loading edge.
+      ctx.fillStyle='#4b504b';ctx.fillRect(53,-30,10,60);
+      ctx.fillStyle='#e5bb51';for(let i=0;i<4;i++)ctx.fillRect(57,-22+i*15,5,8);
 
-      // Loading edge with bumpers.
-      ctx.fillStyle='#4d514c';ctx.fillRect(43,-24,7,48);
-      ctx.fillStyle='#e2b84f';
-      for(let i=0;i<3;i++)ctx.fillRect(46,-17+i*17,4,8);
+      // Terminal shelter with roof, windows and bench.
+      ctx.fillStyle=sceneIndex===3?'#40534c':'#9f7050';ctx.fillRect(-72,-46,38,39);
+      ctx.fillStyle=sceneIndex===3?'#2a403a':'#704f40';ctx.beginPath();ctx.moveTo(-78,-46);ctx.lineTo(-53,-62);ctx.lineTo(-28,-46);ctx.closePath();ctx.fill();
+      ctx.fillStyle=sceneIndex===3?'#f5dfa0':'#fff0bf';ctx.fillRect(-64,-38,9,12);ctx.fillRect(-48,-38,9,12);
+      ctx.strokeStyle=sceneIndex===3?'#d1d9d2':'#705f50';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-66,-4);ctx.lineTo(-37,-4);ctx.stroke();
 
-      // Small terminal shelter, positioned on the shore side.
-      ctx.fillStyle=sceneIndex===3?'#40534c':'#a87956';ctx.fillRect(-52,-31,28,31);
-      ctx.fillStyle=sceneIndex===3?'#293d37':'#765542';
-      ctx.beginPath();ctx.moveTo(-56,-31);ctx.lineTo(-38,-43);ctx.lineTo(-20,-31);ctx.closePath();ctx.fill();
-      ctx.fillStyle=sceneIndex===3?'#f2d99a':'#f6dfb0';ctx.fillRect(-47,-25,7,9);ctx.fillRect(-35,-25,7,9);
+      // Large readable ferry sign.
+      ctx.fillStyle='#5d5549';ctx.fillRect(-82,-3,4,32);
+      ctx.fillStyle=sceneIndex===3?'#e1e9e3':'#f5e4bd';ctx.fillRect(-101,-20,42,18);
+      ctx.fillStyle='#314942';ctx.font='800 7px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText('FERRY',-80,-8);
 
-      // Ferry terminal sign.
-      ctx.fillStyle='#f1d48b';ctx.fillRect(-61,2,3,23);
-      ctx.fillStyle=sceneIndex===3?'#d9e4dd':'#f2e2bb';ctx.fillRect(-72,-8,25,12);
-      ctx.fillStyle='#3c534b';ctx.font='700 5px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText('FERRY',-59,-1);
-
-      // Bollards and safety rails.
-      ctx.fillStyle='#5d5549';
-      [-8,18,37].forEach(x=>{ctx.fillRect(x,-31,5,8);ctx.fillRect(x,23,5,8)});
-      ctx.strokeStyle=sceneIndex===3?'#c8d5cc':'#e6d6b7';ctx.lineWidth=2;
-      ctx.beginPath();ctx.moveTo(-10,-28);ctx.lineTo(38,-28);ctx.moveTo(-10,28);ctx.lineTo(38,28);ctx.stroke();
+      // Railings + bollards.
+      ctx.strokeStyle=sceneIndex===3?'#d1dbd5':'#e9d9ba';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(-22,-31);ctx.lineTo(43,-31);ctx.moveTo(-22,31);ctx.lineTo(43,31);ctx.stroke();
+      ctx.fillStyle='#5a5147';[-18,4,25,42].forEach(x=>{ctx.fillRect(x,-35,5,9);ctx.fillRect(x,26,5,9)});
       ctx.restore();
     }
     drawTerminal(nearBank,false);drawTerminal(farBank,true);
 
-    // Ferry cycle: leave the near terminal, cross, dock, then return.
-    const ferryCycle=(t%20)/20;
+    // Ferry animation: dock → depart → cross → arrive → return.
+    const ferryCycle=(t%18)/18;
     let q;
-    if(ferryCycle<.09) q=0;
-    else if(ferryCycle<.40){const a=(ferryCycle-.09)/.31;q=a*a*(3-2*a)}
-    else if(ferryCycle<.49) q=1;
-    else if(ferryCycle<.80){const a=(ferryCycle-.49)/.31;q=1-a*a*(3-2*a)}
+    if(ferryCycle<.12)q=0;
+    else if(ferryCycle<.43){const a=(ferryCycle-.12)/.31;q=a*a*(3-2*a)}
+    else if(ferryCycle<.53)q=1;
+    else if(ferryCycle<.84){const a=(ferryCycle-.53)/.31;q=1-a*a*(3-2*a)}
     else q=0;
-
     const ferryX=nearBank.x+dx*q, ferryY=nearBank.y+dy*q;
-    const ferryAngle=Math.atan2(dy,dx)+(q>.49&&q<.80?Math.PI:0);
-    const moving=(ferryCycle>.09&&ferryCycle<.40)||(ferryCycle>.49&&ferryCycle<.80);
+    const ferryAngle=Math.atan2(dy,dx)+(q>.5?Math.PI:0);
+    const moving=(ferryCycle>.12&&ferryCycle<.43)||(ferryCycle>.53&&ferryCycle<.84);
 
-    // Strong wake makes movement obvious.
+    // Big wake behind the moving ferry.
     if(moving && !reduceMotion){
       ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);
-      ctx.strokeStyle='rgba(245,255,252,.82)';ctx.lineWidth=2.2;
-      for(let i=0;i<5;i++){
-        const back=42+i*15;
-        ctx.beginPath();ctx.moveTo(-back,13+i*3);ctx.quadraticCurveTo(-back-18,2+i*4,-back-38,13+i*3);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(-back,-13-i*3);ctx.quadraticCurveTo(-back-18,-2-i*4,-back-38,-13-i*3);ctx.stroke();
+      ctx.strokeStyle='rgba(250,255,252,.88)';ctx.lineWidth=2.6;
+      for(let i=0;i<7;i++){
+        const back=58+i*14;
+        ctx.beginPath();ctx.moveTo(-back,18+i*2.5);ctx.quadraticCurveTo(-back-20,5+i*4,-back-46,18+i*2.5);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(-back,-18-i*2.5);ctx.quadraticCurveTo(-back-20,-5-i*4,-back-46,-18-i*2.5);ctx.stroke();
       }
       ctx.restore();
     }
 
-    // Larger ferry: clearly a boat, not a bridge segment.
+    // Large ferry — deliberately oversized enough to read from the page.
     ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);
-    // Hull.
-    ctx.fillStyle=sceneIndex===3?'#263b37':'#4e5b58';
-    ctx.beginPath();ctx.moveTo(-58,-1);ctx.lineTo(58,-1);ctx.lineTo(45,27);ctx.quadraticCurveTo(0,35,-45,27);ctx.closePath();ctx.fill();
-    // Upper passenger deck.
-    ctx.fillStyle=sceneIndex===3?'#d0d9d2':'#f0eadc';ctx.fillRect(-48,-34,96,31);
-    // Cabin windows.
-    ctx.fillStyle=sceneIndex===3?'#71aaa5':'#669ba0';
-    for(let i=0;i<7;i++)ctx.fillRect(-40+i*13,-27,9,10);
-    // Roof and rail.
-    ctx.fillStyle=sceneIndex===3?'#465b54':'#c6bda9';ctx.fillRect(-52,-39,104,5);
-    ctx.strokeStyle=sceneIndex===3?'#e0e9e4':'#b8b9ae';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(-57,-41);ctx.lineTo(57,-41);ctx.stroke();
-    // Navigation light + rear marker.
-    ctx.fillStyle='#ffe8a0';ctx.beginPath();ctx.arc(0,-43,4,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#d85f4f';ctx.fillRect(38,-45,5,8);
-    // Fenders.
-    ctx.fillStyle='#e0b451';[-40,-20,0,20,40].forEach(x=>{ctx.beginPath();ctx.arc(x,4,4,0,Math.PI*2);ctx.fill()});
-    // Open loading ramp hint.
-    ctx.fillStyle='#6d716b';ctx.fillRect(-64,-2,7,26);ctx.fillRect(57,-2,7,26);
+    // Shadow / hull.
+    ctx.fillStyle='rgba(24,48,45,.20)';ctx.beginPath();ctx.ellipse(0,22,88,17,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=sceneIndex===3?'#243b36':'#465b59';
+    ctx.beginPath();ctx.moveTo(-76,-5);ctx.lineTo(76,-5);ctx.lineTo(59,35);ctx.quadraticCurveTo(0,47,-59,35);ctx.closePath();ctx.fill();
+    // White passenger deck.
+    ctx.fillStyle=sceneIndex===3?'#d6dfd8':'#f4eee1';ctx.fillRect(-63,-47,126,42);
+    // Windows.
+    ctx.fillStyle=sceneIndex===3?'#69a7a5':'#5f99a0';
+    for(let i=0;i<8;i++)ctx.fillRect(-52+i*14,-37,10,13);
+    // Roof + rail.
+    ctx.fillStyle=sceneIndex===3?'#465b54':'#c5bdab';ctx.fillRect(-68,-53,136,6);
+    ctx.strokeStyle=sceneIndex===3?'#e1e9e4':'#aaa99f';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(-73,-55);ctx.lineTo(73,-55);ctx.stroke();
+    // Cabin + lights.
+    ctx.fillStyle=sceneIndex===3?'#b7cbc4':'#e7dcc5';ctx.fillRect(-17,-67,34,14);
+    ctx.fillStyle='#ffe89e';ctx.beginPath();ctx.arc(0,-70,5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#d85c4e';ctx.fillRect(48,-57,6,9);
+    // Fenders + ramps.
+    ctx.fillStyle='#e1b34b';[-52,-26,0,26,52].forEach(x=>{ctx.beginPath();ctx.arc(x,2,5,0,Math.PI*2);ctx.fill()});
+    ctx.fillStyle='#6d726d';ctx.fillRect(-82,-5,8,35);ctx.fillRect(74,-5,8,35);
     ctx.restore();
 
-    // Animated terminal beacons.
+    // Pulsing terminal lights.
     [nearBank,farBank].forEach((p,i)=>{
-      const pulse=reduceMotion?1:(.75+.25*Math.sin(t*3+i));
-      ctx.fillStyle=i===0?'#69b77c':'#6c9ac0';ctx.globalAlpha=pulse;
-      ctx.beginPath();ctx.arc(p.x,p.y-55,7,0,Math.PI*2);ctx.fill();
-      ctx.globalAlpha=1;ctx.strokeStyle='rgba(255,248,220,.84)';ctx.lineWidth=2;
-      ctx.beginPath();ctx.arc(p.x,p.y-55,13,0,Math.PI*2);ctx.stroke();
+      const pulse=reduceMotion?1:(.72+.28*Math.sin(t*3+i));
+      ctx.globalAlpha=pulse;ctx.fillStyle=i?'#79a7d0':'#71c582';ctx.beginPath();ctx.arc(p.x,p.y-70,8,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+      ctx.strokeStyle='rgba(255,248,220,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y-70,15,0,Math.PI*2);ctx.stroke();
     });
 
-    // Houses beyond the far terminal.
-    const village=[[.90,.615,34],[.955,.585,29],[1.015,.625,27]];
+    // Far-side neighborhood — deliberately beyond the terminal.
+    const village=[[.89,.61,34],[.955,.57,31],[1.02,.60,28]];
     village.forEach(([xp,yp,size],i)=>{
       const x=cw*xp,y=ch*yp;
-      ctx.fillStyle=sceneIndex===3?'#2c4b43':['#8a6248','#996f52','#84634d'][i];
-      ctx.fillRect(x-size/2,y-size*.56,size,size*.56);
-      ctx.beginPath();ctx.moveTo(x-size*.68,y-size*.56);ctx.lineTo(x,y-size*1.04);ctx.lineTo(x+size*.68,y-size*.56);ctx.closePath();ctx.fill();
-      ctx.fillStyle=sceneIndex===3?'#ffe0a0':'#fff0bf';ctx.fillRect(x-size*.24,y-size*.33,size*.17,size*.17);ctx.fillRect(x+size*.08,y-size*.30,size*.15,size*.15);
+      ctx.fillStyle=sceneIndex===3?'#2c4b43':['#956b4c','#a47451','#8b664e'][i];ctx.fillRect(x-size/2,y-size*.56,size,size*.56);
+      ctx.beginPath();ctx.moveTo(x-size*.68,y-size*.56);ctx.lineTo(x,y-size*1.03);ctx.lineTo(x+size*.68,y-size*.56);ctx.closePath();ctx.fill();
+      ctx.fillStyle=sceneIndex===3?'#ffe0a0':'#fff0bf';ctx.fillRect(x-size*.23,y-size*.33,size*.16,size*.16);ctx.fillRect(x+size*.08,y-size*.30,size*.15,size*.15);
     });
 
-    // Small label reinforces the scene without looking like a bridge.
-    ctx.save();ctx.font='700 10px system-ui,sans-serif';ctx.textAlign='center';
-    ctx.fillStyle='rgba(30,48,43,.72)';ctx.fillText(moving?'FERRY UNDERWAY':'FERRY DOCKED',Math.min(cw-95,cw*.82),ch*.69);ctx.restore();
-
+    ctx.save();ctx.font='800 10px system-ui,sans-serif';ctx.textAlign='center';ctx.fillStyle='rgba(30,48,43,.76)';
+    ctx.fillText(moving?'FERRY CROSSING':'FERRY AT DOCK',Math.min(cw-100,cw*.88),ch*.665);ctx.restore();
     ctx.restore();
   }
 
@@ -681,7 +659,7 @@ function drawWorld(dt){
     ctx.beginPath();ctx.moveTo(cw*.74,ch*.55);ctx.quadraticCurveTo(cw*.84,ch*.51,cw*.965,ch*.55);ctx.stroke();
     ctx.restore();
 
-    if(establishedWorld){
+    if(establishedWorld && worldProgress>=82){
       // A real dock projects into the lake from the developed shoreline.
       const dockX=cw*.73, dockY=ch*.755;
       ctx.save();
