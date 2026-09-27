@@ -58,11 +58,13 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 .mini-row{display:flex;gap:9px;align-items:center;margin-top:12px}.primary{border:0;background:var(--accent);color:#fffdf5;font-weight:750;padding:11px 15px;border-radius:12px}.primary:hover{filter:brightness(1.04)}.saved{font-size:12px;color:var(--accent);opacity:0;transition:.2s}.saved.show{opacity:1}
 .bottom-nav{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:16px;padding:9px}.nav-btn{border:1px solid transparent;background:transparent;color:var(--muted);border-radius:14px;padding:12px 7px;font-size:12px}.nav-btn:hover,.nav-btn.active{background:rgba(111,175,152,.075);border-color:var(--line);color:var(--text)}
 .quote{margin-top:16px;padding:19px 22px;color:#53635e;font-size:14px;border-left:2px solid var(--accent);background:rgba(111,175,152,.045);border-radius:0 15px 15px 0}.world-status{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(142,227,193,.18);border-radius:999px;background:rgba(5,16,22,.28);color:rgba(190,225,217,.7);font-size:10px;letter-spacing:.13em;text-transform:uppercase;margin-bottom:14px}.world-status:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);animation:pulse 2.5s ease-in-out infinite}@keyframes pulse{50%{opacity:.35;transform:scale(.75)}}footer{padding-top:25px;color:rgba(79,94,87,.62);font-size:11px;text-align:center}
+.world-unlock{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:22px;background:rgba(14,35,31,.18);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .35s ease}.world-unlock.show{opacity:1;pointer-events:auto}.world-unlock-card{width:min(430px,calc(100vw - 32px));padding:28px;border-radius:24px;background:rgba(255,254,249,.92);border:1px solid rgba(255,255,255,.75);box-shadow:0 24px 80px rgba(30,60,50,.22);text-align:center}.world-unlock-icon{font-size:38px;margin-bottom:8px}.world-unlock-kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#3cae86;font-weight:800}.world-unlock-card h2{margin:8px 0 10px;font-size:28px;letter-spacing:-.04em}.world-unlock-card p{margin:0 auto 20px;max-width:340px;color:#596a65;line-height:1.55}.world-unlock-card button{border:0;background:#3caf88;color:white;font-weight:800;padding:12px 18px;border-radius:12px;cursor:pointer}.tier-badge{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);padding:7px 12px;border-radius:999px;background:rgba(255,254,249,.58);border:1px solid rgba(255,255,255,.55);color:#557069;font-size:10px;letter-spacing:.12em;text-transform:uppercase;backdrop-filter:blur(8px);z-index:2;white-space:nowrap}
 @media(max-width:820px){.dashboard{grid-template-columns:1fr}.hero{padding-top:38px}.bottom-nav{grid-template-columns:repeat(3,1fr)}}@media(max-width:560px){.shell{width:min(100% - 20px,1180px)}header{align-items:flex-start}.top-actions .ghost:nth-child(2){display:none}.hero p{font-size:16px}.card.pad{padding:17px}.move{grid-template-columns:26px 1fr}.move .tag{display:none}.moon{right:5%;width:64px;height:64px}.bottom-nav{grid-template-columns:repeat(2,1fr)}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div id="world" aria-hidden="true"><canvas id="worldCanvas"></canvas><div class="world-ui-layer"></div><div class="world-badge" id="worldBadge">Your world · alive</div></div><div class="overlay"></div>
+<div id="world" aria-hidden="true"><canvas id="worldCanvas"></canvas><div class="world-ui-layer"></div><div class="world-badge" id="worldBadge">Your world · first signs</div></div><div class="overlay"></div>
+<div class="world-unlock" id="worldUnlock" aria-hidden="true"><div class="world-unlock-card"><div class="world-unlock-icon">🌿</div><div class="world-unlock-kicker">10% · First signs</div><h2>The world is starting to change.</h2><p>You've made your first meaningful progress. More life is beginning to appear around you.</p><button type="button" id="closeWorldUnlock">Explore the world</button></div></div>
 <main class="shell">
 <header><a class="brand" href="#" aria-label="WhereFits home"><div class="logo"></div><div><strong>WHEREFITS</strong><span>Build a life that fits you.</span></div></a><div class="top-actions"><button class="ghost" id="resetDemo">Reset demo</button><button class="ghost" id="themePulse">Change scene</button><button class="ghost" id="worldMotion">Pause world</button></div></header>
 <section class="hero"><div class="eyebrow">Your life, one move at a time</div><h1>Build a life that fits you.</h1><p>WhereFits turns the things you want to change into a clear plan, a few meaningful moves today, and a place to see your progress.</p></section>
@@ -95,9 +97,10 @@ const scenes=["morning","day","sunset","night"],sceneLabels={morning:"quiet morn
 const canvas=document.getElementById("worldCanvas"),ctx=canvas.getContext("2d"),reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let cw=0,ch=0,dpr=1,worldTime=0,progressMoves=0;
 // Tier 0 is our locked starting-world build. Later tiers will be selected automatically from this same percentage.
-const worldProgress=Number(state.worldProgress||0);
+const worldProgress=Math.max(Number(state.worldProgress||0),10);
 function getWorldTier(p){if(p>=100)return 7;if(p>=90)return 6;if(p>=75)return 5;if(p>=60)return 4;if(p>=40)return 3;if(p>=25)return 2;if(p>=10)return 1;return 0;}
 const worldTier=getWorldTier(worldProgress);
+const tier1=worldTier>=1;
 const clouds=[{x:.08,y:.16,s:1.0,v:.00024},{x:.46,y:.23,s:.76,v:.00016},{x:.78,y:.13,s:.84,v:.00020},{x:.30,y:.34,s:.60,v:.00013}];
 const trees=Array.from({length:34},(_,i)=>({x:(i/33)*1.08-.04,h:.10+((i*37)%11)/100,w:.035+((i*17)%7)/300,phase:i*.7}));
 const birds=Array.from({length:5},(_,i)=>({x:.1+i*.2,y:.18+(i%2)*.08,v:.018+i*.004}));
@@ -138,6 +141,7 @@ function drawTree(x,base,h,w,c1,c2){
 function drawWorld(dt){
   worldTime+=dt;const c=sceneColors(),t=worldTime*.001;
   const startingWorld=worldTier===0;
+  const firstSigns=worldTier===1;
   const mountainShift=startingWorld?.11:0;
   ctx.clearRect(0,0,cw,ch);
 
@@ -190,9 +194,9 @@ function drawWorld(dt){
   }
   // Tier 0 gets three readable mountain depths: pale distant ridges, a mid range,
   // and a richer near range. The silhouettes stay broad and rounded.
-  roundedRange(sceneIndex===3?"#355f59":"#a7c7bd", .67, .25, .90, startingWorld?.82:.72);
-  roundedRange(sceneIndex===3?"#2f6559":c.hill, .75, .7, 1, .96);
-  roundedRange(sceneIndex===3?"#214d43":c.hill2, .84, 1.4, 1.15, .99);
+  roundedRange(sceneIndex===3?"#355f59":(firstSigns?"#91b8a5":"#a7c7bd"), .67, .25, .90, startingWorld?.82:.76);
+  roundedRange(sceneIndex===3?"#2f6559":(firstSigns?"#4c9b76":c.hill), .75, .7, 1, .98);
+  roundedRange(sceneIndex===3?"#214d43":(firstSigns?"#2f805f":c.hill2), .84, 1.4, 1.15, .99);
 
   // Curved mountain-face shadows and highlights make the ridges read as terrain.
   ctx.save();
@@ -284,6 +288,7 @@ function drawWorld(dt){
   // Fish schools: small silhouettes that continuously swim through the shallows.
   fish.forEach((f,i)=>{
     if(startingWorld && i>1) return;
+    if(firstSigns && i>5) return;
     if(sceneIndex===3 && i>5) return;
     const fx=cw*(.54+((f.x+t*f.v)%1)*.43), fy=ch*f.y+Math.sin(t*1.8+f.phase)*3;
     const sc=f.scale;
@@ -301,6 +306,7 @@ function drawWorld(dt){
   // Two ducks quietly crossing the lake.
   ducks.forEach((d,i)=>{
     if(startingWorld && i>0) return;
+    if(firstSigns && i>1) return;
     const dx=cw*(.52+((d.x+t*d.v)%1)*.42), dy=ch*d.y+Math.sin(t*1.5+d.phase)*2;
     const sc=d.scale;
     ctx.save();ctx.translate(dx,dy);ctx.scale(sc,sc);ctx.globalAlpha=sceneIndex===3?.5:.9;
@@ -315,6 +321,7 @@ function drawWorld(dt){
   if(sceneIndex!==3){
     dragonflies.forEach((d,i)=>{
       if(startingWorld && i>1) return;
+      if(firstSigns && i>2) return;
       const dx=cw*(.54+((d.x+t*d.v)%1)*.40), dy=ch*d.y+Math.sin(t*2.5+d.phase)*7;
       ctx.save();ctx.translate(dx,dy);ctx.globalAlpha=.48;ctx.strokeStyle=i%2?'#4f8f8d':'#6c7897';ctx.lineWidth=1.1;
       ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(10,-4);ctx.moveTo(0,0);ctx.lineTo(-9,-4);ctx.stroke();
@@ -375,7 +382,7 @@ function drawWorld(dt){
 
   // Tier 0 lower-left meadow: this is a real foreground zone, not a few strokes.
   ctx.save();
-  for(let i=0;i<(startingWorld?68:92);i++){
+  for(let i=0;i<(startingWorld?68:firstSigns?108:92);i++){
     const x=cw*(.005+((i*47)%46)/100), base=ch*(.81+((i*23)%17)/100);
     const h=20+(i%9)*6, sway=reduceMotion?0:Math.sin(t*2.4+i*.55)*10+Math.sin(t*1.1+i)*4;
     ctx.strokeStyle=i%5===0?'rgba(43,97,61,.94)':i%3===0?'rgba(66,119,69,.86)':'rgba(91,142,82,.80)';
@@ -387,7 +394,7 @@ function drawWorld(dt){
     }
   }
   // Broad leaves and low plants break up the flat green surface.
-  for(let i=0;i<(startingWorld?15:24);i++){
+  for(let i=0;i<(startingWorld?15:firstSigns?30:24);i++){
     const x=cw*(.008+((i*31)%41)/100), y=ch*(.89+((i*11)%10)/100);
     ctx.fillStyle=i%3===0?'rgba(45,105,63,.82)':i%2?'rgba(62,123,70,.78)':'rgba(91,145,79,.72)';
     ctx.beginPath();ctx.ellipse(x,y,15+(i%4)*4,6+(i%3)*2,(-.65+(i%5)*.3),0,Math.PI*2);ctx.fill();
@@ -397,7 +404,7 @@ function drawWorld(dt){
     }
   }
   // A few taller meadow clumps create foreground depth.
-  for(let i=0;i<(startingWorld?7:13);i++){
+  for(let i=0;i<(startingWorld?7:firstSigns?11:13);i++){
     const x=cw*(.025+((i*59)%42)/100), y=ch*(.985-((i*7)%9)/100);
     const sway=reduceMotion?0:Math.sin(t*2+i)*9;
     ctx.strokeStyle='rgba(37,88,54,.88)';ctx.lineWidth=2.2;
@@ -408,7 +415,7 @@ function drawWorld(dt){
   ctx.restore();
 
   // Flowers.
-  for(let i=0;i<(startingWorld?12:34);i++){
+  for(let i=0;i<(startingWorld?12:firstSigns?26:34);i++){
     const x=(i*91%48)/100*cw,y=ch*(.78+((i*13)%18)/100);
     ctx.fillStyle=i%3===0?"rgba(255,242,204,.95)":"rgba(246,232,220,.82)";
     ctx.beginPath();ctx.arc(x,y,2.4,0,Math.PI*2);ctx.fill();
@@ -420,7 +427,7 @@ function drawWorld(dt){
   for(let i=0;i<4;i++){const x=cw*(.80+i*.06),y=ch*(.81-i*.032);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-ch*.09);ctx.stroke()}
 
   // Distant little homes/lights establish a place beyond the path.
-  for(let i=0;i<(startingWorld?0:7);i++){
+  for(let i=0;i<(startingWorld?0:firstSigns?1:7);i++){
     const x=cw*(.29+i*.065),y=ch*(.615-(i%2)*.008);
     ctx.fillStyle=sceneIndex===3?"rgba(30,51,47,.9)":"rgba(73,99,82,.70)";
     ctx.fillRect(x,y-7,15,8);
@@ -428,8 +435,24 @@ function drawWorld(dt){
     if(sceneIndex===3){ctx.fillStyle="#ffe6a2";ctx.fillRect(x+5,y-5,3,3)}
   }
 
+  // Tier 1: a tiny distant cabin and a simple footbridge are the first signs of a life taking shape.
+  if(firstSigns){
+    const hx=cw*.34, hy=ch*.625;
+    ctx.fillStyle=sceneIndex===3?"#233d38":"#8a6b4d";
+    ctx.fillRect(hx,hy-13,30,13);
+    ctx.beginPath();ctx.moveTo(hx-4,hy-13);ctx.lineTo(hx+15,hy-27);ctx.lineTo(hx+34,hy-13);ctx.closePath();ctx.fill();
+    ctx.fillStyle=sceneIndex===3?"#ffe5a2":"#d8a55f";ctx.fillRect(hx+12,hy-9,7,9);
+    ctx.fillStyle="rgba(255,255,255,.28)";ctx.fillRect(hx+4,hy-10,5,5);
+    ctx.strokeStyle=sceneIndex===3?"#765f48":"#8c7457";ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(cw*.43,ch*.695);ctx.quadraticCurveTo(cw*.49,ch*.67,cw*.55,ch*.695);ctx.stroke();
+    ctx.lineWidth=1.5;ctx.strokeStyle="rgba(255,245,218,.5)";
+    for(let i=0;i<6;i++){const xx=cw*(.43+i*.024);const yy=ch*(.695+Math.abs(i-2.5)*.006);ctx.beginPath();ctx.moveTo(xx,yy-5);ctx.lineTo(xx+7,yy+5);ctx.stroke()}
+    // A small path fork points toward the new cabin.
+    ctx.strokeStyle="rgba(222,196,143,.9)";ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(cw*.50,ch*.72);ctx.quadraticCurveTo(cw*.43,ch*.67,cw*.36,ch*.63);ctx.stroke();
+  }
+
   // Large framing trees: only at the edges so they don't hide the interface.
-  const edgeTrees=startingWorld?[[.05,.88,.14,.075],[.93,.88,.14,.075]]:[
+  const edgeTrees=startingWorld?[[.05,.88,.14,.075],[.93,.88,.14,.075]]:firstSigns?[[.035,.87,.19,.10],[.13,.88,.14,.08],[.87,.88,.15,.085],[.965,.86,.21,.12]]:[
     [.045,.86,.24,.13],[.12,.87,.18,.105],[.22,.86,.14,.08],
     [.78,.87,.15,.085],[.90,.86,.22,.12],[.97,.85,.27,.145]
   ];
@@ -439,7 +462,7 @@ function drawWorld(dt){
   });
 
   // A few distant trees along the horizon.
-  for(let i=0;i<(startingWorld?7:18);i++){
+  for(let i=0;i<(startingWorld?7:firstSigns?11:18);i++){
     const x=cw*(.22+(i/17)*.58),base=ch*(.68-((i%3)*.006));
     drawTree(x,base,ch*(.08+(i%4)*.012),cw*.035,c.hill2,c.hill);
   }
@@ -472,6 +495,9 @@ let last=performance.now(),raf=0;
 function frame(now){if(worldPaused)return;const dt=Math.min(50,now-last);last=now;drawWorld(dt);if(!reduceMotion)raf=requestAnimationFrame(frame)}
 function setScene(){document.getElementById("worldBadge").textContent="Your world · "+sceneLabels[scenes[sceneIndex]];drawWorld(16)}
 let worldPaused=false;
+if(worldTier===0)document.getElementById("worldBadge").textContent="Your world · starting point";
+if(worldTier===1)document.getElementById("worldBadge").textContent="Your world · first signs";
+if(worldTier>=2)document.getElementById("worldBadge").textContent="Your world · growing";
 document.getElementById("themePulse").addEventListener("click",()=>{sceneIndex=(sceneIndex+1)%scenes.length;setScene()});
 document.getElementById("worldMotion").addEventListener("click",e=>{
   worldPaused=!worldPaused;
@@ -486,3 +512,14 @@ update();
 </script>
 </body>
 </html>
+const unlock=document.getElementById("worldUnlock");
+const closeUnlock=document.getElementById("closeWorldUnlock");
+function showTierUnlock(){
+  if(worldTier<1 || localStorage.getItem("wherefits_tier1_seen")) return;
+  setTimeout(()=>{unlock.classList.add("show");unlock.setAttribute("aria-hidden","false")},700);
+}
+function closeTierUnlock(){unlock.classList.remove("show");unlock.setAttribute("aria-hidden","true");localStorage.setItem("wherefits_tier1_seen","1")}
+closeUnlock.addEventListener("click",closeTierUnlock);
+unlock.addEventListener("click",e=>{if(e.target===unlock)closeTierUnlock()});
+showTierUnlock();
+
