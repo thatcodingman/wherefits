@@ -504,57 +504,84 @@ function drawWorld(dt){
   // Tier 2: the horizon opens. These rewards are deliberately placed in
   // unobstructed right-side landscape so the user can actually see them.
   if(horizonOpens){
-    // Tier 2 bridge: intentionally large and placed in the open lower-right water so it is unmistakable.
-    const bx1=cw*.79,bx2=cw*.995,by=ch*.805;
+    // Tier 2: replace the old fantasy waterfall with a believable river system.
+    // The river starts high in the mountains, runs downhill, passes under a road bridge,
+    // and finally empties into the lake. That gives the world a readable geography.
+    const riverTopX=cw*.675, riverTopY=ch*.505, riverBottomX=cw*.735, riverBottomY=ch*.735;
     ctx.save();
-    // supports
-    ctx.strokeStyle=sceneIndex===3?"#4f4338":"#6e5139";ctx.lineWidth=5;
-    [bx1+.025*cw,bx2-.025*cw].forEach(x=>{ctx.beginPath();ctx.moveTo(x,by+7);ctx.lineTo(x,by+38);ctx.stroke()});
-    // bridge deck
-    ctx.strokeStyle=sceneIndex===3?"#6a5845":"#7f5738";ctx.lineWidth=15;
-    ctx.beginPath();ctx.moveTo(bx1,by);ctx.quadraticCurveTo((bx1+bx2)/2,by-28,bx2,by);ctx.stroke();
-    // bright top edge
-    ctx.strokeStyle=sceneIndex===3?"#c4ab7e":"#e0b77d";ctx.lineWidth=3;
-    ctx.beginPath();ctx.moveTo(bx1,by-5);ctx.quadraticCurveTo((bx1+bx2)/2,by-33,bx2,by-5);ctx.stroke();
-    // railing posts and rails
-    ctx.strokeStyle=sceneIndex===3?"#b89e74":"#d7aa70";ctx.lineWidth=3;
-    for(let i=0;i<13;i++){
-      const x=bx1+i*(bx2-bx1)/12, yy=by-28*Math.sin(i/12*Math.PI);
-      ctx.beginPath();ctx.moveTo(x,yy-2);ctx.lineTo(x,yy-24);ctx.stroke();
+    ctx.fillStyle=sceneIndex===3?"rgba(73,132,129,.82)":"rgba(72,177,190,.90)";
+    ctx.beginPath();
+    ctx.moveTo(riverTopX-7,riverTopY);
+    ctx.bezierCurveTo(riverTopX-28,riverTopY+48,riverBottomX-36,riverBottomY-62,riverBottomX-19,riverBottomY);
+    ctx.lineTo(riverBottomX+25,riverBottomY);
+    ctx.bezierCurveTo(riverBottomX+12,riverBottomY-63,riverTopX+28,riverTopY+48,riverTopX+8,riverTopY);
+    ctx.closePath();ctx.fill();
+    // River highlights make the downhill flow obvious.
+    ctx.strokeStyle=sceneIndex===3?"rgba(206,239,229,.42)":"rgba(239,255,249,.72)";ctx.lineCap="round";ctx.lineWidth=2;
+    for(let i=0;i<5;i++){
+      const off=(i-2)*8, sway=reduceMotion?0:Math.sin(t*1.5+i)*3;
+      ctx.beginPath();
+      ctx.moveTo(riverTopX+off,riverTopY+18+i*18);
+      ctx.bezierCurveTo(riverTopX-14+off+sway,riverTopY+45+i*24,riverBottomX+18+off-sway,riverBottomY-48+i*3,riverBottomX+off,riverBottomY-8+i*2);
+      ctx.stroke();
     }
-    ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(bx1,by-21);ctx.quadraticCurveTo((bx1+bx2)/2,by-51,bx2,by-21);ctx.stroke();
+    // Little rapids where the river enters the lake.
+    ctx.globalAlpha=.55;ctx.strokeStyle="#f3fffa";ctx.lineWidth=1.5;
+    for(let i=0;i<4;i++){ctx.beginPath();ctx.ellipse(riverBottomX+3,riverBottomY+i*4,18+i*5,2.5+i*.5,0,0,Math.PI*2);ctx.stroke()}
     ctx.restore();
 
-    // A clearly visible mountain waterfall drops into the lake at the right horizon.
-    const fx=cw*.905, top=ch*.485, shore=ch*.675;
+    // A real road approaches from the settlement, crosses the river, and continues toward the lake.
+    const bridgeY=ch*.755, roadLeft=cw*.57, roadRight=cw*.91;
     ctx.save();
-    // rock chute
-    ctx.fillStyle=sceneIndex===3?"#385d55":"#587d69";
-    ctx.beginPath();
-    ctx.moveTo(fx-26,top+3);ctx.quadraticCurveTo(fx-14,top-8,fx-4,top+4);
-    ctx.lineTo(fx+12,top-4);ctx.quadraticCurveTo(fx+23,top+8,fx+27,top+18);
-    ctx.lineTo(fx+18,shore);ctx.lineTo(fx-20,shore);ctx.closePath();ctx.fill();
-    // several falling water ribbons with a subtle animated lateral shift
-    const wfShift=reduceMotion?0:Math.sin(t*2.2)*3;
-    ctx.strokeStyle=sceneIndex===3?"rgba(187,235,226,.72)":"rgba(239,255,250,.96)";
-    ctx.lineCap="round";
-    ctx.lineWidth=7;
-    ctx.beginPath();ctx.moveTo(fx-7,top);ctx.bezierCurveTo(fx-17+wfShift,top+38,fx+10-wfShift,top+80,fx-5,shore);ctx.stroke();
-    ctx.lineWidth=4;
-    ctx.beginPath();ctx.moveTo(fx+3,top+2);ctx.bezierCurveTo(fx-3,top+43,fx+19+wfShift,top+78,fx+5,shore-2);ctx.stroke();
-    ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(fx+13,top+10);ctx.bezierCurveTo(fx+7,top+46,fx+22,top+82,fx+14,shore-6);ctx.stroke();
-    // splash pool
-    ctx.globalAlpha=.7;ctx.strokeStyle="#eefcf6";ctx.lineWidth=2;
-    for(let i=0;i<3;i++){
-      ctx.beginPath();ctx.ellipse(fx+3,shore+i*4,18+i*8,3+i,0,0,Math.PI*2);ctx.stroke();
-    }
-    ctx.fillStyle=sceneIndex===3?"rgba(214,244,238,.65)":"rgba(255,255,255,.82)";
-    for(let i=0;i<7;i++){
-      const dx=Math.sin(i*4.7)*18, dy=(i%3)*5 + (reduceMotion?0:Math.sin(t*2+i)*2);
-      ctx.beginPath();ctx.arc(fx+dx,shore-8-dy,1.7,0,Math.PI*2);ctx.fill();
-    }
+    ctx.strokeStyle=sceneIndex===3?"rgba(58,57,52,.92)":"rgba(91,87,76,.86)";ctx.lineWidth=25;
+    ctx.beginPath();ctx.moveTo(roadLeft,bridgeY+18);ctx.quadraticCurveTo(cw*.68,bridgeY+2,cw*.78,bridgeY);ctx.quadraticCurveTo(cw*.84,bridgeY-3,roadRight,bridgeY+12);ctx.stroke();
+    // road edge lines
+    ctx.strokeStyle=sceneIndex===3?"rgba(214,202,166,.55)":"rgba(245,231,186,.9)";ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(roadLeft,bridgeY+7);ctx.quadraticCurveTo(cw*.68,bridgeY-9,cw*.78,bridgeY-7);ctx.quadraticCurveTo(cw*.84,bridgeY-10,roadRight,bridgeY+2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(roadLeft,bridgeY+29);ctx.quadraticCurveTo(cw*.68,bridgeY+13,cw*.78,bridgeY+15);ctx.quadraticCurveTo(cw*.84,bridgeY+12,roadRight,bridgeY+24);ctx.stroke();
+    // dashed center line on the approach
+    ctx.strokeStyle=sceneIndex===3?"rgba(255,226,145,.72)":"rgba(255,224,130,.95)";ctx.lineWidth=2.5;
+    ctx.setLineDash([12,11]);
+    ctx.beginPath();ctx.moveTo(roadLeft+8,bridgeY+18);ctx.quadraticCurveTo(cw*.69,bridgeY+2,cw*.78,bridgeY+4);ctx.quadraticCurveTo(cw*.84,bridgeY+2,roadRight-5,bridgeY+14);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // Bridge sits directly over the river: deck, supports, railings and a recognizable road surface.
+    const bx1=cw*.59,bx2=cw*.88,by=ch*.755,riverX=cw*.735;
+    ctx.save();
+    // concrete supports visible beneath the deck
+    ctx.strokeStyle=sceneIndex===3?"#55534c":"#77766f";ctx.lineWidth=8;
+    [riverX-.055*cw,riverX+.055*cw].forEach(x=>{ctx.beginPath();ctx.moveTo(x,by+7);ctx.lineTo(x,by+45);ctx.stroke()});
+    // concrete/steel bridge deck
+    ctx.strokeStyle=sceneIndex===3?"#4e514d":"#656a66";ctx.lineWidth=24;
+    ctx.beginPath();ctx.moveTo(bx1,by);ctx.lineTo(bx2,by);ctx.stroke();
+    // roadway center stripe
+    ctx.strokeStyle=sceneIndex===3?"#f2cf70":"#f5d57d";ctx.lineWidth=2.5;ctx.setLineDash([13,10]);
+    ctx.beginPath();ctx.moveTo(bx1,by);ctx.lineTo(bx2,by);ctx.stroke();ctx.setLineDash([]);
+    // metal guardrails
+    ctx.strokeStyle=sceneIndex===3?"#b6b8ae":"#d6d9cf";ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(bx1,by-10);ctx.lineTo(bx2,by-10);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bx1,by+10);ctx.lineTo(bx2,by+10);ctx.stroke();
+    for(let i=0;i<12;i++){const x=bx1+i*(bx2-bx1)/11;ctx.beginPath();ctx.moveTo(x,by-13);ctx.lineTo(x,by+13);ctx.stroke()}
+    ctx.restore();
+
+    // Everyday life: a couple of small cars actually travel across the bridge.
+    const traffic=[{phase:0.18,v:.026,dir:1,color:"#d36f55"},{phase:.62,v:.020,dir:-1,color:"#e1b85d"},{phase:.84,v:.016,dir:1,color:"#6c9fb0"}];
+    traffic.forEach((car,i)=>{
+      let q=(car.phase+t*car.v*car.dir)%1;if(q<0)q+=1;
+      const x=bx1+q*(bx2-bx1), y=by-8+(i%2)*15;
+      ctx.save();ctx.translate(x,y);ctx.scale(car.dir,1);
+      ctx.fillStyle=car.color;ctx.fillRect(-10,-4,20,7);
+      ctx.fillStyle=sceneIndex===3?"#263b3b":"#eef7ef";ctx.fillRect(-5,-7,9,4);
+      ctx.fillStyle="#202b2a";ctx.beginPath();ctx.arc(-6,4,3,0,Math.PI*2);ctx.arc(7,4,3,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    });
+
+    // A pedestrian on the sidewalk gives the bridge a human scale.
+    const personX=bx1+(bx2-bx1)*(.36+Math.sin(t*.18)*.08);
+    ctx.save();ctx.translate(personX,by-16);ctx.strokeStyle=sceneIndex===3?"#d5ded8":"#3e5550";ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(0,-7,3,0,Math.PI*2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,-4);ctx.lineTo(0,6);ctx.moveTo(0,0);ctx.lineTo(-5,4);ctx.moveTo(0,0);ctx.lineTo(5,3);ctx.moveTo(0,6);ctx.lineTo(-4,12);ctx.moveTo(0,6);ctx.lineTo(4,12);ctx.stroke();
     ctx.restore();
 
     // Small settlement in the open far-right horizon: more than the first cabin,
