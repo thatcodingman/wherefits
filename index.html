@@ -589,16 +589,19 @@ function drawWorld(dt){
     // final part of each crossing like an actual docking maneuver. The boat
     // now decelerates into the dock, gives a tiny natural settle/bob, and lets
     // its wake die behind it instead of simply snapping to a parked state.
-    const ferryCycle=(t%20)/20;
+    // A slightly longer 24-second timetable gives the ferry a more believable
+    // service rhythm: linger at each terminal, cross deliberately, then settle
+    // before the next departure. The route itself is unchanged.
+    const ferryCycle=(t%24)/24;
     const smoothstep=a=>a*a*(3-2*a);
     const easeOutCubic=a=>1-Math.pow(1-a,3);
     let q=0, moving=false, docking=false, dockSide='near', dockAmount=0, travelAmount=0;
-    if(ferryCycle<.12){
+    if(ferryCycle<.16){
       q=0;
       dockSide='near';
       dockAmount=1;
-    }else if(ferryCycle<.46){
-      const a=(ferryCycle-.12)/.34;
+    }else if(ferryCycle<.44){
+      const a=(ferryCycle-.16)/.28;
       q=smoothstep(a);
       moving=true;
       travelAmount=1;
@@ -606,8 +609,8 @@ function drawWorld(dt){
       q=1;
       dockSide='far';
       dockAmount=1;
-    }else if(ferryCycle<.92){
-      const a=(ferryCycle-.58)/.34;
+    }else if(ferryCycle<.86){
+      const a=(ferryCycle-.58)/.28;
       q=1-smoothstep(a);
       moving=true;
       travelAmount=1;
@@ -622,6 +625,14 @@ function drawWorld(dt){
     let ferryX=nearDock.x+(farDock.x-nearDock.x)*q;
     let ferryY=nearDock.y-2 - Math.sin(q*Math.PI)*ch*.035;
     let ferryAngle=0;
+
+    // Keep the ferry's final position exactly on the terminal centerline.
+    // This prevents accumulated easing/rounding from carrying the hull toward
+    // the hillside at the end of a crossing.
+    if(!moving){
+      ferryX=dockSide==='far'?farDock.x:nearDock.x;
+      ferryY=(dockSide==='far'?farDock.y:nearDock.y)-2;
+    }
 
     // Docking behavior is deliberately tiny: no route change, just a short
     // settle at the terminal so the ferry looks like it has weight.
