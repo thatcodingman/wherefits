@@ -575,18 +575,33 @@ function drawWorld(dt){
     }
     drawTerminal(nearDock,false);drawTerminal(farDock,true);
 
-    // Ferry animation: dock -> depart -> cross -> dock -> return.
-    const ferryCycle=(t%18)/18;
-    let q;
-    if(ferryCycle<.13)q=0;
-    else if(ferryCycle<.43){const a=(ferryCycle-.13)/.30;q=a*a*(3-2*a)}
-    else if(ferryCycle<.55)q=1;
-    else if(ferryCycle<.85){const a=(ferryCycle-.55)/.30;q=1-a*a*(3-2*a)}
-    else q=0;
+    // Ferry animation: a continuous dock-to-dock route.
+    // The previous version flipped the ferry 180 degrees halfway through
+    // the crossing, which created the visible snap/glitch.
+    const ferryCycle=(t%20)/20;
+    const smoothstep=a=>a*a*(3-2*a);
+    let q=0, moving=false;
+    if(ferryCycle<.12){
+      q=0;
+    }else if(ferryCycle<.46){
+      const a=(ferryCycle-.12)/.34;
+      q=smoothstep(a);
+      moving=true;
+    }else if(ferryCycle<.58){
+      q=1;
+    }else if(ferryCycle<.92){
+      const a=(ferryCycle-.58)/.34;
+      q=1-smoothstep(a);
+      moving=true;
+    }else{
+      q=0;
+    }
+
+    // Give the crossing a very shallow arc so it reads as a route,
+    // not a sprite sliding on a ruler.
     const ferryX=nearDock.x+(farDock.x-nearDock.x)*q;
-    const ferryY=nearDock.y-2;
-    const ferryAngle=q>.5?Math.PI:0;
-    const moving=(ferryCycle>.13&&ferryCycle<.43)||(ferryCycle>.55&&ferryCycle<.85);
+    const ferryY=nearDock.y-2 + Math.sin(q*Math.PI)*ch*.012;
+    const ferryAngle=0;
 
     // Wake expands behind the ferry while underway.
     if(moving && !reduceMotion){
@@ -787,7 +802,7 @@ document.getElementById("worldMotion").addEventListener("click",e=>{
   e.currentTarget.textContent=worldPaused?"Resume world":"Pause world";
   if(!worldPaused){last=performance.now();frame(last);}
 });
-if(!reduceMotion){window.addEventListener("pointermove",e=>{const px=(e.clientX/cw-.5)*2,py=(e.clientY/ch-.5)*2;canvas.style.transform=`translate(${px*-2}px,${py*-1}px) scale(1.004)`})}
+// Keep the world anchored to the viewport; pointer parallax made scrolling feel like the landscape was shifting.
 window.addEventListener("resize",resizeCanvas);
 resizeCanvas();setScene();frame(performance.now());
 document.querySelectorAll(".nav-btn").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));btn.classList.add("active")}));
