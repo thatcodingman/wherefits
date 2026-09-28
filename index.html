@@ -503,142 +503,136 @@ function drawWorld(dt){
   // The crossing lives in the lower-right open landscape so the dashboard does not
   // completely cover it. The path ends at a terminal; it never becomes a bridge.
   if(ferryCrossing){
+    // FERRY SCENE 2.0 — a broad horizontal crossing in the open lower-right world.
+    // The road ends at a real dock; the ferry travels left/right across the bay.
     ctx.save();
 
-    const nearBank={x:cw*.68,y:ch*.685};
-    const farBank={x:cw*.91,y:ch*.535};
-    const dx=farBank.x-nearBank.x, dy=farBank.y-nearBank.y;
-    const crossingLen=Math.hypot(dx,dy);
-    const ux=dx/crossingLen, uy=dy/crossingLen;
+    const nearDock={x:cw*.78,y:ch*.635};
+    const farDock={x:cw*1.015,y:ch*.635};
+    const waterLeft=cw*.69, waterRight=cw*1.045;
+    const waterTop=ch*.585, waterBottom=ch*.83;
 
-    // A broad bay makes the water route unmistakable.
+    // Broad, horizontal bay. This is deliberately a real body of water,
+    // not a diagonal strip that can be mistaken for a bridge.
     ctx.fillStyle=sceneIndex===3?'#245f69':'#42adbc';
     ctx.beginPath();
-    ctx.moveTo(cw*.55,ch*.585);
-    ctx.bezierCurveTo(cw*.67,ch*.555,cw*.82,ch*.555,cw*1.02,ch*.505);
-    ctx.lineTo(cw*1.04,ch*1.02);ctx.lineTo(cw*.55,ch*1.02);ctx.closePath();ctx.fill();
+    ctx.moveTo(waterLeft,waterTop);
+    ctx.bezierCurveTo(cw*.78,ch*.565,cw*.91,ch*.57,waterRight,ch*.585);
+    ctx.lineTo(waterRight,waterBottom);
+    ctx.lineTo(waterLeft,waterBottom);
+    ctx.closePath();ctx.fill();
 
-    // Shoreline / beach edges.
-    ctx.strokeStyle=sceneIndex===3?'#507b70':'#7fa16f';ctx.lineWidth=24;ctx.lineCap='round';
-    ctx.beginPath();ctx.moveTo(cw*.55,ch*.585);ctx.bezierCurveTo(cw*.67,ch*.555,cw*.82,ch*.555,cw*1.03,ch*.505);ctx.stroke();
+    // Natural shoreline on the near side and far bank.
+    ctx.strokeStyle=sceneIndex===3?'#507b70':'#7fa16f';ctx.lineWidth=22;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(waterLeft,waterTop);ctx.bezierCurveTo(cw*.78,ch*.565,cw*.91,ch*.57,waterRight,ch*.585);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(waterLeft,ch*.83);ctx.bezierCurveTo(cw*.80,ch*.805,cw*.93,ch*.815,waterRight,ch*.825);ctx.stroke();
 
-    // Water movement.
-    ctx.strokeStyle=sceneIndex===3?'rgba(220,244,237,.42)':'rgba(239,255,252,.72)';ctx.lineWidth=1.6;
-    for(let i=0;i<20;i++){
-      const yy=ch*(.605+i*.014);
-      const travel=reduceMotion?0:((t*28+i*71)%260)-120;
-      const x=cw*.56+travel;
-      ctx.beginPath();ctx.moveTo(x,yy);ctx.quadraticCurveTo(x+30,yy-3,x+62,yy);ctx.quadraticCurveTo(x+94,yy+3,x+130,yy);ctx.stroke();
+    // Moving water lines.
+    ctx.strokeStyle=sceneIndex===3?'rgba(220,244,237,.42)':'rgba(239,255,252,.72)';ctx.lineWidth=1.7;
+    for(let i=0;i<15;i++){
+      const yy=ch*(.615+i*.014);
+      const travel=reduceMotion?0:((t*30+i*83)%220)-90;
+      const x=waterLeft+travel;
+      ctx.beginPath();ctx.moveTo(x,yy);ctx.quadraticCurveTo(x+24,yy-3,x+50,yy);ctx.quadraticCurveTo(x+78,yy+3,x+106,yy);ctx.stroke();
     }
 
-    // Near-side road/path terminates at the ferry terminal.
-    ctx.strokeStyle=sceneIndex===3?'#303a37':'#565a55';ctx.lineWidth=29;ctx.lineCap='round';
-    ctx.beginPath();ctx.moveTo(cw*.48,ch*1.04);ctx.bezierCurveTo(cw*.52,ch*.92,cw*.59,ch*.79,nearBank.x,nearBank.y);ctx.stroke();
-    ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.8)':'rgba(255,225,145,.98)';ctx.lineWidth=2.6;ctx.setLineDash([16,12]);
-    ctx.beginPath();ctx.moveTo(cw*.48,ch*1.04);ctx.bezierCurveTo(cw*.52,ch*.92,cw*.59,ch*.79,nearBank.x,nearBank.y);ctx.stroke();ctx.setLineDash([]);
+    // Near-side road/path. It visibly stops at the near ferry terminal.
+    ctx.strokeStyle=sceneIndex===3?'#303a37':'#565a55';ctx.lineWidth=27;ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(cw*.50,ch*1.04);
+    ctx.bezierCurveTo(cw*.56,ch*.91,cw*.65,ch*.77,nearDock.x,nearDock.y);
+    ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.8)':'rgba(255,225,145,.98)';ctx.lineWidth=2.5;ctx.setLineDash([15,11]);
+    ctx.beginPath();ctx.moveTo(cw*.50,ch*1.04);ctx.bezierCurveTo(cw*.56,ch*.91,cw*.65,ch*.77,nearDock.x,nearDock.y);ctx.stroke();ctx.setLineDash([]);
 
-    // Far-side road heads away from the dock toward the neighborhood.
-    ctx.strokeStyle=sceneIndex===3?'#303a37':'#565a55';ctx.lineWidth=24;
-    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*.94,ch*.515,cw*.98,ch*.48,cw*1.04,ch*.455);ctx.stroke();
-    ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.8)':'rgba(255,225,145,.98)';ctx.lineWidth=2.3;ctx.setLineDash([13,10]);
-    ctx.beginPath();ctx.moveTo(farBank.x,farBank.y);ctx.bezierCurveTo(cw*.94,ch*.515,cw*.98,ch*.48,cw*1.04,ch*.455);ctx.stroke();ctx.setLineDash([]);
+    // Far-side road leaves the far dock and runs toward the houses.
+    ctx.strokeStyle=sceneIndex===3?'#303a37':'#565a55';ctx.lineWidth=21;
+    ctx.beginPath();ctx.moveTo(farDock.x,farDock.y);ctx.bezierCurveTo(cw*1.01,ch*.56,cw*1.01,ch*.52,cw*1.02,ch*.46);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.8)':'rgba(255,225,145,.98)';ctx.lineWidth=2.1;ctx.setLineDash([12,9]);
+    ctx.beginPath();ctx.moveTo(farDock.x,farDock.y);ctx.bezierCurveTo(cw*1.01,ch*.56,cw*1.01,ch*.52,cw*1.02,ch*.46);ctx.stroke();ctx.setLineDash([]);
 
-    // Large, unmistakable ferry terminals.
+    // Terminal platforms: clearly side-by-side, like a real ferry crossing.
     function drawTerminal(p,far=false){
-      ctx.save();
-      const angle=Math.atan2(dy,dx);
-      ctx.translate(p.x,p.y);ctx.rotate(angle);
-
-      // Large loading apron.
-      ctx.fillStyle=sceneIndex===3?'#655f53':'#8e6a4a';ctx.fillRect(-24,-34,94,68);
-      ctx.fillStyle=sceneIndex===3?'#a89b7e':'#c39a68';ctx.fillRect(-18,-28,82,56);
-      // Black/yellow loading edge.
-      ctx.fillStyle='#4b504b';ctx.fillRect(53,-30,10,60);
-      ctx.fillStyle='#e5bb51';for(let i=0;i<4;i++)ctx.fillRect(57,-22+i*15,5,8);
-
-      // Terminal shelter with roof, windows and bench.
-      ctx.fillStyle=sceneIndex===3?'#40534c':'#9f7050';ctx.fillRect(-72,-46,38,39);
-      ctx.fillStyle=sceneIndex===3?'#2a403a':'#704f40';ctx.beginPath();ctx.moveTo(-78,-46);ctx.lineTo(-53,-62);ctx.lineTo(-28,-46);ctx.closePath();ctx.fill();
-      ctx.fillStyle=sceneIndex===3?'#f5dfa0':'#fff0bf';ctx.fillRect(-64,-38,9,12);ctx.fillRect(-48,-38,9,12);
-      ctx.strokeStyle=sceneIndex===3?'#d1d9d2':'#705f50';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-66,-4);ctx.lineTo(-37,-4);ctx.stroke();
-
-      // Large readable ferry sign.
-      ctx.fillStyle='#5d5549';ctx.fillRect(-82,-3,4,32);
-      ctx.fillStyle=sceneIndex===3?'#e1e9e3':'#f5e4bd';ctx.fillRect(-101,-20,42,18);
-      ctx.fillStyle='#314942';ctx.font='800 7px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText('FERRY',-80,-8);
-
-      // Railings + bollards.
-      ctx.strokeStyle=sceneIndex===3?'#d1dbd5':'#e9d9ba';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(-22,-31);ctx.lineTo(43,-31);ctx.moveTo(-22,31);ctx.lineTo(43,31);ctx.stroke();
-      ctx.fillStyle='#5a5147';[-18,4,25,42].forEach(x=>{ctx.fillRect(x,-35,5,9);ctx.fillRect(x,26,5,9)});
+      ctx.save();ctx.translate(p.x,p.y);
+      // Apron.
+      ctx.fillStyle=sceneIndex===3?'#665f52':'#8e6a4a';ctx.fillRect(-8,-28,74,56);
+      ctx.fillStyle=sceneIndex===3?'#a89b7e':'#c39a68';ctx.fillRect(-2,-23,62,46);
+      // Loading edge / safety stripes.
+      ctx.fillStyle='#4b504b';ctx.fillRect(48,-24,10,48);
+      ctx.fillStyle='#e5bb51';for(let i=0;i<3;i++)ctx.fillRect(52,-18+i*13,5,7);
+      // Small shelter.
+      ctx.fillStyle=sceneIndex===3?'#40534c':'#9f7050';ctx.fillRect(-35,-53,30,28);
+      ctx.fillStyle=sceneIndex===3?'#2a403a':'#704f40';ctx.beginPath();ctx.moveTo(-40,-53);ctx.lineTo(-20,-65);ctx.lineTo(0,-53);ctx.closePath();ctx.fill();
+      ctx.fillStyle=sceneIndex===3?'#f5dfa0':'#fff0bf';ctx.fillRect(-29,-47,7,9);ctx.fillRect(-17,-47,7,9);
+      // Dock sign.
+      ctx.fillStyle='#5d5549';ctx.fillRect(-45,-13,3,24);
+      ctx.fillStyle=sceneIndex===3?'#e1e9e3':'#f5e4bd';ctx.fillRect(-67,-28,43,17);
+      ctx.fillStyle='#314942';ctx.font='800 7px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(far?'FERRY DOCK':'FERRY',-45,-17);
+      // Railings and bollards.
+      ctx.strokeStyle=sceneIndex===3?'#d1dbd5':'#e9d9ba';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(4,-22);ctx.lineTo(43,-22);ctx.moveTo(4,22);ctx.lineTo(43,22);ctx.stroke();
+      ctx.fillStyle='#5a5147';[6,20,34,46].forEach(x=>{ctx.fillRect(x,-27,4,8);ctx.fillRect(x,19,4,8)});
       ctx.restore();
     }
-    drawTerminal(nearBank,false);drawTerminal(farBank,true);
+    drawTerminal(nearDock,false);drawTerminal(farDock,true);
 
-    // Ferry animation: dock → depart → cross → arrive → return.
+    // Ferry animation: dock -> depart -> cross -> dock -> return.
     const ferryCycle=(t%18)/18;
     let q;
-    if(ferryCycle<.12)q=0;
-    else if(ferryCycle<.43){const a=(ferryCycle-.12)/.31;q=a*a*(3-2*a)}
-    else if(ferryCycle<.53)q=1;
-    else if(ferryCycle<.84){const a=(ferryCycle-.53)/.31;q=1-a*a*(3-2*a)}
+    if(ferryCycle<.13)q=0;
+    else if(ferryCycle<.43){const a=(ferryCycle-.13)/.30;q=a*a*(3-2*a)}
+    else if(ferryCycle<.55)q=1;
+    else if(ferryCycle<.85){const a=(ferryCycle-.55)/.30;q=1-a*a*(3-2*a)}
     else q=0;
-    const ferryX=nearBank.x+dx*q, ferryY=nearBank.y+dy*q;
-    const ferryAngle=Math.atan2(dy,dx)+(q>.5?Math.PI:0);
-    const moving=(ferryCycle>.12&&ferryCycle<.43)||(ferryCycle>.53&&ferryCycle<.84);
+    const ferryX=nearDock.x+(farDock.x-nearDock.x)*q;
+    const ferryY=nearDock.y-2;
+    const ferryAngle=q>.5?Math.PI:0;
+    const moving=(ferryCycle>.13&&ferryCycle<.43)||(ferryCycle>.55&&ferryCycle<.85);
 
-    // Big wake behind the moving ferry.
+    // Wake expands behind the ferry while underway.
     if(moving && !reduceMotion){
       ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);
-      ctx.strokeStyle='rgba(250,255,252,.88)';ctx.lineWidth=2.6;
-      for(let i=0;i<7;i++){
-        const back=58+i*14;
-        ctx.beginPath();ctx.moveTo(-back,18+i*2.5);ctx.quadraticCurveTo(-back-20,5+i*4,-back-46,18+i*2.5);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(-back,-18-i*2.5);ctx.quadraticCurveTo(-back-20,-5-i*4,-back-46,-18-i*2.5);ctx.stroke();
+      ctx.strokeStyle='rgba(250,255,252,.9)';ctx.lineWidth=2.5;
+      for(let i=0;i<6;i++){
+        const back=54+i*15;
+        ctx.beginPath();ctx.moveTo(-back,13+i*2);ctx.quadraticCurveTo(-back-18,3+i*3,-back-42,13+i*2);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(-back,-13-i*2);ctx.quadraticCurveTo(-back-18,-3-i*3,-back-42,-13-i*2);ctx.stroke();
       }
       ctx.restore();
     }
 
-    // Large ferry — deliberately oversized enough to read from the page.
-    ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);ctx.scale(1.12,1.12);
-    // Shadow / hull.
-    ctx.fillStyle='rgba(24,48,45,.20)';ctx.beginPath();ctx.ellipse(0,22,88,17,0,0,Math.PI*2);ctx.fill();
+    // Large, readable ferry. Horizontal orientation makes the crossing obvious.
+    ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);ctx.scale(1.0,1.0);
+    ctx.fillStyle='rgba(24,48,45,.22)';ctx.beginPath();ctx.ellipse(0,21,76,15,0,0,Math.PI*2);ctx.fill();
     ctx.fillStyle=sceneIndex===3?'#243b36':'#465b59';
-    ctx.beginPath();ctx.moveTo(-76,-5);ctx.lineTo(76,-5);ctx.lineTo(59,35);ctx.quadraticCurveTo(0,47,-59,35);ctx.closePath();ctx.fill();
-    // White passenger deck.
-    ctx.fillStyle=sceneIndex===3?'#d6dfd8':'#f4eee1';ctx.fillRect(-63,-47,126,42);
-    // Windows.
-    ctx.fillStyle=sceneIndex===3?'#69a7a5':'#5f99a0';
-    for(let i=0;i<8;i++)ctx.fillRect(-52+i*14,-37,10,13);
-    // Roof + rail.
-    ctx.fillStyle=sceneIndex===3?'#465b54':'#c5bdab';ctx.fillRect(-68,-53,136,6);
-    ctx.strokeStyle=sceneIndex===3?'#e1e9e4':'#aaa99f';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(-73,-55);ctx.lineTo(73,-55);ctx.stroke();
-    // Cabin + lights.
-    ctx.fillStyle=sceneIndex===3?'#b7cbc4':'#e7dcc5';ctx.fillRect(-17,-67,34,14);
-    ctx.fillStyle='#ffe89e';ctx.beginPath();ctx.arc(0,-70,5,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#d85c4e';ctx.fillRect(48,-57,6,9);
-    // Fenders + ramps.
-    ctx.fillStyle='#e1b34b';[-52,-26,0,26,52].forEach(x=>{ctx.beginPath();ctx.arc(x,2,5,0,Math.PI*2);ctx.fill()});
-    ctx.fillStyle='#6d726d';ctx.fillRect(-82,-5,8,35);ctx.fillRect(74,-5,8,35);
+    ctx.beginPath();ctx.moveTo(-72,-4);ctx.lineTo(72,-4);ctx.lineTo(57,30);ctx.quadraticCurveTo(0,41,-57,30);ctx.closePath();ctx.fill();
+    ctx.fillStyle=sceneIndex===3?'#d6dfd8':'#f4eee1';ctx.fillRect(-58,-43,116,39);
+    ctx.fillStyle=sceneIndex===3?'#69a7a5':'#5f99a0';for(let i=0;i<7;i++)ctx.fillRect(-48+i*14,-34,10,12);
+    ctx.fillStyle=sceneIndex===3?'#465b54':'#c5bdab';ctx.fillRect(-62,-49,124,6);
+    ctx.strokeStyle=sceneIndex===3?'#e1e9e4':'#aaa99f';ctx.lineWidth=2.3;ctx.beginPath();ctx.moveTo(-66,-51);ctx.lineTo(66,-51);ctx.stroke();
+    ctx.fillStyle=sceneIndex===3?'#b7cbc4':'#e7dcc5';ctx.fillRect(-16,-63,32,14);
+    ctx.fillStyle='#ffe89e';ctx.beginPath();ctx.arc(0,-66,4.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#d85c4e';ctx.fillRect(43,-53,6,8);
+    ctx.fillStyle='#e1b34b';[-48,-24,0,24,48].forEach(x=>{ctx.beginPath();ctx.arc(x,1,4.5,0,Math.PI*2);ctx.fill()});
     ctx.restore();
 
-    // Pulsing terminal lights.
-    [nearBank,farBank].forEach((p,i)=>{
+    // Terminal beacons pulse subtly.
+    [nearDock,farDock].forEach((p,i)=>{
       const pulse=reduceMotion?1:(.72+.28*Math.sin(t*3+i));
-      ctx.globalAlpha=pulse;ctx.fillStyle=i?'#79a7d0':'#71c582';ctx.beginPath();ctx.arc(p.x,p.y-70,8,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
-      ctx.strokeStyle='rgba(255,248,220,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y-70,15,0,Math.PI*2);ctx.stroke();
+      ctx.globalAlpha=pulse;ctx.fillStyle=i?'#79a7d0':'#71c582';ctx.beginPath();ctx.arc(p.x,p.y-67,7,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+      ctx.strokeStyle='rgba(255,248,220,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y-67,14,0,Math.PI*2);ctx.stroke();
     });
 
-    // Far-side neighborhood — deliberately beyond the terminal.
-    const village=[[.84,.47,34],[.91,.45,31],[.985,.48,28]];
+    // Small far-side houses, clearly beyond the dock rather than sitting on it.
+    const village=[[.88,.505,25],[.95,.48,29],[1.015,.515,23]];
     village.forEach(([xp,yp,size],i)=>{
       const x=cw*xp,y=ch*yp;
       ctx.fillStyle=sceneIndex===3?'#2c4b43':['#956b4c','#a47451','#8b664e'][i];ctx.fillRect(x-size/2,y-size*.56,size,size*.56);
       ctx.beginPath();ctx.moveTo(x-size*.68,y-size*.56);ctx.lineTo(x,y-size*1.03);ctx.lineTo(x+size*.68,y-size*.56);ctx.closePath();ctx.fill();
-      ctx.fillStyle=sceneIndex===3?'#ffe0a0':'#fff0bf';ctx.fillRect(x-size*.23,y-size*.33,size*.16,size*.16);ctx.fillRect(x+size*.08,y-size*.30,size*.15,size*.15);
+      ctx.fillStyle=sceneIndex===3?'#ffe0a0':'#fff0bf';ctx.fillRect(x-size*.22,y-size*.33,size*.15,size*.15);ctx.fillRect(x+size*.08,y-size*.30,size*.14,size*.14);
     });
 
-    ctx.save();ctx.font='800 10px system-ui,sans-serif';ctx.textAlign='center';ctx.fillStyle='rgba(30,48,43,.76)';
-    ctx.fillText(moving?'FERRY':'DOCK',Math.min(cw-58,farBank.x),farBank.y-82);ctx.restore();
+    ctx.save();ctx.font='800 9px system-ui,sans-serif';ctx.textAlign='center';ctx.fillStyle='rgba(30,48,43,.72)';
+    ctx.fillText(moving?'FERRY':'DOCK',Math.min(cw-44,farDock.x),farDock.y-80);ctx.restore();
     ctx.restore();
   }
 
