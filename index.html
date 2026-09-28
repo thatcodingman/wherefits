@@ -622,21 +622,77 @@ function drawWorld(dt){
       ctx.restore();
     }
 
-    // Large, readable ferry. Horizontal orientation makes the crossing obvious.
+    // Premium ferry — intentionally more refined than the surrounding village.
+    // It should read as an expensive private/passenger vessel, not a cartoon boat.
     ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);ctx.scale(1.04,1.04);
-    ctx.fillStyle='rgba(24,48,45,.22)';ctx.beginPath();ctx.ellipse(0,21,76,15,0,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle=sceneIndex===3?'#243b36':'#465b59';
-    ctx.beginPath();ctx.moveTo(-72,-4);ctx.lineTo(72,-4);ctx.lineTo(57,30);ctx.quadraticCurveTo(0,41,-57,30);ctx.closePath();ctx.fill();
-    ctx.fillStyle=sceneIndex===3?'#d6dfd8':'#f4eee1';ctx.fillRect(-58,-43,116,39);
-    ctx.fillStyle=sceneIndex===3?'#69a7a5':'#5f99a0';for(let i=0;i<7;i++)ctx.fillRect(-48+i*14,-34,10,12);
-    ctx.fillStyle=sceneIndex===3?'#465b54':'#c5bdab';ctx.fillRect(-62,-49,124,6);
-    ctx.strokeStyle=sceneIndex===3?'#e1e9e4':'#aaa99f';ctx.lineWidth=2.3;ctx.beginPath();ctx.moveTo(-66,-51);ctx.lineTo(66,-51);ctx.stroke();
-    ctx.fillStyle=sceneIndex===3?'#b7cbc4':'#e7dcc5';ctx.fillRect(-16,-63,32,14);
-    ctx.fillStyle='#ffe89e';ctx.beginPath();ctx.arc(0,-66,4.5,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#d85c4e';ctx.fillRect(43,-53,6,8);
-    ctx.fillStyle='#e1b34b';[-48,-24,0,24,48].forEach(x=>{ctx.beginPath();ctx.arc(x,1,4.5,0,Math.PI*2);ctx.fill()});
-    ctx.restore();
 
+    // Soft contact shadow on the water.
+    ctx.fillStyle='rgba(20,42,40,.18)';
+    ctx.beginPath();ctx.ellipse(0,22,80,14,0,0,Math.PI*2);ctx.fill();
+
+    // Deep, clean hull with a subtle premium accent stripe.
+    ctx.fillStyle=sceneIndex===3?'#1d3432':'#344c4b';
+    ctx.beginPath();ctx.moveTo(-76,-5);ctx.lineTo(76,-5);ctx.lineTo(61,27);
+    ctx.quadraticCurveTo(44,39,0,41);ctx.quadraticCurveTo(-44,39,-61,27);ctx.closePath();ctx.fill();
+    ctx.fillStyle=sceneIndex===3?'#c9a85a':'#caa85c';
+    ctx.fillRect(-62,8,124,3);
+    ctx.fillStyle=sceneIndex===3?'#edf1eb':'#f2eadb';
+    ctx.fillRect(-58,12,116,5);
+
+    // Main passenger deck: warm ivory body, dark glass, restrained trim.
+    ctx.fillStyle=sceneIndex===3?'#d8e0d9':'#f5f0e5';
+    ctx.fillRect(-58,-43,116,38);
+    ctx.fillStyle=sceneIndex===3?'#294744':'#466a6d';
+    ctx.fillRect(-49,-35,98,17);
+
+    // Individual tinted windows, with a little depth instead of flat blocks.
+    for(let i=0;i<7;i++){
+      const x=-44+i*14;
+      ctx.fillStyle=sceneIndex===3?'#5d8e8d':'#65979c';
+      ctx.fillRect(x,-33,9,11);
+      ctx.strokeStyle='rgba(239,248,243,.34)';ctx.lineWidth=1;
+      ctx.strokeRect(x+.5,-32.5,8,10);
+    }
+
+    // Upper lounge/cabin: a small luxury silhouette with panoramic front glass.
+    ctx.fillStyle=sceneIndex===3?'#bfcfc8':'#ddd7c9';
+    ctx.fillRect(-30,-58,60,15);
+    ctx.fillStyle=sceneIndex===3?'#3f6664':'#547b7d';
+    ctx.fillRect(-22,-55,44,9);
+    ctx.fillStyle=sceneIndex===3?'#dfe8e2':'#f3eee1';
+    ctx.fillRect(-31,-61,62,4);
+
+    // Slim roof canopy and premium mast.
+    ctx.fillStyle=sceneIndex===3?'#203a37':'#334b49';
+    ctx.fillRect(-34,-65,68,4);
+    ctx.strokeStyle=sceneIndex===3?'#d5dfd9':'#b99d63';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(0,-65);ctx.lineTo(0,-76);ctx.stroke();
+    ctx.fillStyle='#e8c86b';ctx.beginPath();ctx.arc(0,-78,2.7,0,Math.PI*2);ctx.fill();
+
+    // Tiny people on the upper deck — enough to imply exclusivity without clutter.
+    const people=[[-17,-61],[2,-61],[17,-61]];
+    people.forEach(([px,py],i)=>{
+      ctx.fillStyle=i===1?'#7f5d48':'#344c49';
+      ctx.beginPath();ctx.arc(px,py-1.8,2.1,0,Math.PI*2);ctx.fill();
+      ctx.fillRect(px-1.5,py,3,5);
+    });
+
+    // Small destination/name plaque. It feels like a real premium ferry operator.
+    ctx.fillStyle=sceneIndex===3?'#e8d8a9':'#e6d2a5';
+    ctx.fillRect(-18,-45,36,6);
+    ctx.fillStyle='#314742';ctx.font='800 4.8px system-ui,sans-serif';ctx.textAlign='center';
+    ctx.fillText('WHEREFITS',0,-40.5);
+
+    // Navigation lights and warm deck lights.
+    ctx.fillStyle='#d85c4e';ctx.fillRect(45,-53,5,7);
+    ctx.fillStyle='#f4d277';[-46,-23,0,23,46].forEach(x=>{
+      ctx.beginPath();ctx.arc(x,2,3.7,0,Math.PI*2);ctx.fill();
+    });
+
+    // Bow detail: a restrained chrome/gold rail makes the silhouette feel finished.
+    ctx.strokeStyle=sceneIndex===3?'#d6ddd8':'#c7b58b';ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.moveTo(-66,-7);ctx.lineTo(-73,5);ctx.lineTo(-61,16);ctx.stroke();
+    ctx.restore();
     // Terminal beacons pulse subtly.
     [nearDock,farDock].forEach((p,i)=>{
       const pulse=reduceMotion?1:(.72+.28*Math.sin(t*3+i));
