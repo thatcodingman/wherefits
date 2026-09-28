@@ -509,8 +509,8 @@ function drawWorld(dt){
 
     // Keep the crossing in the open right-hand landscape instead of behind
     // the dashboard. The UI owns the center; the ferry owns the shoreline.
-    const nearDock={x:cw*.86,y:ch*.685};
-    const farDock={x:cw*1.075,y:ch*.685};
+    const nearDock={x:cw*.79,y:ch*.785};
+    const farDock={x:cw*1.045,y:ch*.655};
     const waterLeft=cw*.76, waterRight=cw*1.12;
     const waterTop=ch*.635, waterBottom=ch*.90;
 
@@ -543,12 +543,12 @@ function drawWorld(dt){
     ctx.strokeStyle=sceneIndex===3?'#7d806d':'#c7ad76';ctx.lineWidth=18;ctx.lineCap='round';
     ctx.beginPath();
     ctx.moveTo(cw*.58,ch*1.02);
-    ctx.bezierCurveTo(cw*.67,ch*.94,cw*.76,ch*.82,nearDock.x,nearDock.y);
+    ctx.bezierCurveTo(cw*.67,ch*.94,cw*.73,ch*.87,nearDock.x,nearDock.y);
     ctx.stroke();
     ctx.strokeStyle=sceneIndex===3?'rgba(231,216,171,.65)':'rgba(246,224,165,.82)';ctx.lineWidth=2;
     ctx.beginPath();
     ctx.moveTo(cw*.58,ch*1.02);
-    ctx.bezierCurveTo(cw*.67,ch*.94,cw*.76,ch*.82,nearDock.x,nearDock.y);
+    ctx.bezierCurveTo(cw*.67,ch*.94,cw*.73,ch*.87,nearDock.x,nearDock.y);
     ctx.stroke();
 
     // A quiet village path leaves the far dock toward the houses.
@@ -607,7 +607,7 @@ function drawWorld(dt){
     // Give the crossing a very shallow arc so it reads as a route,
     // not a sprite sliding on a ruler.
     const ferryX=nearDock.x+(farDock.x-nearDock.x)*q;
-    const ferryY=nearDock.y-2 + Math.sin(q*Math.PI)*ch*.012;
+    const ferryY=nearDock.y-2 - Math.sin(q*Math.PI)*ch*.035;
     const ferryAngle=0;
 
     // Wake expands behind the ferry while underway.
@@ -623,7 +623,7 @@ function drawWorld(dt){
     }
 
     // Large, readable ferry. Horizontal orientation makes the crossing obvious.
-    ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);ctx.scale(.86,.86);
+    ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);ctx.scale(1.04,1.04);
     ctx.fillStyle='rgba(24,48,45,.22)';ctx.beginPath();ctx.ellipse(0,21,76,15,0,0,Math.PI*2);ctx.fill();
     ctx.fillStyle=sceneIndex===3?'#243b36':'#465b59';
     ctx.beginPath();ctx.moveTo(-72,-4);ctx.lineTo(72,-4);ctx.lineTo(57,30);ctx.quadraticCurveTo(0,41,-57,30);ctx.closePath();ctx.fill();
