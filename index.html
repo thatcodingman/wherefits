@@ -499,6 +499,118 @@ function drawWorld(dt){
 
   }
 
+  // TIER 3–4: the landscape starts functioning like a real place.
+  // These features are deliberately large, recognizable silhouettes: roads,
+  // utility poles, a developed shoreline, a dock, boats and a growing neighborhood.
+  if(growingWorld){
+    // The sand path remains the pedestrian approach; the ferry handles the water crossing.
+
+    // Utility poles make the settlement feel connected to an actual town.
+    ctx.strokeStyle=sceneIndex===3?'rgba(53,70,65,.82)':'rgba(91,82,66,.82)';ctx.lineWidth=4;
+    for(let i=0;i<(establishedWorld?6:4);i++){
+      const x=cw*(.74+i*.045), y=ch*(.66-i*.014);
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-ch*.11);ctx.stroke();
+      ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-cw*.025,y-ch*.095);ctx.lineTo(x+cw*.025,y-ch*.095);ctx.stroke();ctx.lineWidth=4;
+    }
+    ctx.lineWidth=1.5;ctx.strokeStyle=sceneIndex===3?'rgba(205,225,218,.22)':'rgba(70,74,68,.32)';
+    ctx.beginPath();ctx.moveTo(cw*.74,ch*.55);ctx.quadraticCurveTo(cw*.84,ch*.51,cw*.965,ch*.55);ctx.stroke();
+    ctx.restore();
+
+    if(establishedWorld && worldProgress>=82){
+      // A real dock projects into the lake from the developed shoreline.
+      const dockX=cw*.73, dockY=ch*.755;
+      ctx.save();
+      ctx.strokeStyle=sceneIndex===3?'#5d5d53':'#8a6c4c';ctx.lineWidth=12;
+      ctx.beginPath();ctx.moveTo(dockX,dockY);ctx.lineTo(dockX+cw*.115,dockY+ch*.025);ctx.stroke();
+      ctx.strokeStyle=sceneIndex===3?'#a99a77':'#c9a77b';ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(dockX,dockY-5);ctx.lineTo(dockX+cw*.115,dockY+ch*.02);ctx.stroke();
+      for(let i=0;i<5;i++){
+        const x=dockX+cw*.022+i*cw*.022, y=dockY+ch*.004+i*ch*.004;
+        ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+15);ctx.stroke();
+      }
+      ctx.restore();
+
+      // Two small boats create unmistakable life on the water.
+      const boats=[{x:.78,y:.805,v:.009,c:'#d36d52'},{x:.87,y:.84,v:-.006,c:'#e0b455'},{x:.70,y:.87,v:.004,c:'#6e98a1'}];
+      boats.forEach((b,i)=>{
+        let q=(b.x+t*b.v)%1;if(q<0)q+=1;
+        const x=cw*(.66+q*.30), y=ch*b.y+Math.sin(t*1.2+i)*3;
+        ctx.save();ctx.translate(x,y);
+        ctx.fillStyle=b.c;ctx.beginPath();ctx.moveTo(-18,0);ctx.lineTo(18,0);ctx.lineTo(10,8);ctx.lineTo(-12,8);ctx.closePath();ctx.fill();
+        if(i===0){ctx.strokeStyle='#f0e5c9';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-19);ctx.lineTo(11,-4);ctx.closePath();ctx.stroke()}
+        else {ctx.strokeStyle='#e8eee8';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-1);ctx.lineTo(0,-15);ctx.stroke()}
+        ctx.restore();
+        ctx.strokeStyle='rgba(238,255,249,.45)';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(x,y+9,24,4,0,0,Math.PI*2);ctx.stroke();
+      });
+
+      // A larger neighborhood appears beyond the ferry: homes, a shop and a street.
+      const homes=[
+        [.79,.585,28,'#9b6d4d'],[.84,.57,34,'#8c6549'],[.90,.59,25,'#a17450'],[.955,.565,31,'#8f694f'],
+        [.82,.63,22,'#7f6753'],[.875,.625,27,'#986e50']
+      ];
+      homes.forEach(([xp,yp,size,color],i)=>{
+        const x=cw*xp,y=ch*yp;
+        ctx.save();ctx.fillStyle=sceneIndex===3?'#2e4b43':color;ctx.fillRect(x-size*.5,y-size*.55,size,size*.55);
+        ctx.beginPath();ctx.moveTo(x-size*.62,y-size*.55);ctx.lineTo(x,y-size*.98);ctx.lineTo(x+size*.62,y-size*.55);ctx.closePath();ctx.fill();
+        ctx.fillStyle=sceneIndex===3?'#ffe4a2':'#f7dfad';ctx.fillRect(x-size*.22,y-size*.34,size*.16,size*.16);ctx.fillRect(x+size*.08,y-size*.31,size*.14,size*.14);
+        ctx.restore();
+      });
+      // Small storefront.
+      ctx.save();const sx=cw*.925,sy=ch*.625;ctx.fillStyle=sceneIndex===3?'#3b5750':'#b06f51';ctx.fillRect(sx-28,sy-25,56,25);ctx.fillStyle=sceneIndex===3?'#263e39':'#ead7b2';ctx.fillRect(sx-23,sy-20,46,9);ctx.fillStyle='#5e7669';ctx.fillRect(sx-16,sy-8,12,8);ctx.fillRect(sx+5,sy-8,12,8);ctx.restore();
+    }
+  }
+
+  // TIER 5 — 75%: "Life takes shape." This is the first deliberately dramatic
+  // transformation. A town, marina, traffic and a public green space appear.
+  if(lifeTakesShape){
+    // Larger town block in the far distance.
+    ctx.save();
+    const town=[
+      [.24,.57,52,.10],[.30,.56,74,.13],[.36,.55,44,.09],[.42,.57,64,.12],
+      [.48,.55,86,.15],[.55,.57,52,.10],[.61,.56,68,.12],[.67,.58,42,.08]
+    ];
+    town.forEach(([xp,yp,h,w],i)=>{
+      const x=cw*xp,y=ch*yp;
+      ctx.fillStyle=sceneIndex===3?'#274840':i%3===0?'#667e75':'#708b80';
+      ctx.fillRect(x,y-h,w*cw*.035,h);
+      if(i%2===0){ctx.fillStyle=sceneIndex===3?'#ffe1a0':'rgba(255,236,170,.75)';for(let r=0;r<2;r++)for(let k=0;k<2;k++)ctx.fillRect(x+5+k*9,y-h+12+r*11,4,4)}
+    });
+    ctx.restore();
+
+    // A public park: lawn, a walking loop and a few visible people.
+    ctx.save();ctx.fillStyle=sceneIndex===3?'rgba(44,91,70,.72)':'rgba(103,151,103,.78)';ctx.beginPath();ctx.ellipse(cw*.36,ch*.72,cw*.115,ch*.055,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(236,226,184,.78)';ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(cw*.36,ch*.72,cw*.075,ch*.032,0,0,Math.PI*2);ctx.stroke();
+    for(let i=0;i<4;i++){const px=cw*(.31+i*.035),py=ch*(.705+(i%2)*.026);ctx.fillStyle='#4e6d61';ctx.beginPath();ctx.arc(px,py-6,4,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#4e6d61';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(px,py-2);ctx.lineTo(px,py+9);ctx.moveTo(px,py+2);ctx.lineTo(px-5,py+6);ctx.moveTo(px,py+2);ctx.lineTo(px+5,py+6);ctx.stroke()}
+    ctx.restore();
+
+    // Marina lights and a small sailboat at the new shoreline.
+    ctx.save();ctx.strokeStyle=sceneIndex===3?'#c6d8cf':'#8b7050';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(cw*.57,ch*.80);ctx.lineTo(cw*.70,ch*.84);ctx.stroke();
+    ctx.strokeStyle='#f2d77f';ctx.lineWidth=3;for(let i=0;i<6;i++){const x=cw*(.58+i*.021),y=ch*(.802+i*.006);ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y-13);ctx.stroke();ctx.fillStyle='#ffe8a3';ctx.beginPath();ctx.arc(x,y-16,2.4,0,Math.PI*2);ctx.fill()}
+    const sx=cw*(.61+Math.sin(t*.03)*.02),sy=ch*.835;ctx.fillStyle='#eee8d5';ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx,sy-38);ctx.lineTo(sx+25,sy-5);ctx.closePath();ctx.fill();ctx.fillStyle='#7c6451';ctx.beginPath();ctx.moveTo(sx-18,sy);ctx.lineTo(sx+20,sy);ctx.lineTo(sx+11,sy+9);ctx.lineTo(sx-12,sy+9);ctx.closePath();ctx.fill();ctx.restore();
+
+    // More traffic makes the road feel used rather than decorative.
+    for(let i=0;i<4;i++){
+      const q=(i*.24+t*(.012+i*.002))%1,x=cw*(.51+q*.44),y=ch*(.93-q*.19);
+      ctx.save();ctx.translate(x,y);ctx.fillStyle=i%2?'#4d8493':'#c9654e';ctx.fillRect(-11,-5,22,9);ctx.fillStyle='#d9eceb';ctx.fillRect(-4,-8,9,4);ctx.fillStyle='#27322f';ctx.beginPath();ctx.arc(-7,5,2.8,0,Math.PI*2);ctx.arc(7,5,2.8,0,Math.PI*2);ctx.fill();ctx.restore();
+    }
+  }
+
+  // Large framing trees: only at the edges so they don't hide the interface.
+  // IMPORTANT: these are shoreline framing elements. They are intentionally
+  // drawn BEFORE the ferry so the vessel never appears to travel underneath
+  // a foreground tree/mountain and reveal only its lower hull.
+  const edgeTrees=startingWorld?[[.05,.88,.14,.075],[.93,.95,.10,.065]]:firstSigns?[[.035,.87,.19,.10],[.13,.88,.14,.08],[.87,.95,.10,.065],[.965,.94,.13,.075]]:horizonOpens?[[.025,.87,.22,.12],[.10,.87,.19,.105],[.20,.88,.17,.09],[.79,.95,.10,.065],[.90,.94,.12,.07],[.985,.93,.14,.08]]:lifeTakesShape?[[.025,.86,.25,.14],[.11,.87,.20,.11],[.19,.87,.16,.09],[.79,.95,.10,.065],[.89,.94,.12,.07],[.985,.93,.15,.08]]:[[.045,.86,.24,.13],[.12,.87,.18,.105],[.22,.86,.14,.08],[.78,.95,.10,.065],[.90,.94,.12,.07],[.97,.93,.15,.08]];
+  edgeTrees.forEach((tr,i)=>{
+    const sway=reduceMotion?0:Math.sin(t*1.7+i)*13 + Math.sin(t*.7+i)*5;
+    drawTree(cw*tr[0]+sway,ch*tr[1],ch*tr[2],cw*tr[3],c.hill2,c.hill);
+  });
+
+  // Ferry is deliberately rendered after the framing trees. The crossing is
+  // water, so the vessel must remain fully visible throughout the crossing.
+  // This fixes the old depth bug where later tree/mountain silhouettes covered
+  // the upper half of the ferry and left only the bottom of the hull visible.
+  // No timing change here — only the visual layer order is corrected.
+
   // TIER 2+: FERRY CROSSING — a recognizable piece of infrastructure in the world.
   // The crossing lives in the lower-right open landscape so the dashboard does not
   // completely cover it. The path ends at a terminal; it never becomes a bridge.
@@ -790,108 +902,6 @@ function drawWorld(dt){
     ctx.restore();
   }
 
-  // TIER 3–4: the landscape starts functioning like a real place.
-  // These features are deliberately large, recognizable silhouettes: roads,
-  // utility poles, a developed shoreline, a dock, boats and a growing neighborhood.
-  if(growingWorld){
-    // The sand path remains the pedestrian approach; the ferry handles the water crossing.
-
-    // Utility poles make the settlement feel connected to an actual town.
-    ctx.strokeStyle=sceneIndex===3?'rgba(53,70,65,.82)':'rgba(91,82,66,.82)';ctx.lineWidth=4;
-    for(let i=0;i<(establishedWorld?6:4);i++){
-      const x=cw*(.74+i*.045), y=ch*(.66-i*.014);
-      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-ch*.11);ctx.stroke();
-      ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-cw*.025,y-ch*.095);ctx.lineTo(x+cw*.025,y-ch*.095);ctx.stroke();ctx.lineWidth=4;
-    }
-    ctx.lineWidth=1.5;ctx.strokeStyle=sceneIndex===3?'rgba(205,225,218,.22)':'rgba(70,74,68,.32)';
-    ctx.beginPath();ctx.moveTo(cw*.74,ch*.55);ctx.quadraticCurveTo(cw*.84,ch*.51,cw*.965,ch*.55);ctx.stroke();
-    ctx.restore();
-
-    if(establishedWorld && worldProgress>=82){
-      // A real dock projects into the lake from the developed shoreline.
-      const dockX=cw*.73, dockY=ch*.755;
-      ctx.save();
-      ctx.strokeStyle=sceneIndex===3?'#5d5d53':'#8a6c4c';ctx.lineWidth=12;
-      ctx.beginPath();ctx.moveTo(dockX,dockY);ctx.lineTo(dockX+cw*.115,dockY+ch*.025);ctx.stroke();
-      ctx.strokeStyle=sceneIndex===3?'#a99a77':'#c9a77b';ctx.lineWidth=3;
-      ctx.beginPath();ctx.moveTo(dockX,dockY-5);ctx.lineTo(dockX+cw*.115,dockY+ch*.02);ctx.stroke();
-      for(let i=0;i<5;i++){
-        const x=dockX+cw*.022+i*cw*.022, y=dockY+ch*.004+i*ch*.004;
-        ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+15);ctx.stroke();
-      }
-      ctx.restore();
-
-      // Two small boats create unmistakable life on the water.
-      const boats=[{x:.78,y:.805,v:.009,c:'#d36d52'},{x:.87,y:.84,v:-.006,c:'#e0b455'},{x:.70,y:.87,v:.004,c:'#6e98a1'}];
-      boats.forEach((b,i)=>{
-        let q=(b.x+t*b.v)%1;if(q<0)q+=1;
-        const x=cw*(.66+q*.30), y=ch*b.y+Math.sin(t*1.2+i)*3;
-        ctx.save();ctx.translate(x,y);
-        ctx.fillStyle=b.c;ctx.beginPath();ctx.moveTo(-18,0);ctx.lineTo(18,0);ctx.lineTo(10,8);ctx.lineTo(-12,8);ctx.closePath();ctx.fill();
-        if(i===0){ctx.strokeStyle='#f0e5c9';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-19);ctx.lineTo(11,-4);ctx.closePath();ctx.stroke()}
-        else {ctx.strokeStyle='#e8eee8';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-1);ctx.lineTo(0,-15);ctx.stroke()}
-        ctx.restore();
-        ctx.strokeStyle='rgba(238,255,249,.45)';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(x,y+9,24,4,0,0,Math.PI*2);ctx.stroke();
-      });
-
-      // A larger neighborhood appears beyond the ferry: homes, a shop and a street.
-      const homes=[
-        [.79,.585,28,'#9b6d4d'],[.84,.57,34,'#8c6549'],[.90,.59,25,'#a17450'],[.955,.565,31,'#8f694f'],
-        [.82,.63,22,'#7f6753'],[.875,.625,27,'#986e50']
-      ];
-      homes.forEach(([xp,yp,size,color],i)=>{
-        const x=cw*xp,y=ch*yp;
-        ctx.save();ctx.fillStyle=sceneIndex===3?'#2e4b43':color;ctx.fillRect(x-size*.5,y-size*.55,size,size*.55);
-        ctx.beginPath();ctx.moveTo(x-size*.62,y-size*.55);ctx.lineTo(x,y-size*.98);ctx.lineTo(x+size*.62,y-size*.55);ctx.closePath();ctx.fill();
-        ctx.fillStyle=sceneIndex===3?'#ffe4a2':'#f7dfad';ctx.fillRect(x-size*.22,y-size*.34,size*.16,size*.16);ctx.fillRect(x+size*.08,y-size*.31,size*.14,size*.14);
-        ctx.restore();
-      });
-      // Small storefront.
-      ctx.save();const sx=cw*.925,sy=ch*.625;ctx.fillStyle=sceneIndex===3?'#3b5750':'#b06f51';ctx.fillRect(sx-28,sy-25,56,25);ctx.fillStyle=sceneIndex===3?'#263e39':'#ead7b2';ctx.fillRect(sx-23,sy-20,46,9);ctx.fillStyle='#5e7669';ctx.fillRect(sx-16,sy-8,12,8);ctx.fillRect(sx+5,sy-8,12,8);ctx.restore();
-    }
-  }
-
-  // TIER 5 — 75%: "Life takes shape." This is the first deliberately dramatic
-  // transformation. A town, marina, traffic and a public green space appear.
-  if(lifeTakesShape){
-    // Larger town block in the far distance.
-    ctx.save();
-    const town=[
-      [.24,.57,52,.10],[.30,.56,74,.13],[.36,.55,44,.09],[.42,.57,64,.12],
-      [.48,.55,86,.15],[.55,.57,52,.10],[.61,.56,68,.12],[.67,.58,42,.08]
-    ];
-    town.forEach(([xp,yp,h,w],i)=>{
-      const x=cw*xp,y=ch*yp;
-      ctx.fillStyle=sceneIndex===3?'#274840':i%3===0?'#667e75':'#708b80';
-      ctx.fillRect(x,y-h,w*cw*.035,h);
-      if(i%2===0){ctx.fillStyle=sceneIndex===3?'#ffe1a0':'rgba(255,236,170,.75)';for(let r=0;r<2;r++)for(let k=0;k<2;k++)ctx.fillRect(x+5+k*9,y-h+12+r*11,4,4)}
-    });
-    ctx.restore();
-
-    // A public park: lawn, a walking loop and a few visible people.
-    ctx.save();ctx.fillStyle=sceneIndex===3?'rgba(44,91,70,.72)':'rgba(103,151,103,.78)';ctx.beginPath();ctx.ellipse(cw*.36,ch*.72,cw*.115,ch*.055,0,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle='rgba(236,226,184,.78)';ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(cw*.36,ch*.72,cw*.075,ch*.032,0,0,Math.PI*2);ctx.stroke();
-    for(let i=0;i<4;i++){const px=cw*(.31+i*.035),py=ch*(.705+(i%2)*.026);ctx.fillStyle='#4e6d61';ctx.beginPath();ctx.arc(px,py-6,4,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#4e6d61';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(px,py-2);ctx.lineTo(px,py+9);ctx.moveTo(px,py+2);ctx.lineTo(px-5,py+6);ctx.moveTo(px,py+2);ctx.lineTo(px+5,py+6);ctx.stroke()}
-    ctx.restore();
-
-    // Marina lights and a small sailboat at the new shoreline.
-    ctx.save();ctx.strokeStyle=sceneIndex===3?'#c6d8cf':'#8b7050';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(cw*.57,ch*.80);ctx.lineTo(cw*.70,ch*.84);ctx.stroke();
-    ctx.strokeStyle='#f2d77f';ctx.lineWidth=3;for(let i=0;i<6;i++){const x=cw*(.58+i*.021),y=ch*(.802+i*.006);ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y-13);ctx.stroke();ctx.fillStyle='#ffe8a3';ctx.beginPath();ctx.arc(x,y-16,2.4,0,Math.PI*2);ctx.fill()}
-    const sx=cw*(.61+Math.sin(t*.03)*.02),sy=ch*.835;ctx.fillStyle='#eee8d5';ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx,sy-38);ctx.lineTo(sx+25,sy-5);ctx.closePath();ctx.fill();ctx.fillStyle='#7c6451';ctx.beginPath();ctx.moveTo(sx-18,sy);ctx.lineTo(sx+20,sy);ctx.lineTo(sx+11,sy+9);ctx.lineTo(sx-12,sy+9);ctx.closePath();ctx.fill();ctx.restore();
-
-    // More traffic makes the road feel used rather than decorative.
-    for(let i=0;i<4;i++){
-      const q=(i*.24+t*(.012+i*.002))%1,x=cw*(.51+q*.44),y=ch*(.93-q*.19);
-      ctx.save();ctx.translate(x,y);ctx.fillStyle=i%2?'#4d8493':'#c9654e';ctx.fillRect(-11,-5,22,9);ctx.fillStyle='#d9eceb';ctx.fillRect(-4,-8,9,4);ctx.fillStyle='#27322f';ctx.beginPath();ctx.arc(-7,5,2.8,0,Math.PI*2);ctx.arc(7,5,2.8,0,Math.PI*2);ctx.fill();ctx.restore();
-    }
-  }
-
-  // Large framing trees: only at the edges so they don't hide the interface.
-  const edgeTrees=startingWorld?[[.05,.88,.14,.075],[.93,.88,.14,.075]]:firstSigns?[[.035,.87,.19,.10],[.13,.88,.14,.08],[.87,.88,.15,.085],[.965,.86,.21,.12]]:horizonOpens?[[.025,.87,.22,.12],[.10,.87,.19,.105],[.20,.88,.17,.09],[.79,.87,.18,.10],[.90,.86,.24,.13],[.985,.85,.28,.15]]:lifeTakesShape?[[.025,.86,.25,.14],[.11,.87,.20,.11],[.19,.87,.16,.09],[.79,.87,.17,.09],[.89,.86,.24,.13],[.985,.85,.29,.16]]:[[.045,.86,.24,.13],[.12,.87,.18,.105],[.22,.86,.14,.08],[.78,.87,.15,.085],[.90,.86,.22,.12],[.97,.85,.27,.145]];
-  edgeTrees.forEach((tr,i)=>{
-    const sway=reduceMotion?0:Math.sin(t*1.7+i)*13 + Math.sin(t*.7+i)*5;
-    drawTree(cw*tr[0]+sway,ch*tr[1],ch*tr[2],cw*tr[3],c.hill2,c.hill);
-  });
 
   // A few distant trees along the horizon.
   for(let i=0;i<(startingWorld?7:firstSigns?11:horizonOpens?26:growingWorld?34:18);i++){
