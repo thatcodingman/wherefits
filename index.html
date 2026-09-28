@@ -509,9 +509,9 @@ function drawWorld(dt){
 
     // Keep the crossing in the open right-hand landscape instead of behind
     // the dashboard. The UI owns the center; the ferry owns the shoreline.
-    const nearDock={x:cw*.73,y:ch*.845};
-    const farDock={x:cw*.965,y:ch*.635};
-    const waterLeft=cw*.68, waterRight=cw*1.12;
+    const nearDock={x:cw*.865,y:ch*.825};
+    const farDock={x:cw*1.005,y:ch*.635};
+    const waterLeft=cw*.75, waterRight=cw*1.12;
     const waterTop=ch*.59, waterBottom=ch*.98;
 
     // Broad, horizontal bay. This is deliberately a real body of water,
@@ -542,20 +542,20 @@ function drawWorld(dt){
     // the water, so the ferry is unmistakably the connection.
     ctx.strokeStyle=sceneIndex===3?'#7d806d':'#c7ad76';ctx.lineWidth=18;ctx.lineCap='round';
     ctx.beginPath();
-    ctx.moveTo(cw*.64,ch*1.02);
-    ctx.bezierCurveTo(cw*.66,ch*.95,cw*.69,ch*.89,nearDock.x,nearDock.y);
+    ctx.moveTo(cw*.76,ch*1.02);
+    ctx.bezierCurveTo(cw*.78,ch*.95,cw*.82,ch*.89,nearDock.x,nearDock.y);
     ctx.stroke();
     ctx.strokeStyle=sceneIndex===3?'rgba(231,216,171,.65)':'rgba(246,224,165,.82)';ctx.lineWidth=2;
     ctx.beginPath();
-    ctx.moveTo(cw*.64,ch*1.02);
-    ctx.bezierCurveTo(cw*.66,ch*.95,cw*.69,ch*.89,nearDock.x,nearDock.y);
+    ctx.moveTo(cw*.76,ch*1.02);
+    ctx.bezierCurveTo(cw*.78,ch*.95,cw*.82,ch*.89,nearDock.x,nearDock.y);
     ctx.stroke();
 
     // A quiet village path leaves the far dock toward the houses.
     ctx.strokeStyle=sceneIndex===3?'#65776e':'#aa8a62';ctx.lineWidth=10;
     ctx.beginPath();
     ctx.moveTo(farDock.x,farDock.y);
-    ctx.bezierCurveTo(cw*.985,ch*.61,cw*.99,ch*.55,cw*1.00,ch*.49);
+    ctx.bezierCurveTo(cw*1.005,ch*.61,cw*1.01,ch*.55,cw*1.015,ch*.49);
     ctx.stroke();
 
     // Terminal platforms: clearly side-by-side, like a real ferry crossing.
@@ -612,7 +612,15 @@ function drawWorld(dt){
 
     // Wake expands behind the ferry while underway.
     if(moving && !reduceMotion){
-      ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);
+      ctx.save();
+      // Keep the moving ferry, wake and contact shadow physically inside the bay.
+      // This prevents the boat from ever appearing to pass through the foreground island.
+      ctx.beginPath();
+      ctx.moveTo(waterLeft,waterTop);
+      ctx.bezierCurveTo(cw*.83,ch*.615,cw*.98,ch*.62,waterRight,ch*.635);
+      ctx.lineTo(waterRight,waterBottom);ctx.lineTo(waterLeft,waterBottom);ctx.closePath();
+      ctx.clip();
+      ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);
       ctx.strokeStyle='rgba(250,255,252,.9)';ctx.lineWidth=2.5;
       for(let i=0;i<6;i++){
         const back=54+i*15;
@@ -623,12 +631,18 @@ function drawWorld(dt){
     }
 
     // Premium ferry — intentionally more refined than the surrounding village.
-    // It should read as an expensive private/passenger vessel, not a cartoon boat.
-    ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);ctx.scale(1.04,1.04);
+    // It stays subtle and water-bound so the world, not the boat, remains the focus.
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(waterLeft,waterTop);
+    ctx.bezierCurveTo(cw*.83,ch*.615,cw*.98,ch*.62,waterRight,ch*.635);
+    ctx.lineTo(waterRight,waterBottom);ctx.lineTo(waterLeft,waterBottom);ctx.closePath();
+    ctx.clip();
+    ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);ctx.scale(.92,.92);
 
     // Soft contact shadow on the water.
-    ctx.fillStyle='rgba(20,42,40,.18)';
-    ctx.beginPath();ctx.ellipse(0,22,80,14,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(20,42,40,.13)';
+    ctx.beginPath();ctx.ellipse(0,22,72,11,0,0,Math.PI*2);ctx.fill();
 
     // Deep, clean hull with a subtle premium accent stripe.
     ctx.fillStyle=sceneIndex===3?'#1d3432':'#344c4b';
