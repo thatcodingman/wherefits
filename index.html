@@ -509,10 +509,10 @@ function drawWorld(dt){
 
     // Keep the crossing in the open right-hand landscape instead of behind
     // the dashboard. The UI owns the center; the ferry owns the shoreline.
-    const nearDock={x:cw*.79,y:ch*.785};
-    const farDock={x:cw*1.045,y:ch*.655};
-    const waterLeft=cw*.76, waterRight=cw*1.12;
-    const waterTop=ch*.635, waterBottom=ch*.90;
+    const nearDock={x:cw*.875,y:ch*.805};
+    const farDock={x:cw*.995,y:ch*.635};
+    const waterLeft=cw*.84, waterRight=cw*1.12;
+    const waterTop=ch*.59, waterBottom=ch*.91;
 
     // Broad, horizontal bay. This is deliberately a real body of water,
     // not a diagonal strip that can be mistaken for a bridge.
@@ -542,20 +542,20 @@ function drawWorld(dt){
     // the water, so the ferry is unmistakably the connection.
     ctx.strokeStyle=sceneIndex===3?'#7d806d':'#c7ad76';ctx.lineWidth=18;ctx.lineCap='round';
     ctx.beginPath();
-    ctx.moveTo(cw*.58,ch*1.02);
-    ctx.bezierCurveTo(cw*.67,ch*.94,cw*.73,ch*.87,nearDock.x,nearDock.y);
+    ctx.moveTo(cw*.64,ch*1.02);
+    ctx.bezierCurveTo(cw*.74,ch*.95,cw*.82,ch*.88,nearDock.x,nearDock.y);
     ctx.stroke();
     ctx.strokeStyle=sceneIndex===3?'rgba(231,216,171,.65)':'rgba(246,224,165,.82)';ctx.lineWidth=2;
     ctx.beginPath();
-    ctx.moveTo(cw*.58,ch*1.02);
-    ctx.bezierCurveTo(cw*.67,ch*.94,cw*.73,ch*.87,nearDock.x,nearDock.y);
+    ctx.moveTo(cw*.64,ch*1.02);
+    ctx.bezierCurveTo(cw*.74,ch*.95,cw*.82,ch*.88,nearDock.x,nearDock.y);
     ctx.stroke();
 
     // A quiet village path leaves the far dock toward the houses.
     ctx.strokeStyle=sceneIndex===3?'#65776e':'#aa8a62';ctx.lineWidth=10;
     ctx.beginPath();
     ctx.moveTo(farDock.x,farDock.y);
-    ctx.bezierCurveTo(cw*1.00,ch*.64,cw*1.01,ch*.57,cw*1.02,ch*.50);
+    ctx.bezierCurveTo(cw*.985,ch*.61,cw*.99,ch*.55,cw*1.00,ch*.49);
     ctx.stroke();
 
     // Terminal platforms: clearly side-by-side, like a real ferry crossing.
@@ -645,7 +645,7 @@ function drawWorld(dt){
     });
 
     // Small far-side houses, clearly beyond the dock rather than sitting on it.
-    const village=[[.93,.505,25],[1.00,.475,29],[1.065,.515,23]];
+    const village=[[.91,.485,25],[.975,.455,29],[1.04,.50,23]];
     village.forEach(([xp,yp,size],i)=>{
       const x=cw*xp,y=ch*yp;
       ctx.fillStyle=sceneIndex===3?'#2c4b43':['#956b4c','#a47451','#8b664e'][i];ctx.fillRect(x-size/2,y-size*.56,size,size*.56);
