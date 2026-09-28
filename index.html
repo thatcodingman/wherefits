@@ -509,9 +509,9 @@ function drawWorld(dt){
 
     // Keep the crossing in the open right-hand landscape instead of behind
     // the dashboard. The UI owns the center; the ferry owns the shoreline.
-    const nearDock={x:cw*.675,y:ch*.835};
-    const farDock={x:cw*.925,y:ch*.775};
-    const waterLeft=cw*.775, waterRight=cw*1.08;
+    const nearDock={x:cw*.805,y:ch*.835};
+    const farDock={x:cw*.985,y:ch*.775};
+    const waterLeft=cw*.735, waterRight=cw*1.08;
     const waterTop=ch*.625, waterBottom=ch*.91;
 
     // Broad, horizontal bay. This is deliberately a real body of water,
@@ -543,12 +543,12 @@ function drawWorld(dt){
     ctx.strokeStyle=sceneIndex===3?'#7d806d':'#c7ad76';ctx.lineWidth=18;ctx.lineCap='round';
     ctx.beginPath();
     ctx.moveTo(cw*.60,ch*1.02);
-    ctx.bezierCurveTo(cw*.69,ch*.97,cw*.75,ch*.88,nearDock.x,nearDock.y);
+    ctx.bezierCurveTo(cw*.70,ch*.97,cw*.76,ch*.88,nearDock.x,nearDock.y);
     ctx.stroke();
     ctx.strokeStyle=sceneIndex===3?'rgba(231,216,171,.65)':'rgba(246,224,165,.82)';ctx.lineWidth=2;
     ctx.beginPath();
     ctx.moveTo(cw*.60,ch*1.02);
-    ctx.bezierCurveTo(cw*.69,ch*.97,cw*.75,ch*.88,nearDock.x,nearDock.y);
+    ctx.bezierCurveTo(cw*.70,ch*.97,cw*.76,ch*.88,nearDock.x,nearDock.y);
     ctx.stroke();
 
     // A quiet village path leaves the far dock toward the houses.
@@ -623,7 +623,7 @@ function drawWorld(dt){
     }
 
     // Large, readable ferry. Horizontal orientation makes the crossing obvious.
-    ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);ctx.scale(1.42,1.42);
+    ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);ctx.scale(1.18,1.18);
     ctx.fillStyle='rgba(24,48,45,.22)';ctx.beginPath();ctx.ellipse(0,21,76,15,0,0,Math.PI*2);ctx.fill();
     ctx.fillStyle=sceneIndex===3?'#243b36':'#465b59';
     ctx.beginPath();ctx.moveTo(-72,-4);ctx.lineTo(72,-4);ctx.lineTo(57,30);ctx.quadraticCurveTo(0,41,-57,30);ctx.closePath();ctx.fill();
