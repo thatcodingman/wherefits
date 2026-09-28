@@ -582,57 +582,103 @@ function drawWorld(dt){
     }
     drawTerminal(nearDock,false);drawTerminal(farDock,true);
 
-    // Ferry animation: a continuous dock-to-dock route.
-    // The previous version flipped the ferry 180 degrees halfway through
-    // the crossing, which created the visible snap/glitch.
+    // Ferry animation: keep the exact same dock-to-dock route, but treat the
+    // final part of each crossing like an actual docking maneuver. The boat
+    // now decelerates into the dock, gives a tiny natural settle/bob, and lets
+    // its wake die behind it instead of simply snapping to a parked state.
     const ferryCycle=(t%20)/20;
     const smoothstep=a=>a*a*(3-2*a);
-    let q=0, moving=false;
+    const easeOutCubic=a=>1-Math.pow(1-a,3);
+    let q=0, moving=false, docking=false, dockSide='near', dockAmount=0, travelAmount=0;
     if(ferryCycle<.12){
       q=0;
+      dockSide='near';
+      dockAmount=1;
     }else if(ferryCycle<.46){
       const a=(ferryCycle-.12)/.34;
       q=smoothstep(a);
       moving=true;
+      travelAmount=1;
     }else if(ferryCycle<.58){
       q=1;
+      dockSide='far';
+      dockAmount=1;
     }else if(ferryCycle<.92){
       const a=(ferryCycle-.58)/.34;
       q=1-smoothstep(a);
       moving=true;
+      travelAmount=1;
     }else{
       q=0;
+      dockSide='near';
+      dockAmount=1;
     }
 
     // Give the crossing a very shallow arc so it reads as a route,
-    // not a sprite sliding on a ruler.
-    const ferryX=nearDock.x+(farDock.x-nearDock.x)*q;
-    const ferryY=nearDock.y-2 - Math.sin(q*Math.PI)*ch*.035;
-    const ferryAngle=0;
+    // not a sprite sliding on a ruler. The route itself is unchanged.
+    let ferryX=nearDock.x+(farDock.x-nearDock.x)*q;
+    let ferryY=nearDock.y-2 - Math.sin(q*Math.PI)*ch*.035;
+    let ferryAngle=0;
 
-    // Wake expands behind the ferry while underway. It eases away as the
-    // ferry settles into either dock so the animation never looks like it
-    // suddenly cuts off at the end of a crossing.
-    if(moving && !reduceMotion){
-      const wakeFade=Math.min(1,Math.min(q,1-q)*10);
-      ctx.save();ctx.globalAlpha=.9*Math.max(.18,wakeFade);
-      ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);
-      ctx.strokeStyle='rgba(250,255,252,.9)';ctx.lineWidth=2.5;
-      for(let i=0;i<6;i++){
-        const back=54+i*15;
-        ctx.beginPath();ctx.moveTo(-back,13+i*2);ctx.quadraticCurveTo(-back-18,3+i*3,-back-42,13+i*2);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(-back,-13-i*2);ctx.quadraticCurveTo(-back-18,-3-i*3,-back-42,-13-i*2);ctx.stroke();
+    // Docking behavior is deliberately tiny: no route change, just a short
+    // settle at the terminal so the ferry looks like it has weight.
+    if(moving){
+      const edge=Math.min(q,1-q);
+      if(edge<.16){
+        docking=true;
+        dockSide=q<.5?'near':'far';
+        const a=1-Math.min(1,edge/.16);
+        dockAmount=a;
+        ferryAngle=(q<.5?1:-1)*0.012*a;
       }
-      ctx.restore();
+    }
+    if(!moving && dockAmount){
+      const bob=reduceMotion?0:Math.sin(t*1.8)*.8*dockAmount;
+      ferryY+=bob;
+      ferryAngle=reduceMotion?0:Math.sin(t*1.55)*0.0045*dockAmount;
+    }
+
+    // Wake is strongest while cruising, then naturally shortens during the
+    // final approach. At the dock, the last ripples remain briefly on the
+    // water instead of disappearing with the boat.
+    if(!reduceMotion){
+      let wakeStrength=moving?1:0;
+      if(docking) wakeStrength=Math.max(.08,dockAmount*.45);
+      if(wakeStrength>.01){
+        ctx.save();
+        ctx.globalAlpha=.78*wakeStrength;
+        ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);
+        ctx.strokeStyle='rgba(250,255,252,.82)';ctx.lineWidth=2.2;
+        const count=docking?3:6;
+        for(let i=0;i<count;i++){
+          const back=42+i*15;
+          const spread=11+i*2.1;
+          ctx.beginPath();
+          ctx.moveTo(-back,spread);
+          ctx.quadraticCurveTo(-back-18,3+i*2,-back-38,spread+2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(-back,-spread);
+          ctx.quadraticCurveTo(-back-18,-3-i*2,-back-38,-spread-2);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
     }
 
     // Premium ferry — intentionally more refined than the surrounding village.
     // It should read as an expensive private/passenger vessel, not a cartoon boat.
     ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);ctx.scale(1.04,1.04);
 
-    // Soft contact shadow on the water.
-    ctx.fillStyle='rgba(20,42,40,.18)';
-    ctx.beginPath();ctx.ellipse(0,22,80,14,0,0,Math.PI*2);ctx.fill();
+    // Soft contact shadow on the water. When docked it tightens beneath the
+    // hull rather than looking like a separate dark object floating around.
+    const shadowScale=docking?.88:1;
+    ctx.fillStyle='rgba(20,42,40,.14)';
+    ctx.beginPath();ctx.ellipse(0,22,78*shadowScale,11*shadowScale,0,0,Math.PI*2);ctx.fill();
+    if(docking && !reduceMotion){
+      ctx.strokeStyle='rgba(245,255,251,.24)';ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.ellipse(0,25,66,8,0,0,Math.PI*2);ctx.stroke();
+    }
 
     // Deep, clean hull with a subtle premium accent stripe.
     ctx.fillStyle=sceneIndex===3?'#1d3432':'#344c4b';
