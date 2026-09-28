@@ -562,11 +562,13 @@ function drawWorld(dt){
     function drawTerminal(p,far=false){
       ctx.save();ctx.translate(p.x,p.y);
       // Apron.
-      ctx.fillStyle=sceneIndex===3?'#665f52':'#8e6a4a';ctx.fillRect(-8,-28,74,56);
-      ctx.fillStyle=sceneIndex===3?'#a89b7e':'#c39a68';ctx.fillRect(-2,-23,62,46);
+      const pw=far?74:118, ph=far?56:68;
+      ctx.fillStyle=sceneIndex===3?'#665f52':'#8e6a4a';ctx.fillRect(-8,-ph/2,pw,ph);
+      ctx.fillStyle=sceneIndex===3?'#a89b7e':'#c39a68';ctx.fillRect(-2,-ph/2+5,pw-12,ph-10);
       // Loading edge / safety stripes.
-      ctx.fillStyle='#4b504b';ctx.fillRect(48,-24,10,48);
-      ctx.fillStyle='#e5bb51';for(let i=0;i<3;i++)ctx.fillRect(52,-18+i*13,5,7);
+      const edgeX=far?48:pw-18;
+      ctx.fillStyle='#4b504b';ctx.fillRect(edgeX,-ph/2+4,10,ph-8);
+      ctx.fillStyle='#e5bb51';for(let i=0;i<(far?3:4);i++)ctx.fillRect(edgeX+4,-ph/2+10+i*13,5,7);
       // Small shelter.
       ctx.fillStyle=sceneIndex===3?'#40534c':'#9f7050';ctx.fillRect(-35,-53,30,28);
       ctx.fillStyle=sceneIndex===3?'#2a403a':'#704f40';ctx.beginPath();ctx.moveTo(-40,-53);ctx.lineTo(-20,-65);ctx.lineTo(0,-53);ctx.closePath();ctx.fill();
@@ -576,8 +578,9 @@ function drawWorld(dt){
       ctx.fillStyle=sceneIndex===3?'#e1e9e3':'#f5e4bd';ctx.fillRect(-67,-28,43,17);
       ctx.fillStyle='#314942';ctx.font='800 7px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(far?'FERRY DOCK':'FERRY',-45,-17);
       // Railings and bollards.
-      ctx.strokeStyle=sceneIndex===3?'#d1dbd5':'#e9d9ba';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(4,-22);ctx.lineTo(43,-22);ctx.moveTo(4,22);ctx.lineTo(43,22);ctx.stroke();
-      ctx.fillStyle='#5a5147';[6,20,34,46].forEach(x=>{ctx.fillRect(x,-27,4,8);ctx.fillRect(x,19,4,8)});
+      const railEnd=far?43:88, railY=far?22:28;
+      ctx.strokeStyle=sceneIndex===3?'#d1dbd5':'#e9d9ba';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(4,-railY);ctx.lineTo(railEnd,-railY);ctx.moveTo(4,railY);ctx.lineTo(railEnd,railY);ctx.stroke();
+      ctx.fillStyle='#5a5147';(far?[6,20,34,46]:[6,26,46,66,86]).forEach(x=>{ctx.fillRect(x,-railY-5,4,8);ctx.fillRect(x,railY-3,4,8)});
       ctx.restore();
     }
     drawTerminal(nearDock,false);drawTerminal(farDock,true);
@@ -633,9 +636,9 @@ function drawWorld(dt){
       }
     }
     if(!moving && dockAmount){
-      const bob=reduceMotion?0:Math.sin(t*1.8)*.8*dockAmount;
+      const bob=reduceMotion?0:Math.sin(t*1.55)*.62*dockAmount;
       ferryY+=bob;
-      ferryAngle=reduceMotion?0:Math.sin(t*1.55)*0.0045*dockAmount;
+      ferryAngle=reduceMotion?0:Math.sin(t*1.25)*0.0032*dockAmount;
     }
 
     // Wake is strongest while cruising, then naturally shortens during the
@@ -646,10 +649,10 @@ function drawWorld(dt){
       if(docking) wakeStrength=Math.max(.08,dockAmount*.45);
       if(wakeStrength>.01){
         ctx.save();
-        ctx.globalAlpha=.78*wakeStrength;
+        ctx.globalAlpha=(docking?.58:.78)*wakeStrength;
         ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);
         ctx.strokeStyle='rgba(250,255,252,.82)';ctx.lineWidth=2.2;
-        const count=docking?3:6;
+        const count=docking?4:6;
         for(let i=0;i<count;i++){
           const back=42+i*15;
           const spread=11+i*2.1;
@@ -664,6 +667,18 @@ function drawWorld(dt){
         }
         ctx.restore();
       }
+    }
+
+    // Residual docking ripples: the water continues reacting after the ferry stops.
+    if(!reduceMotion && !moving && dockAmount){
+      ctx.save();
+      ctx.globalAlpha=.26+.08*Math.sin(t*1.7);
+      ctx.strokeStyle='rgba(247,255,251,.78)';ctx.lineWidth=1.25;
+      for(let r=0;r<3;r++){
+        const rx=48+r*18+Math.sin(t*1.1+r)*3;
+        ctx.beginPath();ctx.ellipse(ferryX+rx,ferryY+25+r*3,14+r*5,3.2+r*1.1,0,0,Math.PI*2);ctx.stroke();
+      }
+      ctx.restore();
     }
 
     // Premium ferry — intentionally more refined than the surrounding village.
