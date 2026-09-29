@@ -37,7 +37,7 @@ body{overflow-x:hidden}button,input,textarea{font:inherit}button{cursor:pointer}
 .fireflies i:nth-child(1){left:18%;top:63%;animation-delay:-1s}.fireflies i:nth-child(2){left:31%;top:72%;animation-delay:-3s}.fireflies i:nth-child(3){left:72%;top:65%;animation-delay:-2s}.fireflies i:nth-child(4){left:84%;top:74%;animation-delay:-4s}
 @keyframes float{to{transform:translateY(-30px);opacity:1}}
 .overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.00),rgba(255,255,255,.00) 48%,rgba(30,64,48,.05) 100%);z-index:1;pointer-events:none}
-.shell{position:relative;z-index:2;width:min(860px,calc(100% - 32px));margin:0 auto;padding:24px 0 70px}
+.shell{position:relative;z-index:2;width:min(820px,calc(100% - 32px));margin:0 auto;padding:24px 0 70px}
 header{display:flex;align-items:center;justify-content:space-between;gap:20px}
 .brand{display:flex;align-items:center;gap:12px;color:var(--text);text-decoration:none}.logo{width:42px;height:42px;border:1px solid rgba(111,175,152,.45);border-radius:14px;display:grid;place-items:center;background:rgba(111,175,152,.10);box-shadow:0 0 28px rgba(142,227,193,.08)}
 .logo:before{content:"";width:17px;height:17px;border:2px solid var(--accent);border-radius:50%;box-shadow:8px 0 0 -5px var(--accent)}
@@ -499,6 +499,143 @@ function drawWorld(dt){
 
   }
 
+  // TIER 2+: FERRY CROSSING — a recognizable piece of infrastructure in the world.
+  // The crossing lives in the lower-right open landscape so the dashboard does not
+  // completely cover it. The path ends at a terminal; it never becomes a bridge.
+  if(ferryCrossing){
+    // FERRY SCENE 2.0 — a broad horizontal crossing in the open lower-right world.
+    // The road ends at a real dock; the ferry travels left/right across the bay.
+    ctx.save();
+
+    const nearDock={x:cw*.78,y:ch*.635};
+    const farDock={x:cw*1.015,y:ch*.635};
+    const waterLeft=cw*.69, waterRight=cw*1.045;
+    const waterTop=ch*.585, waterBottom=ch*.83;
+
+    // Broad, horizontal bay. This is deliberately a real body of water,
+    // not a diagonal strip that can be mistaken for a bridge.
+    ctx.fillStyle=sceneIndex===3?'#245f69':'#42adbc';
+    ctx.beginPath();
+    ctx.moveTo(waterLeft,waterTop);
+    ctx.bezierCurveTo(cw*.78,ch*.565,cw*.91,ch*.57,waterRight,ch*.585);
+    ctx.lineTo(waterRight,waterBottom);
+    ctx.lineTo(waterLeft,waterBottom);
+    ctx.closePath();ctx.fill();
+
+    // Natural shoreline on the near side and far bank.
+    ctx.strokeStyle=sceneIndex===3?'#507b70':'#7fa16f';ctx.lineWidth=22;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(waterLeft,waterTop);ctx.bezierCurveTo(cw*.78,ch*.565,cw*.91,ch*.57,waterRight,ch*.585);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(waterLeft,ch*.83);ctx.bezierCurveTo(cw*.80,ch*.805,cw*.93,ch*.815,waterRight,ch*.825);ctx.stroke();
+
+    // Moving water lines.
+    ctx.strokeStyle=sceneIndex===3?'rgba(220,244,237,.42)':'rgba(239,255,252,.72)';ctx.lineWidth=1.7;
+    for(let i=0;i<15;i++){
+      const yy=ch*(.615+i*.014);
+      const travel=reduceMotion?0:((t*30+i*83)%220)-90;
+      const x=waterLeft+travel;
+      ctx.beginPath();ctx.moveTo(x,yy);ctx.quadraticCurveTo(x+24,yy-3,x+50,yy);ctx.quadraticCurveTo(x+78,yy+3,x+106,yy);ctx.stroke();
+    }
+
+    // Near-side road/path. It visibly stops at the near ferry terminal.
+    ctx.strokeStyle=sceneIndex===3?'#303a37':'#565a55';ctx.lineWidth=27;ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(cw*.50,ch*1.04);
+    ctx.bezierCurveTo(cw*.56,ch*.91,cw*.65,ch*.77,nearDock.x,nearDock.y);
+    ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.8)':'rgba(255,225,145,.98)';ctx.lineWidth=2.5;ctx.setLineDash([15,11]);
+    ctx.beginPath();ctx.moveTo(cw*.50,ch*1.04);ctx.bezierCurveTo(cw*.56,ch*.91,cw*.65,ch*.77,nearDock.x,nearDock.y);ctx.stroke();ctx.setLineDash([]);
+
+    // Far-side road leaves the far dock and runs toward the houses.
+    ctx.strokeStyle=sceneIndex===3?'#303a37':'#565a55';ctx.lineWidth=21;
+    ctx.beginPath();ctx.moveTo(farDock.x,farDock.y);ctx.bezierCurveTo(cw*1.01,ch*.56,cw*1.01,ch*.52,cw*1.02,ch*.46);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(246,217,139,.8)':'rgba(255,225,145,.98)';ctx.lineWidth=2.1;ctx.setLineDash([12,9]);
+    ctx.beginPath();ctx.moveTo(farDock.x,farDock.y);ctx.bezierCurveTo(cw*1.01,ch*.56,cw*1.01,ch*.52,cw*1.02,ch*.46);ctx.stroke();ctx.setLineDash([]);
+
+    // Terminal platforms: clearly side-by-side, like a real ferry crossing.
+    function drawTerminal(p,far=false){
+      ctx.save();ctx.translate(p.x,p.y);
+      // Apron.
+      ctx.fillStyle=sceneIndex===3?'#665f52':'#8e6a4a';ctx.fillRect(-8,-28,74,56);
+      ctx.fillStyle=sceneIndex===3?'#a89b7e':'#c39a68';ctx.fillRect(-2,-23,62,46);
+      // Loading edge / safety stripes.
+      ctx.fillStyle='#4b504b';ctx.fillRect(48,-24,10,48);
+      ctx.fillStyle='#e5bb51';for(let i=0;i<3;i++)ctx.fillRect(52,-18+i*13,5,7);
+      // Small shelter.
+      ctx.fillStyle=sceneIndex===3?'#40534c':'#9f7050';ctx.fillRect(-35,-53,30,28);
+      ctx.fillStyle=sceneIndex===3?'#2a403a':'#704f40';ctx.beginPath();ctx.moveTo(-40,-53);ctx.lineTo(-20,-65);ctx.lineTo(0,-53);ctx.closePath();ctx.fill();
+      ctx.fillStyle=sceneIndex===3?'#f5dfa0':'#fff0bf';ctx.fillRect(-29,-47,7,9);ctx.fillRect(-17,-47,7,9);
+      // Dock sign.
+      ctx.fillStyle='#5d5549';ctx.fillRect(-45,-13,3,24);
+      ctx.fillStyle=sceneIndex===3?'#e1e9e3':'#f5e4bd';ctx.fillRect(-67,-28,43,17);
+      ctx.fillStyle='#314942';ctx.font='800 7px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(far?'FERRY DOCK':'FERRY',-45,-17);
+      // Railings and bollards.
+      ctx.strokeStyle=sceneIndex===3?'#d1dbd5':'#e9d9ba';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(4,-22);ctx.lineTo(43,-22);ctx.moveTo(4,22);ctx.lineTo(43,22);ctx.stroke();
+      ctx.fillStyle='#5a5147';[6,20,34,46].forEach(x=>{ctx.fillRect(x,-27,4,8);ctx.fillRect(x,19,4,8)});
+      ctx.restore();
+    }
+    drawTerminal(nearDock,false);drawTerminal(farDock,true);
+
+    // Ferry animation: dock -> depart -> cross -> dock -> return.
+    const ferryCycle=(t%18)/18;
+    let q;
+    if(ferryCycle<.13)q=0;
+    else if(ferryCycle<.43){const a=(ferryCycle-.13)/.30;q=a*a*(3-2*a)}
+    else if(ferryCycle<.55)q=1;
+    else if(ferryCycle<.85){const a=(ferryCycle-.55)/.30;q=1-a*a*(3-2*a)}
+    else q=0;
+    const ferryX=nearDock.x+(farDock.x-nearDock.x)*q;
+    const ferryY=nearDock.y-2;
+    const ferryAngle=q>.5?Math.PI:0;
+    const moving=(ferryCycle>.13&&ferryCycle<.43)||(ferryCycle>.55&&ferryCycle<.85);
+
+    // Wake expands behind the ferry while underway.
+    if(moving && !reduceMotion){
+      ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);
+      ctx.strokeStyle='rgba(250,255,252,.9)';ctx.lineWidth=2.5;
+      for(let i=0;i<6;i++){
+        const back=54+i*15;
+        ctx.beginPath();ctx.moveTo(-back,13+i*2);ctx.quadraticCurveTo(-back-18,3+i*3,-back-42,13+i*2);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(-back,-13-i*2);ctx.quadraticCurveTo(-back-18,-3-i*3,-back-42,-13-i*2);ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // Large, readable ferry. Horizontal orientation makes the crossing obvious.
+    ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);ctx.scale(1.0,1.0);
+    ctx.fillStyle='rgba(24,48,45,.22)';ctx.beginPath();ctx.ellipse(0,21,76,15,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=sceneIndex===3?'#243b36':'#465b59';
+    ctx.beginPath();ctx.moveTo(-72,-4);ctx.lineTo(72,-4);ctx.lineTo(57,30);ctx.quadraticCurveTo(0,41,-57,30);ctx.closePath();ctx.fill();
+    ctx.fillStyle=sceneIndex===3?'#d6dfd8':'#f4eee1';ctx.fillRect(-58,-43,116,39);
+    ctx.fillStyle=sceneIndex===3?'#69a7a5':'#5f99a0';for(let i=0;i<7;i++)ctx.fillRect(-48+i*14,-34,10,12);
+    ctx.fillStyle=sceneIndex===3?'#465b54':'#c5bdab';ctx.fillRect(-62,-49,124,6);
+    ctx.strokeStyle=sceneIndex===3?'#e1e9e4':'#aaa99f';ctx.lineWidth=2.3;ctx.beginPath();ctx.moveTo(-66,-51);ctx.lineTo(66,-51);ctx.stroke();
+    ctx.fillStyle=sceneIndex===3?'#b7cbc4':'#e7dcc5';ctx.fillRect(-16,-63,32,14);
+    ctx.fillStyle='#ffe89e';ctx.beginPath();ctx.arc(0,-66,4.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#d85c4e';ctx.fillRect(43,-53,6,8);
+    ctx.fillStyle='#e1b34b';[-48,-24,0,24,48].forEach(x=>{ctx.beginPath();ctx.arc(x,1,4.5,0,Math.PI*2);ctx.fill()});
+    ctx.restore();
+
+    // Terminal beacons pulse subtly.
+    [nearDock,farDock].forEach((p,i)=>{
+      const pulse=reduceMotion?1:(.72+.28*Math.sin(t*3+i));
+      ctx.globalAlpha=pulse;ctx.fillStyle=i?'#79a7d0':'#71c582';ctx.beginPath();ctx.arc(p.x,p.y-67,7,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+      ctx.strokeStyle='rgba(255,248,220,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y-67,14,0,Math.PI*2);ctx.stroke();
+    });
+
+    // Small far-side houses, clearly beyond the dock rather than sitting on it.
+    const village=[[.88,.505,25],[.95,.48,29],[1.015,.515,23]];
+    village.forEach(([xp,yp,size],i)=>{
+      const x=cw*xp,y=ch*yp;
+      ctx.fillStyle=sceneIndex===3?'#2c4b43':['#956b4c','#a47451','#8b664e'][i];ctx.fillRect(x-size/2,y-size*.56,size,size*.56);
+      ctx.beginPath();ctx.moveTo(x-size*.68,y-size*.56);ctx.lineTo(x,y-size*1.03);ctx.lineTo(x+size*.68,y-size*.56);ctx.closePath();ctx.fill();
+      ctx.fillStyle=sceneIndex===3?'#ffe0a0':'#fff0bf';ctx.fillRect(x-size*.22,y-size*.33,size*.15,size*.15);ctx.fillRect(x+size*.08,y-size*.30,size*.14,size*.14);
+    });
+
+    ctx.save();ctx.font='800 9px system-ui,sans-serif';ctx.textAlign='center';ctx.fillStyle='rgba(30,48,43,.72)';
+    ctx.fillText(moving?'FERRY':'DOCK',Math.min(cw-44,farDock.x),farDock.y-80);ctx.restore();
+    ctx.restore();
+  }
+
   // TIER 3–4: the landscape starts functioning like a real place.
   // These features are deliberately large, recognizable silhouettes: roads,
   // utility poles, a developed shoreline, a dock, boats and a growing neighborhood.
@@ -560,7 +697,7 @@ function drawWorld(dt){
     }
   }
 
-  // TIER 5 — 75%: "Life takes shape." This is the first deliberately dramatic
+  // TIER 5 — 75–85%: "Life takes shape." The world becomes an established place.
   // transformation. A town, marina, traffic and a public green space appear.
   if(lifeTakesShape){
     // Larger town block in the far distance.
@@ -593,315 +730,67 @@ function drawWorld(dt){
       const q=(i*.24+t*(.012+i*.002))%1,x=cw*(.51+q*.44),y=ch*(.93-q*.19);
       ctx.save();ctx.translate(x,y);ctx.fillStyle=i%2?'#4d8493':'#c9654e';ctx.fillRect(-11,-5,22,9);ctx.fillStyle='#d9eceb';ctx.fillRect(-4,-8,9,4);ctx.fillStyle='#27322f';ctx.beginPath();ctx.arc(-7,5,2.8,0,Math.PI*2);ctx.arc(7,5,2.8,0,Math.PI*2);ctx.fill();ctx.restore();
     }
+
+    // 75–85%: the town starts feeling established rather than merely revealed.
+    // These additions are restrained: infrastructure, human presence, and a clearer waterfront connection.
+    ctx.save();
+    ctx.strokeStyle=sceneIndex===3?'rgba(211,224,215,.62)':'rgba(244,231,199,.88)';
+    ctx.lineWidth=10;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(cw*.46,ch*.79);ctx.bezierCurveTo(cw*.54,ch*.775,cw*.61,ch*.785,cw*.70,ch*.84);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(79,111,101,.8)':'rgba(116,132,104,.65)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(cw*.46,ch*.775);ctx.bezierCurveTo(cw*.54,ch*.76,cw*.62,ch*.77,cw*.70,ch*.825);ctx.stroke();
+
+    // Warm pedestrian lights along the promenade.
+    for(let i=0;i<7;i++){
+      const q=i/6,x=cw*(.48+q*.20),y=ch*(.78+q*.055);
+      ctx.strokeStyle=sceneIndex===3?'#a9c0b6':'#665b4a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-18);ctx.stroke();
+      ctx.fillStyle=sceneIndex===3?'#ffe3a0':'#f4d98c';ctx.beginPath();ctx.arc(x,y-21,3,0,Math.PI*2);ctx.fill();
+    }
+
+    // A few better-finished waterfront homes sit behind the promenade.
+    const waterfrontHomes=[[.43,.72,30],[.49,.70,38],[.55,.72,27],[.68,.70,34]];
+    waterfrontHomes.forEach(([xp,yp,size],i)=>{
+      const x=cw*xp,y=ch*yp;
+      ctx.fillStyle=sceneIndex===3?'#315149':['#a77a58','#8e7057','#b07f58','#96705a'][i];
+      ctx.fillRect(x-size*.5,y-size*.55,size,size*.55);
+      ctx.beginPath();ctx.moveTo(x-size*.64,y-size*.55);ctx.lineTo(x,y-size*.98);ctx.lineTo(x+size*.64,y-size*.55);ctx.closePath();ctx.fill();
+      ctx.fillStyle=sceneIndex===3?'#ffe2a0':'#f5e4bd';ctx.fillRect(x-size*.24,y-size*.34,size*.16,size*.16);ctx.fillRect(x+size*.08,y-size*.31,size*.14,size*.14);
+      ctx.fillStyle=sceneIndex===3?'#6fa6a0':'#6e9ca0';ctx.fillRect(x-size*.43,y-size*.23,size*.18,size*.13);
+    });
+
+    // Small community building / café.
+    const cx=cw*.385,cy=ch*.70;
+    ctx.fillStyle=sceneIndex===3?'#315048':'#8c6650';ctx.fillRect(cx-32,cy-24,64,24);
+    ctx.fillStyle=sceneIndex===3?'#d2b77a':'#d8a45e';ctx.fillRect(cx-35,cy-29,70,7);
+    ctx.fillStyle='#f4e7c4';ctx.fillRect(cx-23,cy-17,16,10);ctx.fillRect(cx+7,cy-17,16,10);
+    ctx.fillStyle='#5b766d';ctx.fillRect(cx-5,cy-19,10,19);
+
+    // Sparse pedestrians make the scale read naturally.
+    const walkers=[[.52,.795,0],[.59,.815,1],[.65,.832,2],[.47,.784,3]];
+    walkers.forEach(([xp,yp,i])=>{
+      const x=cw*xp,y=ch*yp;
+      ctx.fillStyle=sceneIndex===3?'#d4ddd7':['#4e625c','#6d5b51','#506f72','#80624f'][i];
+      ctx.beginPath();ctx.arc(x,y-7,3.1,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y-3);ctx.lineTo(x,y+7);ctx.moveTo(x,y+1);ctx.lineTo(x-4,y+5);ctx.moveTo(x,y+1);ctx.lineTo(x+4,y+5);ctx.stroke();
+    });
+
+    // Two small boats give the water believable everyday activity.
+    const boats=[[.73,.78,1],[.82,.69,0]];
+    boats.forEach(([xp,yp,i])=>{
+      const x=cw*xp+(reduceMotion?0:Math.sin(t*.18+i)*7),y=ch*yp;
+      ctx.fillStyle=sceneIndex===3?'#d5ddd8':i?'#f0e4cc':'#d7e5e0';
+      ctx.beginPath();ctx.moveTo(x-20,y);ctx.lineTo(x+19,y);ctx.lineTo(x+11,y+7);ctx.quadraticCurveTo(x,y+10,x-11,y+7);ctx.closePath();ctx.fill();
+      if(!i){ctx.strokeStyle=sceneIndex===3?'#b8c9c1':'#7c9b9b';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-25);ctx.lineTo(x+13,y-5);ctx.closePath();ctx.stroke();}
+    });
+    ctx.restore();
   }
 
   // Large framing trees: only at the edges so they don't hide the interface.
-  // IMPORTANT: these are shoreline framing elements. They are intentionally
-  // drawn BEFORE the ferry so the vessel never appears to travel underneath
-  // a foreground tree/mountain and reveal only its lower hull.
-  const edgeTrees=startingWorld?[[.05,.88,.14,.075],[.93,.95,.10,.065]]:firstSigns?[[.035,.87,.19,.10],[.13,.88,.14,.08],[.87,.95,.10,.065],[.965,.94,.13,.075]]:horizonOpens?[[.025,.87,.22,.12],[.10,.87,.19,.105],[.20,.88,.17,.09],[.79,.95,.10,.065],[.90,.94,.12,.07],[.985,.93,.14,.08]]:lifeTakesShape?[[.025,.86,.25,.14],[.11,.87,.20,.11],[.19,.87,.16,.09],[.79,.95,.10,.065],[.89,.94,.12,.07],[.985,.93,.15,.08]]:[[.045,.86,.24,.13],[.12,.87,.18,.105],[.22,.86,.14,.08],[.78,.95,.10,.065],[.90,.94,.12,.07],[.97,.93,.15,.08]];
+  const edgeTrees=startingWorld?[[.05,.88,.14,.075],[.93,.88,.14,.075]]:firstSigns?[[.035,.87,.19,.10],[.13,.88,.14,.08],[.87,.88,.15,.085],[.965,.86,.21,.12]]:horizonOpens?[[.025,.87,.22,.12],[.10,.87,.19,.105],[.20,.88,.17,.09],[.79,.87,.18,.10],[.90,.86,.24,.13],[.985,.85,.28,.15]]:lifeTakesShape?[[.025,.86,.25,.14],[.11,.87,.20,.11],[.19,.87,.16,.09],[.79,.87,.17,.09],[.89,.86,.24,.13],[.985,.85,.29,.16]]:[[.045,.86,.24,.13],[.12,.87,.18,.105],[.22,.86,.14,.08],[.78,.87,.15,.085],[.90,.86,.22,.12],[.97,.85,.27,.145]];
   edgeTrees.forEach((tr,i)=>{
     const sway=reduceMotion?0:Math.sin(t*1.7+i)*13 + Math.sin(t*.7+i)*5;
     drawTree(cw*tr[0]+sway,ch*tr[1],ch*tr[2],cw*tr[3],c.hill2,c.hill);
   });
-
-  // Ferry is deliberately rendered after the framing trees. The crossing is
-  // water, so the vessel must remain fully visible throughout the crossing.
-  // This fixes the old depth bug where later tree/mountain silhouettes covered
-  // the upper half of the ferry and left only the bottom of the hull visible.
-  // No timing change here — only the visual layer order is corrected.
-
-  // TIER 2+: FERRY CROSSING — a recognizable piece of infrastructure in the world.
-  // The crossing lives in the lower-right open landscape so the dashboard does not
-  // completely cover it. The path ends at a terminal; it never becomes a bridge.
-  if(ferryCrossing){
-    // FERRY SCENE 2.0 — a broad horizontal crossing in the open lower-right world.
-    // The road ends at a real dock; the ferry travels left/right across the bay.
-    ctx.save();
-
-    // Keep the crossing in the open right-hand landscape instead of behind
-    // the dashboard. The UI owns the center; the ferry owns the shoreline.
-    const nearDock={x:cw*.73,y:ch*.845};
-    const farDock={x:cw*.965,y:ch*.635};
-    const waterLeft=cw*.68, waterRight=cw*1.12;
-    const waterTop=ch*.59, waterBottom=ch*.98;
-
-    // Broad, horizontal bay. This is deliberately a real body of water,
-    // not a diagonal strip that can be mistaken for a bridge.
-    ctx.fillStyle=sceneIndex===3?'#245f69':'#42adbc';
-    ctx.beginPath();
-    ctx.moveTo(waterLeft,waterTop);
-    ctx.bezierCurveTo(cw*.83,ch*.615,cw*.98,ch*.62,waterRight,ch*.635);
-    ctx.lineTo(waterRight,waterBottom);
-    ctx.lineTo(waterLeft,waterBottom);
-    ctx.closePath();ctx.fill();
-
-    // Natural shoreline on the near side and far bank.
-    ctx.strokeStyle=sceneIndex===3?'#507b70':'#7fa16f';ctx.lineWidth=22;ctx.lineCap='round';
-    ctx.beginPath();ctx.moveTo(waterLeft,waterTop);ctx.bezierCurveTo(cw*.83,ch*.615,cw*.98,ch*.62,waterRight,ch*.635);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(waterLeft,ch*.90);ctx.bezierCurveTo(cw*.84,ch*.875,cw*.99,ch*.885,waterRight,ch*.895);ctx.stroke();
-
-    // Moving water lines.
-    ctx.strokeStyle=sceneIndex===3?'rgba(220,244,237,.42)':'rgba(239,255,252,.72)';ctx.lineWidth=1.7;
-    for(let i=0;i<15;i++){
-      const yy=ch*(.615+i*.014);
-      const travel=reduceMotion?0:((t*30+i*83)%220)-90;
-      const x=waterLeft+travel;
-      ctx.beginPath();ctx.moveTo(x,yy);ctx.quadraticCurveTo(x+24,yy-3,x+50,yy);ctx.quadraticCurveTo(x+78,yy+3,x+106,yy);ctx.stroke();
-    }
-
-    // A small pedestrian path approaches the near dock. No road crosses
-    // the water, so the ferry is unmistakably the connection.
-    ctx.strokeStyle=sceneIndex===3?'#7d806d':'#c7ad76';ctx.lineWidth=18;ctx.lineCap='round';
-    ctx.beginPath();
-    ctx.moveTo(cw*.64,ch*1.02);
-    ctx.bezierCurveTo(cw*.66,ch*.95,cw*.69,ch*.89,nearDock.x,nearDock.y);
-    ctx.stroke();
-    ctx.strokeStyle=sceneIndex===3?'rgba(231,216,171,.65)':'rgba(246,224,165,.82)';ctx.lineWidth=2;
-    ctx.beginPath();
-    ctx.moveTo(cw*.64,ch*1.02);
-    ctx.bezierCurveTo(cw*.66,ch*.95,cw*.69,ch*.89,nearDock.x,nearDock.y);
-    ctx.stroke();
-
-    // A quiet village path leaves the far dock toward the houses.
-    ctx.strokeStyle=sceneIndex===3?'#65776e':'#aa8a62';ctx.lineWidth=10;
-    ctx.beginPath();
-    ctx.moveTo(farDock.x,farDock.y);
-    ctx.bezierCurveTo(cw*.985,ch*.61,cw*.99,ch*.55,cw*1.00,ch*.49);
-    ctx.stroke();
-
-    // Terminal platforms: clearly side-by-side, like a real ferry crossing.
-    function drawTerminal(p,far=false){
-      ctx.save();ctx.translate(p.x,p.y);
-      // Apron.
-      const pw=far?74:118, ph=far?56:68;
-      ctx.fillStyle=sceneIndex===3?'#665f52':'#8e6a4a';ctx.fillRect(-8,-ph/2,pw,ph);
-      ctx.fillStyle=sceneIndex===3?'#a89b7e':'#c39a68';ctx.fillRect(-2,-ph/2+5,pw-12,ph-10);
-      // Loading edge / safety stripes.
-      const edgeX=far?48:pw-18;
-      ctx.fillStyle='#4b504b';ctx.fillRect(edgeX,-ph/2+4,10,ph-8);
-      ctx.fillStyle='#e5bb51';for(let i=0;i<(far?3:4);i++)ctx.fillRect(edgeX+4,-ph/2+10+i*13,5,7);
-      // Small shelter.
-      ctx.fillStyle=sceneIndex===3?'#40534c':'#9f7050';ctx.fillRect(-35,-53,30,28);
-      ctx.fillStyle=sceneIndex===3?'#2a403a':'#704f40';ctx.beginPath();ctx.moveTo(-40,-53);ctx.lineTo(-20,-65);ctx.lineTo(0,-53);ctx.closePath();ctx.fill();
-      ctx.fillStyle=sceneIndex===3?'#f5dfa0':'#fff0bf';ctx.fillRect(-29,-47,7,9);ctx.fillRect(-17,-47,7,9);
-      // Dock sign.
-      ctx.fillStyle='#5d5549';ctx.fillRect(-45,-13,3,24);
-      ctx.fillStyle=sceneIndex===3?'#e1e9e3':'#f5e4bd';ctx.fillRect(-67,-28,43,17);
-      ctx.fillStyle='#314942';ctx.font='800 7px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(far?'FERRY DOCK':'FERRY',-45,-17);
-      // Railings and bollards.
-      const railEnd=far?43:88, railY=far?22:28;
-      ctx.strokeStyle=sceneIndex===3?'#d1dbd5':'#e9d9ba';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(4,-railY);ctx.lineTo(railEnd,-railY);ctx.moveTo(4,railY);ctx.lineTo(railEnd,railY);ctx.stroke();
-      ctx.fillStyle='#5a5147';(far?[6,20,34,46]:[6,26,46,66,86]).forEach(x=>{ctx.fillRect(x,-railY-5,4,8);ctx.fillRect(x,railY-3,4,8)});
-      ctx.restore();
-    }
-    drawTerminal(nearDock,false);drawTerminal(farDock,true);
-
-    // Ferry animation: keep the exact same dock-to-dock route, but treat the
-    // final part of each crossing like an actual docking maneuver. The boat
-    // now decelerates into the dock, gives a tiny natural settle/bob, and lets
-    // its wake die behind it instead of simply snapping to a parked state.
-    // A slightly longer 24-second timetable gives the ferry a more believable
-    // service rhythm: linger at each terminal, cross deliberately, then settle
-    // before the next departure. The route itself is unchanged.
-    const ferryCycle=(t%24)/24;
-    const smoothstep=a=>a*a*(3-2*a);
-    const easeOutCubic=a=>1-Math.pow(1-a,3);
-    let q=0, moving=false, docking=false, dockSide='near', dockAmount=0, travelAmount=0;
-    if(ferryCycle<.16){
-      q=0;
-      dockSide='near';
-      dockAmount=1;
-    }else if(ferryCycle<.44){
-      const a=(ferryCycle-.16)/.28;
-      q=smoothstep(a);
-      moving=true;
-      travelAmount=1;
-    }else if(ferryCycle<.58){
-      q=1;
-      dockSide='far';
-      dockAmount=1;
-    }else if(ferryCycle<.86){
-      const a=(ferryCycle-.58)/.28;
-      q=1-smoothstep(a);
-      moving=true;
-      travelAmount=1;
-    }else{
-      q=0;
-      dockSide='near';
-      dockAmount=1;
-    }
-
-    // Give the crossing a very shallow arc so it reads as a route,
-    // not a sprite sliding on a ruler. The route itself is unchanged.
-    let ferryX=nearDock.x+(farDock.x-nearDock.x)*q;
-    let ferryY=nearDock.y-2 - Math.sin(q*Math.PI)*ch*.035;
-    let ferryAngle=0;
-
-    // Keep the ferry's final position exactly on the terminal centerline.
-    // This prevents accumulated easing/rounding from carrying the hull toward
-    // the hillside at the end of a crossing.
-    if(!moving){
-      ferryX=dockSide==='far'?farDock.x:nearDock.x;
-      ferryY=(dockSide==='far'?farDock.y:nearDock.y)-2;
-    }
-
-    // Docking behavior is deliberately tiny: no route change, just a short
-    // settle at the terminal so the ferry looks like it has weight.
-    if(moving){
-      const edge=Math.min(q,1-q);
-      if(edge<.16){
-        docking=true;
-        dockSide=q<.5?'near':'far';
-        const a=1-Math.min(1,edge/.16);
-        dockAmount=a;
-        ferryAngle=(q<.5?1:-1)*0.012*a;
-      }
-    }
-    if(!moving && dockAmount){
-      const bob=reduceMotion?0:Math.sin(t*1.55)*.62*dockAmount;
-      ferryY+=bob;
-      ferryAngle=reduceMotion?0:Math.sin(t*1.25)*0.0032*dockAmount;
-    }
-
-    // Wake is strongest while cruising, then naturally shortens during the
-    // final approach. At the dock, the last ripples remain briefly on the
-    // water instead of disappearing with the boat.
-    if(!reduceMotion){
-      let wakeStrength=moving?1:0;
-      if(docking) wakeStrength=Math.max(.08,dockAmount*.45);
-      if(wakeStrength>.01){
-        ctx.save();
-        ctx.globalAlpha=(docking?.58:.78)*wakeStrength;
-        ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);
-        ctx.strokeStyle='rgba(250,255,252,.82)';ctx.lineWidth=2.2;
-        const count=docking?4:6;
-        for(let i=0;i<count;i++){
-          const back=42+i*15;
-          const spread=11+i*2.1;
-          ctx.beginPath();
-          ctx.moveTo(-back,spread);
-          ctx.quadraticCurveTo(-back-18,3+i*2,-back-38,spread+2);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(-back,-spread);
-          ctx.quadraticCurveTo(-back-18,-3-i*2,-back-38,-spread-2);
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-    }
-
-    // Residual docking ripples: the water continues reacting after the ferry stops.
-    if(!reduceMotion && !moving && dockAmount){
-      ctx.save();
-      ctx.globalAlpha=.26+.08*Math.sin(t*1.7);
-      ctx.strokeStyle='rgba(247,255,251,.78)';ctx.lineWidth=1.25;
-      for(let r=0;r<3;r++){
-        const rx=48+r*18+Math.sin(t*1.1+r)*3;
-        ctx.beginPath();ctx.ellipse(ferryX+rx,ferryY+25+r*3,14+r*5,3.2+r*1.1,0,0,Math.PI*2);ctx.stroke();
-      }
-      ctx.restore();
-    }
-
-    // Premium ferry — intentionally more refined than the surrounding village.
-    // It should read as an expensive private/passenger vessel, not a cartoon boat.
-    ctx.save();ctx.translate(ferryX,ferryY);ctx.rotate(ferryAngle);ctx.scale(1.04,1.04);
-
-    // Soft contact shadow on the water. When docked it tightens beneath the
-    // hull rather than looking like a separate dark object floating around.
-    const shadowScale=docking?.88:1;
-    ctx.fillStyle='rgba(20,42,40,.14)';
-    ctx.beginPath();ctx.ellipse(0,22,78*shadowScale,11*shadowScale,0,0,Math.PI*2);ctx.fill();
-    if(docking && !reduceMotion){
-      ctx.strokeStyle='rgba(245,255,251,.24)';ctx.lineWidth=1.2;
-      ctx.beginPath();ctx.ellipse(0,25,66,8,0,0,Math.PI*2);ctx.stroke();
-    }
-
-    // Deep, clean hull with a subtle premium accent stripe.
-    ctx.fillStyle=sceneIndex===3?'#1d3432':'#344c4b';
-    ctx.beginPath();ctx.moveTo(-76,-5);ctx.lineTo(76,-5);ctx.lineTo(61,27);
-    ctx.quadraticCurveTo(44,39,0,41);ctx.quadraticCurveTo(-44,39,-61,27);ctx.closePath();ctx.fill();
-    ctx.fillStyle=sceneIndex===3?'#c9a85a':'#caa85c';
-    ctx.fillRect(-62,8,124,3);
-    ctx.fillStyle=sceneIndex===3?'#edf1eb':'#f2eadb';
-    ctx.fillRect(-58,12,116,5);
-
-    // Main passenger deck: warm ivory body, dark glass, restrained trim.
-    ctx.fillStyle=sceneIndex===3?'#d8e0d9':'#f5f0e5';
-    ctx.fillRect(-58,-43,116,38);
-    ctx.fillStyle=sceneIndex===3?'#294744':'#466a6d';
-    ctx.fillRect(-49,-35,98,17);
-
-    // Individual tinted windows, with a little depth instead of flat blocks.
-    for(let i=0;i<7;i++){
-      const x=-44+i*14;
-      ctx.fillStyle=sceneIndex===3?'#5d8e8d':'#65979c';
-      ctx.fillRect(x,-33,9,11);
-      ctx.strokeStyle='rgba(239,248,243,.34)';ctx.lineWidth=1;
-      ctx.strokeRect(x+.5,-32.5,8,10);
-    }
-
-    // Upper lounge/cabin: a small luxury silhouette with panoramic front glass.
-    ctx.fillStyle=sceneIndex===3?'#bfcfc8':'#ddd7c9';
-    ctx.fillRect(-30,-58,60,15);
-    ctx.fillStyle=sceneIndex===3?'#3f6664':'#547b7d';
-    ctx.fillRect(-22,-55,44,9);
-    ctx.fillStyle=sceneIndex===3?'#dfe8e2':'#f3eee1';
-    ctx.fillRect(-31,-61,62,4);
-
-    // Slim roof canopy and premium mast.
-    ctx.fillStyle=sceneIndex===3?'#203a37':'#334b49';
-    ctx.fillRect(-34,-65,68,4);
-    ctx.strokeStyle=sceneIndex===3?'#d5dfd9':'#b99d63';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(0,-65);ctx.lineTo(0,-76);ctx.stroke();
-    ctx.fillStyle='#e8c86b';ctx.beginPath();ctx.arc(0,-78,2.7,0,Math.PI*2);ctx.fill();
-
-    // Tiny people on the upper deck — enough to imply exclusivity without clutter.
-    const people=[[-17,-61],[2,-61],[17,-61]];
-    people.forEach(([px,py],i)=>{
-      ctx.fillStyle=i===1?'#7f5d48':'#344c49';
-      ctx.beginPath();ctx.arc(px,py-1.8,2.1,0,Math.PI*2);ctx.fill();
-      ctx.fillRect(px-1.5,py,3,5);
-    });
-
-    // Small destination/name plaque. It feels like a real premium ferry operator.
-    ctx.fillStyle=sceneIndex===3?'#e8d8a9':'#e6d2a5';
-    ctx.fillRect(-18,-45,36,6);
-    ctx.fillStyle='#314742';ctx.font='800 4.8px system-ui,sans-serif';ctx.textAlign='center';
-    ctx.fillText('WHEREFITS',0,-40.5);
-
-    // Navigation lights and warm deck lights.
-    ctx.fillStyle='#d85c4e';ctx.fillRect(45,-53,5,7);
-    ctx.fillStyle='#f4d277';[-46,-23,0,23,46].forEach(x=>{
-      ctx.beginPath();ctx.arc(x,2,3.7,0,Math.PI*2);ctx.fill();
-    });
-
-    // Bow detail: a restrained chrome/gold rail makes the silhouette feel finished.
-    ctx.strokeStyle=sceneIndex===3?'#d6ddd8':'#c7b58b';ctx.lineWidth=1.8;
-    ctx.beginPath();ctx.moveTo(-66,-7);ctx.lineTo(-73,5);ctx.lineTo(-61,16);ctx.stroke();
-    ctx.restore();
-    // Terminal beacons pulse subtly.
-    [nearDock,farDock].forEach((p,i)=>{
-      const pulse=reduceMotion?1:(.72+.28*Math.sin(t*3+i));
-      ctx.globalAlpha=pulse;ctx.fillStyle=i?'#79a7d0':'#71c582';ctx.beginPath();ctx.arc(p.x,p.y-67,7,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
-      ctx.strokeStyle='rgba(255,248,220,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y-67,14,0,Math.PI*2);ctx.stroke();
-    });
-
-    // Small far-side houses, clearly beyond the dock rather than sitting on it.
-    const village=[[.91,.485,25],[.975,.455,29],[1.04,.50,23]];
-    village.forEach(([xp,yp,size],i)=>{
-      const x=cw*xp,y=ch*yp;
-      ctx.fillStyle=sceneIndex===3?'#2c4b43':['#956b4c','#a47451','#8b664e'][i];ctx.fillRect(x-size/2,y-size*.56,size,size*.56);
-      ctx.beginPath();ctx.moveTo(x-size*.68,y-size*.56);ctx.lineTo(x,y-size*1.03);ctx.lineTo(x+size*.68,y-size*.56);ctx.closePath();ctx.fill();
-      ctx.fillStyle=sceneIndex===3?'#ffe0a0':'#fff0bf';ctx.fillRect(x-size*.22,y-size*.33,size*.15,size*.15);ctx.fillRect(x+size*.08,y-size*.30,size*.14,size*.14);
-    });
-
-    ctx.save();ctx.font='800 9px system-ui,sans-serif';ctx.textAlign='center';ctx.fillStyle='rgba(30,48,43,.72)';
-    ctx.fillText(moving?'FERRY':'DOCK',Math.min(cw-46,farDock.x-6),farDock.y-76);ctx.restore();
-    ctx.restore();
-  }
-
 
   // A few distant trees along the horizon.
   for(let i=0;i<(startingWorld?7:firstSigns?11:horizonOpens?26:growingWorld?34:18);i++){
@@ -951,7 +840,7 @@ document.getElementById("worldMotion").addEventListener("click",e=>{
   e.currentTarget.textContent=worldPaused?"Resume world":"Pause world";
   if(!worldPaused){last=performance.now();frame(last);}
 });
-// Keep the world anchored to the viewport; pointer parallax made scrolling feel like the landscape was shifting.
+if(!reduceMotion){window.addEventListener("pointermove",e=>{const px=(e.clientX/cw-.5)*2,py=(e.clientY/ch-.5)*2;canvas.style.transform=`translate(${px*-2}px,${py*-1}px) scale(1.004)`})}
 window.addEventListener("resize",resizeCanvas);
 resizeCanvas();setScene();frame(performance.now());
 document.querySelectorAll(".nav-btn").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));btn.classList.add("active")}));
