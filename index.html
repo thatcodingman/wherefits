@@ -65,6 +65,7 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 @media(min-width:900px){.shell{width:min(820px,calc(100% - 44px))}.dashboard{gap:18px}.card{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}}
 @media(max-width:760px){.shell{width:min(100% - 24px,860px)}.dashboard{grid-template-columns:1fr}.card{background:rgba(255,254,249,.78)}}
 </style>
+<!-- 85-95% town center: buildings spread along a shallow street with more breathing room. -->
 </head>
 <body>
 <div id="world" aria-hidden="true"><canvas id="worldCanvas"></canvas><div class="world-ui-layer"></div><div class="world-badge" id="worldBadge">Your world · first signs</div></div><div class="overlay"></div>
@@ -904,9 +905,9 @@ function drawWorld(dt){
     ctx.save();
     const centerNight=sceneIndex===3;
     const centerBuildings=[
-      {x:.815,y:.535,w:48,h:34,body:centerNight?'#35514a':'#ad7458',roof:centerNight?'#263f3a':'#56645d',sign:'CAFE'},
-      {x:.875,y:.515,w:56,h:40,body:centerNight?'#3b574f':'#b39a70',roof:centerNight?'#29423d':'#53615b',sign:'MARKET'},
-      {x:.945,y:.535,w:48,h:34,body:centerNight?'#36534c':'#78958a',roof:centerNight?'#283f3a':'#4e5e59',sign:'HALL'}
+      {x:.785,y:.545,w:48,h:34,body:centerNight?'#35514a':'#ad7458',roof:centerNight?'#263f3a':'#56645d',sign:'CAFE'},
+      {x:.855,y:.525,w:56,h:40,body:centerNight?'#3b574f':'#b39a70',roof:centerNight?'#29423d':'#53615b',sign:'MARKET'},
+      {x:.935,y:.545,w:48,h:34,body:centerNight?'#36534c':'#78958a',roof:centerNight?'#283f3a':'#4e5e59',sign:'HALL'}
     ];
     centerBuildings.forEach((b,i)=>{
       const x=cw*b.x,y=ch*b.y;
@@ -923,13 +924,13 @@ function drawWorld(dt){
     });
     // Small town square between the buildings.
     ctx.fillStyle=centerNight?'rgba(74,104,91,.72)':'rgba(132,151,122,.76)';
-    ctx.beginPath();ctx.ellipse(cw*.878,ch*.575,cw*.055,ch*.025,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(cw*.855,ch*.595,cw*.042,ch*.022,0,0,Math.PI*2);ctx.fill();
     ctx.strokeStyle=centerNight?'rgba(215,218,194,.45)':'rgba(245,232,195,.8)';ctx.lineWidth=3;
-    ctx.beginPath();ctx.ellipse(cw*.878,ch*.575,cw*.038,ch*.017,0,0,Math.PI*2);ctx.stroke();
+    ctx.beginPath();ctx.ellipse(cw*.855,ch*.595,cw*.028,ch*.012,0,0,Math.PI*2);ctx.stroke();
     // A tiny civic marker makes this read as a town center.
     ctx.strokeStyle=centerNight?'#bac8bd':'#6e6f63';ctx.lineWidth=2.5;
-    ctx.beginPath();ctx.moveTo(cw*.878,ch*.575);ctx.lineTo(cw*.878,ch*.535);ctx.stroke();
-    ctx.fillStyle=centerNight?'#d9e0d8':'#d7c38f';ctx.beginPath();ctx.arc(cw*.878,ch*.53,5,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.moveTo(cw*.855,ch*.595);ctx.lineTo(cw*.855,ch*.555);ctx.stroke();
+    ctx.fillStyle=centerNight?'#d9e0d8':'#d7c38f';ctx.beginPath();ctx.arc(cw*.855,ch*.55,5,0,Math.PI*2);ctx.fill();
     ctx.restore();
 
     // A clean secondary street connects the hillside neighborhood to the town.
@@ -967,7 +968,7 @@ function drawWorld(dt){
 
     // Street lamps along the new connection make the town feel inhabited after sunset.
     const lamps=[
-      [.67,.575],[.72,.60],[.77,.625],[.82,.60],[.88,.595],[.94,.60]
+      [.72,.605],[.76,.585],[.80,.605],[.84,.575],[.89,.595],[.94,.605]
     ];
     lamps.forEach(([xp,yp],i)=>{
       const x=cw*xp,y=ch*yp;ctx.save();
@@ -993,7 +994,7 @@ function drawWorld(dt){
     ctx.restore();
 
     // Two parked cars sit beside the town center, clearly on the road shoulder.
-    [[.835,.555,'#4d8493'],[.925,.555,'#c9654e']].forEach(([xp,yp,col])=>{
+    [[.815,.595,'#4d8493'],[.925,.595,'#c9654e']].forEach(([xp,yp,col])=>{
       const x=cw*xp,y=ch*yp;ctx.save();ctx.translate(x,y);ctx.rotate(-0.06);
       ctx.fillStyle=col;ctx.fillRect(-10,-4.5,20,9);
       ctx.fillStyle='#d9eceb';ctx.fillRect(-4,-7.5,8,4);
@@ -1002,7 +1003,7 @@ function drawWorld(dt){
 
     // Sparse pedestrians around the town center. Their movement is subtle and local.
     const walkers=[
-      [.37,.595,.55],[.45,.61,-.35],[.53,.595,.25],[.61,.615,-.45],[.68,.60,.35]
+      [.76,.615,.55],[.80,.595,-.35],[.85,.615,.25],[.90,.595,-.45],[.95,.615,.35]
     ];
     walkers.forEach(([xp,yp,dir],i)=>{
       const x=cw*xp+Math.sin(t*.7+i)*5,y=ch*yp+Math.cos(t*.9+i)*2;
