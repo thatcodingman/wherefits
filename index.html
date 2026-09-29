@@ -760,11 +760,13 @@ function drawWorld(dt){
         ctx.fillStyle=night?'#ffe5a2':'#e8d49d';ctx.beginPath();ctx.arc(x-size*.34,y-size*.27,2,0,Math.PI*2);ctx.arc(x+size*.36,y-size*.31,2,0,Math.PI*2);ctx.fill();
         ctx.restore();
       });
-      // Additional luxury homes fill out the neighborhood without making it feel crowded.
-      // These sit at slightly different depths and scales so the shoreline reads as a real community.
+      // Additional luxury homes fill out the neighborhood. These are intentionally
+      // larger and placed on the visible right-side hillside so the upgrade is obvious
+      // through the glass UI instead of disappearing into the distant background.
       const moreHomes=[
-        [.735,.555,29,1],[.765,.535,25,0],[.805,.545,27,2],[.855,.535,30,1],
-        [.905,.545,27,0],[.94,.525,25,2],[.975,.55,28,1],[.995,.59,23,0]
+        [.695,.545,38,1],[.745,.515,44,0],[.795,.535,40,2],[.845,.505,47,1],
+        [.895,.525,42,0],[.945,.495,45,2],[.985,.525,39,1],
+        [.72,.605,34,0],[.775,.585,37,2],[.835,.595,35,1],[.895,.575,39,0],[.95,.585,34,2]
       ];
       moreHomes.forEach(([xp,yp,size,style],i)=>{
         const x=cw*xp,y=ch*yp,night=sceneIndex===3;
@@ -773,28 +775,66 @@ function drawWorld(dt){
         const glass=night?'#ffe0a0':'#789da0';
         const trim=night?'#d8dfd9':'#eee6d6';
         ctx.save();
-        ctx.fillStyle='rgba(25,48,43,.12)';ctx.beginPath();ctx.ellipse(x,y+2,size*.66,4,0,0,Math.PI*2);ctx.fill();
-        // Compact modern villa mass.
-        ctx.fillStyle=body;ctx.fillRect(x-size*.50,y-size*.53,size,size*.53);
+        // Ground plane makes these read as houses sitting on the hillside.
+        ctx.fillStyle='rgba(25,48,43,.13)';ctx.beginPath();ctx.ellipse(x,y+3,size*.72,5,0,0,Math.PI*2);ctx.fill();
+        // Main modern two-story villa.
+        ctx.fillStyle=body;ctx.fillRect(x-size*.52,y-size*.55,size*1.04,size*.55);
         const shift=style===1?-size*.08:style===2?size*.06:0;
-        ctx.fillRect(x-size*.24+shift,y-size*.82,size*.52,size*.29);
-        ctx.fillStyle=roof;ctx.fillRect(x-size*.30+shift,y-size*.87,size*.62,3);
-        ctx.fillRect(x-size*.53,y-size*.57,size*1.06,3);
-        // Glass frontage.
-        ctx.fillStyle=glass;ctx.fillRect(x-size*.40,y-size*.45,size*.23,size*.26);
-        ctx.fillRect(x-size*.12,y-size*.45,size*.37,size*.26);
-        ctx.strokeStyle='rgba(241,246,242,.52)';ctx.lineWidth=1;
-        ctx.beginPath();ctx.moveTo(x-size*.285,y-size*.45);ctx.lineTo(x-size*.285,y-size*.19);ctx.moveTo(x+size*.06,y-size*.45);ctx.lineTo(x+size*.06,y-size*.19);ctx.stroke();
-        // Small upper windows.
-        ctx.fillStyle=glass;ctx.fillRect(x-size*.13+shift,y-size*.75,size*.18,size*.14);ctx.fillRect(x+size*.10+shift,y-size*.75,size*.16,size*.14);
-        // Terrace and rail.
-        ctx.fillStyle=trim;ctx.fillRect(x+size*.01,y-size*.57,size*.40,3);
-        ctx.strokeStyle=trim;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+size*.02,y-size*.57);ctx.lineTo(x+size*.40,y-size*.57);ctx.moveTo(x+size*.08,y-size*.57);ctx.lineTo(x+size*.08,y-size*.46);ctx.moveTo(x+size*.20,y-size*.57);ctx.lineTo(x+size*.20,y-size*.46);ctx.moveTo(x+size*.32,y-size*.57);ctx.lineTo(x+size*.32,y-size*.46);ctx.stroke();
-        // Entry, garage and landscaping.
-        ctx.fillStyle=night?'#29423d':'#72766f';ctx.fillRect(x-size*.43,y-size*.18,size*.13,size*.18);
-        ctx.fillStyle=night?'#b9c7c0':'#d9d4c7';ctx.fillRect(x+size*.22,y-size*.23,size*.22,size*.23);
-        ctx.fillStyle=night?'#355a4d':'#608368';ctx.beginPath();ctx.arc(x-size*.58,y-2,4,0,Math.PI*2);ctx.arc(x-size*.49,y-3,5,0,Math.PI*2);ctx.arc(x+size*.53,y-3,5,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle=night?'#ffe5a2':'#e8d49d';ctx.beginPath();ctx.arc(x-size*.31,y-size*.27,1.7,0,Math.PI*2);ctx.arc(x+size*.32,y-size*.29,1.7,0,Math.PI*2);ctx.fill();
+        ctx.fillRect(x-size*.24+shift,y-size*.84,size*.54,size*.31);
+        // Low roof + deep overhang.
+        ctx.fillStyle=roof;ctx.fillRect(x-size*.30+shift,y-size*.89,size*.64,4);
+        ctx.fillRect(x-size*.55,y-size*.58,size*1.10,4);
+        // Floor-to-ceiling glass frontage.
+        ctx.fillStyle=glass;ctx.fillRect(x-size*.43,y-size*.46,size*.25,size*.27);
+        ctx.fillRect(x-size*.12,y-size*.46,size*.42,size*.27);
+        ctx.strokeStyle='rgba(241,246,242,.54)';ctx.lineWidth=1.1;
+        ctx.beginPath();
+        ctx.moveTo(x-size*.305,y-size*.46);ctx.lineTo(x-size*.305,y-size*.19);
+        ctx.moveTo(x+size*.09,y-size*.46);ctx.lineTo(x+size*.09,y-size*.19);
+        ctx.moveTo(x-size*.43,y-size*.32);ctx.lineTo(x-size*.18,y-size*.32);
+        ctx.stroke();
+        // Upper windows.
+        ctx.fillStyle=glass;ctx.fillRect(x-size*.13+shift,y-size*.77,size*.18,size*.14);ctx.fillRect(x+size*.10+shift,y-size*.77,size*.17,size*.14);
+        // Large terrace/balcony.
+        ctx.fillStyle=trim;ctx.fillRect(x+size*.00,y-size*.58,size*.45,3);
+        ctx.strokeStyle=trim;ctx.lineWidth=1.2;ctx.beginPath();
+        ctx.moveTo(x+size*.01,y-size*.58);ctx.lineTo(x+size*.44,y-size*.58);
+        ctx.moveTo(x+size*.07,y-size*.58);ctx.lineTo(x+size*.07,y-size*.45);
+        ctx.moveTo(x+size*.18,y-size*.58);ctx.lineTo(x+size*.18,y-size*.45);
+        ctx.moveTo(x+size*.29,y-size*.58);ctx.lineTo(x+size*.29,y-size*.45);
+        ctx.moveTo(x+size*.40,y-size*.58);ctx.lineTo(x+size*.40,y-size*.45);ctx.stroke();
+        // Entry + garage.
+        ctx.fillStyle=night?'#29423d':'#72766f';ctx.fillRect(x-size*.44,y-size*.18,size*.13,size*.18);
+        ctx.fillStyle=night?'#b9c7c0':'#d9d4c7';ctx.fillRect(x+size*.22,y-size*.23,size*.23,size*.23);
+        // Landscaping and a small ornamental tree.
+        ctx.fillStyle=night?'#355a4d':'#608368';
+        ctx.beginPath();ctx.arc(x-size*.61,y-2,5,0,Math.PI*2);ctx.arc(x-size*.51,y-3,6,0,Math.PI*2);ctx.arc(x+size*.55,y-3,6,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle=night?'#3b6252':'#6d8d6c';ctx.beginPath();ctx.arc(x+size*.66,y-size*.22,7,0,Math.PI*2);ctx.fill();ctx.fillRect(x+size*.645,y-size*.10,3,size*.13);
+        // Warm exterior lights.
+        ctx.fillStyle=night?'#ffe5a2':'#e8d49d';ctx.beginPath();ctx.arc(x-size*.31,y-size*.27,2,0,Math.PI*2);ctx.arc(x+size*.34,y-size*.29,2,0,Math.PI*2);ctx.fill();
+        ctx.restore();
+      });
+
+      // A few signature hillside estates sit farther back, larger than the old cabins
+      // so the neighborhood visibly reads as upscale from the main dashboard view.
+      const estates=[
+        [.77,.475,50,0],[.865,.455,55,1],[.96,.47,48,2]
+      ];
+      estates.forEach(([xp,yp,size,style])=>{
+        const x=cw*xp,y=ch*yp,night=sceneIndex===3;
+        ctx.save();
+        ctx.fillStyle='rgba(25,48,43,.12)';ctx.beginPath();ctx.ellipse(x,y+3,size*.76,5,0,0,Math.PI*2);ctx.fill();
+        const body=night?'#2f4b45':['#d0c4ae','#bfc8bf','#cfb493'][style];
+        const roof=night?'#243b36':['#4d5d57','#56635e','#625f56'][style];
+        const glass=night?'#ffe2a0':'#73979b';
+        ctx.fillStyle=body;ctx.fillRect(x-size*.55,y-size*.53,size*1.10,size*.53);
+        ctx.fillStyle=roof;ctx.fillRect(x-size*.59,y-size*.58,size*1.18,5);
+        ctx.fillRect(x-size*.27,y-size*.84,size*.62,4);
+        ctx.fillStyle=glass;ctx.fillRect(x-size*.45,y-size*.45,size*.30,size*.27);ctx.fillRect(x-size*.08,y-size*.45,size*.40,size*.27);
+        ctx.fillStyle=night?'#d8dfd9':'#eee6d6';ctx.fillRect(x+size*.03,y-size*.59,size*.43,3);
+        ctx.strokeStyle=night?'#d8dfd9':'#eee6d6';ctx.lineWidth=1.1;ctx.beginPath();ctx.moveTo(x+size*.04,y-size*.59);ctx.lineTo(x+size*.44,y-size*.59);ctx.moveTo(x+size*.10,y-size*.59);ctx.lineTo(x+size*.10,y-size*.46);ctx.moveTo(x+size*.22,y-size*.59);ctx.lineTo(x+size*.22,y-size*.46);ctx.moveTo(x+size*.34,y-size*.59);ctx.lineTo(x+size*.34,y-size*.46);ctx.stroke();
+        ctx.fillStyle=night?'#355a4d':'#66876b';ctx.beginPath();ctx.arc(x-size*.65,y-2,6,0,Math.PI*2);ctx.arc(x+size*.62,y-3,7,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle=night?'#ffe5a2':'#e8d49d';ctx.beginPath();ctx.arc(x-size*.34,y-size*.27,2.2,0,Math.PI*2);ctx.arc(x+size*.35,y-size*.29,2.2,0,Math.PI*2);ctx.fill();
         ctx.restore();
       });
 
