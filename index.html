@@ -692,7 +692,7 @@ function drawWorld(dt){
     ctx.beginPath();ctx.moveTo(cw*.74,ch*.55);ctx.quadraticCurveTo(cw*.84,ch*.51,cw*.965,ch*.55);ctx.stroke();
     ctx.restore();
 
-    if(establishedWorld && worldProgress>=82){
+    if(establishedWorld){
       // A real dock projects into the lake from the developed shoreline.
       const dockX=cw*.73, dockY=ch*.755;
       ctx.save();
