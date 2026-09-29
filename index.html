@@ -80,7 +80,7 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 <div class="move" data-move="2"><button class="check" aria-label="Complete move">✓</button><div><div class="move-title">Research one neighborhood you could live in</div><div class="move-meta">Home · 15 minutes</div></div><span class="tag">TODAY</span></div>
 <div class="move" data-move="3"><button class="check" aria-label="Complete move">✓</button><div><div class="move-title">Write down one thing you want from your next job</div><div class="move-meta">Career · 5 minutes</div></div><span class="tag">TODAY</span></div>
 </div><div class="quote">You don't have to change your whole life today. <strong>Just make the next useful move.</strong></div></div>
-<div class="card pad"><div class="card-head"><div><div class="kicker">Current goal</div><h2>Move toward a new chapter</h2></div></div><div class="goal-visual"><div class="ring"><strong>80%</strong></div><div class="goal-copy">$5,820 of $8,000 moving fund</div></div><div class="statline"><span>Progress</span><b>$5,820 / $8,000</b></div><div class="progress"><i></i></div><div class="statline"><span>Milestones</span><b>3 of 5</b></div></div>
+<div class="card pad"><div class="card-head"><div><div class="kicker">Current goal</div><h2>Move toward a new chapter</h2></div></div><div class="goal-visual"><div class="ring"><strong>90%</strong></div><div class="goal-copy">$7,200 of $8,000 moving fund</div></div><div class="statline"><span>Progress</span><b>$7,200 / $8,000</b></div><div class="progress"><i style="width:90%"></i></div><div class="statline"><span>Milestones</span><b>4 of 5</b></div></div>
 <div class="card pad journal"><div class="card-head"><div><div class="kicker">Journal</div><h2>What's on your mind?</h2></div><div class="date">Today</div></div><textarea id="journal" placeholder="Write a few words about today..."></textarea><div class="mini-row"><button class="primary" id="saveJournal">Save entry</button><span class="saved" id="saved">Saved locally</span></div></div>
 <div class="card pad"><div class="card-head"><div><div class="kicker">Journey</div><h2>Keep building</h2></div></div><div class="statline"><span>Today's moves</span><b id="moveCount">0 / 3</b></div><div class="progress"><i id="moveProgress" style="width:0%"></i></div><div class="statline"><span>Current streak</span><b>1 day</b></div><div class="quote">When life gets messy, your plan doesn't disappear. Come back, adjust, and keep going.</div></div>
 </section>
@@ -107,7 +107,9 @@ let cw=0,ch=0,dpr=1,worldTime=0,progressMoves=0;
 // can replace state.worldProgress with the same percentage from the user's goals.
 const demoProgressParam=new URLSearchParams(location.search).get("progress");
 const parsedDemoProgress=demoProgressParam===null?NaN:Number(demoProgressParam);
-const worldProgress=Math.min(100,Math.max(0,Number.isFinite(parsedDemoProgress)?parsedDemoProgress:(Number.isFinite(Number(state.worldProgress))?Number(state.worldProgress):80)));
+// This build is the 85–95% visual preview. Keep the URL override so the same file can still be tested at any percentage.
+const previewDefaultProgress=90;
+const worldProgress=Math.min(100,Math.max(0,Number.isFinite(parsedDemoProgress)?parsedDemoProgress:previewDefaultProgress));
 function getWorldTier(p){if(p>=100)return 7;if(p>=90)return 6;if(p>=75)return 5;if(p>=60)return 4;if(p>=40)return 3;if(p>=25)return 2;if(p>=10)return 1;return 0;}
 const worldTier=getWorldTier(worldProgress);
 const tier1=worldTier>=1;
@@ -874,10 +876,139 @@ function drawWorld(dt){
     const sx=cw*(.61+Math.sin(t*.03)*.02),sy=ch*.835;ctx.fillStyle='#eee8d5';ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx,sy-38);ctx.lineTo(sx+25,sy-5);ctx.closePath();ctx.fill();ctx.fillStyle='#7c6451';ctx.beginPath();ctx.moveTo(sx-18,sy);ctx.lineTo(sx+20,sy);ctx.lineTo(sx+11,sy+9);ctx.lineTo(sx-12,sy+9);ctx.closePath();ctx.fill();ctx.restore();
 
     // More traffic makes the road feel used rather than decorative.
+    // Keep every car on the actual near-side road curve; the old version
+    // let cars drift into the lake because its x/y interpolation did not
+    // follow the road geometry.
     for(let i=0;i<4;i++){
-      const q=(i*.24+t*(.012+i*.002))%1,x=cw*(.51+q*.44),y=ch*(.93-q*.19);
-      ctx.save();ctx.translate(x,y);ctx.fillStyle=i%2?'#4d8493':'#c9654e';ctx.fillRect(-11,-5,22,9);ctx.fillStyle='#d9eceb';ctx.fillRect(-4,-8,9,4);ctx.fillStyle='#27322f';ctx.beginPath();ctx.arc(-7,5,2.8,0,Math.PI*2);ctx.arc(7,5,2.8,0,Math.PI*2);ctx.fill();ctx.restore();
+      const q=(i*.24+t*(.012+i*.002))%1;
+      const x=cw*(.50+q*.28);
+      const y=ch*(1.00-q*.365+Math.sin(q*Math.PI)*.012);
+      ctx.save();ctx.translate(x,y);
+      ctx.rotate(-0.58+q*.16);
+      ctx.fillStyle=i%2?'#4d8493':'#c9654e';ctx.fillRect(-11,-5,22,9);
+      ctx.fillStyle='#d9eceb';ctx.fillRect(-4,-8,9,4);
+      ctx.fillStyle='#27322f';ctx.beginPath();ctx.arc(-7,5,2.8,0,Math.PI*2);ctx.arc(7,5,2.8,0,Math.PI*2);ctx.fill();
+      ctx.restore();
     }
+  }
+
+  // TIER 6 — 90%: "Thriving." The destination is now a functioning town,
+  // not just a collection of houses. Build outward from the locked 80% world:
+  // connected streets, small businesses, people, lighting, mature landscaping,
+  // and a more active waterfront. The mountains, lake, ferry, plane and existing
+  // homes remain untouched.
+  if(tier6){
+    // A clean secondary street connects the hillside neighborhood to the town.
+    ctx.save();
+    ctx.strokeStyle=sceneIndex===3?'#303c38':'#565b56';ctx.lineWidth=18;ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(cw*.77,ch*.64);
+    ctx.bezierCurveTo(cw*.70,ch*.60,cw*.60,ch*.58,cw*.49,ch*.58);
+    ctx.bezierCurveTo(cw*.43,ch*.57,cw*.38,ch*.59,cw*.34,ch*.63);
+    ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'rgba(245,216,139,.72)':'rgba(255,225,145,.92)';ctx.lineWidth=2;ctx.setLineDash([11,9]);
+    ctx.beginPath();
+    ctx.moveTo(cw*.77,ch*.64);
+    ctx.bezierCurveTo(cw*.70,ch*.60,cw*.60,ch*.58,cw*.49,ch*.58);
+    ctx.bezierCurveTo(cw*.43,ch*.57,cw*.38,ch*.59,cw*.34,ch*.63);
+    ctx.stroke();ctx.setLineDash([]);
+    ctx.restore();
+
+    // A compact civic/commercial row: cafe, market and community building.
+    const shops=[
+      {x:.395,y:.565,w:58,h:34,body:'#b87455',roof:'#596761',label:'CAFE'},
+      {x:.475,y:.555,w:64,h:38,body:'#b39b72',roof:'#53625c',label:'MARKET'},
+      {x:.555,y:.565,w:56,h:34,body:'#78968b',roof:'#4e5f5a',label:'COMMUNITY'}
+    ];
+    shops.forEach((b,i)=>{
+      const x=cw*b.x,y=ch*b.y,night=sceneIndex===3;
+      ctx.save();
+      ctx.fillStyle='rgba(24,46,41,.16)';ctx.beginPath();ctx.ellipse(x,y+4,b.w*.72,5,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=night?'#36534c':b.body;ctx.fillRect(x-b.w/2,y-b.h,b.w,b.h);
+      ctx.fillStyle=night?'#293f3b':b.roof;ctx.fillRect(x-b.w/2-3,y-b.h-6,b.w+6,7);
+      ctx.fillStyle=night?'#ffe1a0':'#e6d9bc';ctx.fillRect(x-b.w*.40,y-b.h*.68,b.w*.80,8);
+      ctx.fillStyle=night?'#ffd991':'#d7e4df';ctx.fillRect(x-b.w*.33,y-b.h*.38,b.w*.22,b.h*.34);ctx.fillRect(x+b.w*.11,y-b.h*.38,b.w*.22,b.h*.34);
+      ctx.fillStyle=night?'#ffe5a4':'#314e47';ctx.font='800 6px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(b.label,x,y-b.h*.72);
+      ctx.restore();
+    });
+
+    // Street lamps along the new connection make the town feel inhabited after sunset.
+    const lamps=[
+      [.43,.585],[.50,.575],[.57,.58],[.65,.60],[.72,.625]
+    ];
+    lamps.forEach(([xp,yp],i)=>{
+      const x=cw*xp,y=ch*yp;ctx.save();
+      ctx.strokeStyle=sceneIndex===3?'#c4d3ca':'#56635d';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-24);ctx.quadraticCurveTo(x,y-29,x+7,y-29);ctx.stroke();
+      ctx.fillStyle=sceneIndex===3?'#ffe6a0':'#e6d39c';ctx.beginPath();ctx.arc(x+8,y-29,3.2,0,Math.PI*2);ctx.fill();
+      if(sceneIndex===3){ctx.globalAlpha=.18;ctx.fillStyle='#ffe7a5';ctx.beginPath();ctx.arc(x+8,y-29,11,0,Math.PI*2);ctx.fill();}
+      ctx.restore();
+    });
+
+    // A mature pocket park: benches, trees and a few people, without making it crowded.
+    ctx.save();
+    ctx.fillStyle=sceneIndex===3?'rgba(43,86,67,.78)':'rgba(91,143,94,.72)';
+    ctx.beginPath();ctx.ellipse(cw*.265,ch*.675,cw*.095,ch*.048,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(238,226,184,.72)';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(cw*.265,ch*.675,cw*.063,ch*.028,0,0,Math.PI*2);ctx.stroke();
+    // benches
+    [[.23,.675],[.30,.666]].forEach(([xp,yp])=>{
+      const x=cw*xp,y=ch*yp;ctx.strokeStyle='#765f49';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x-9,y);ctx.lineTo(x+9,y);ctx.moveTo(x-7,y+5);ctx.lineTo(x-5,y);ctx.moveTo(x+7,y+5);ctx.lineTo(x+5,y);ctx.stroke();
+    });
+    // trees
+    [[.21,.66,13],[.29,.65,11],[.32,.69,9]].forEach(([xp,yp,r])=>{
+      const x=cw*xp,y=ch*yp;ctx.fillStyle=sceneIndex===3?'#355e50':'#547d5e';ctx.beginPath();ctx.arc(x,y-r,r,0,Math.PI*2);ctx.fill();ctx.fillRect(x-2,y-r+5,4,13);
+    });
+    ctx.restore();
+
+    // Sparse pedestrians around the town center. Their movement is subtle and local.
+    const walkers=[
+      [.37,.595,.55],[.45,.61,-.35],[.53,.595,.25],[.61,.615,-.45],[.68,.60,.35]
+    ];
+    walkers.forEach(([xp,yp,dir],i)=>{
+      const x=cw*xp+Math.sin(t*.7+i)*5,y=ch*yp+Math.cos(t*.9+i)*2;
+      ctx.save();ctx.translate(x,y);ctx.scale(dir<0?-1:1,1);
+      ctx.strokeStyle=sceneIndex===3?'#d5ddd8':'#435d55';ctx.lineWidth=2;ctx.lineCap='round';
+      ctx.fillStyle=sceneIndex===3?'#e7d8b7':'#d1a36f';ctx.beginPath();ctx.arc(0,-9,3,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.moveTo(0,-6);ctx.lineTo(0,4);ctx.moveTo(0,-2);ctx.lineTo(-5,2);ctx.moveTo(0,-2);ctx.lineTo(5,2);ctx.moveTo(0,4);ctx.lineTo(-4,10);ctx.moveTo(0,4);ctx.lineTo(4,10);ctx.stroke();
+      ctx.restore();
+    });
+
+    // Cars on the actual roads only: one near-side and two on the far-side connection.
+    // None of these positions enter the lake polygon.
+    for(let i=0;i<3;i++){
+      const q=(i*.31+t*(.010+i*.0015))%1;
+      const x=cw*(.50+q*.28);
+      const y=ch*(1.00-q*.365+Math.sin(q*Math.PI)*.012);
+      ctx.save();ctx.translate(x,y);ctx.rotate(-0.58+q*.16);
+      ctx.fillStyle=['#4d8493','#c9654e','#d1a45d'][i];ctx.fillRect(-10,-4.5,20,9);
+      ctx.fillStyle='#d9eceb';ctx.fillRect(-4,-7.5,8,4);ctx.fillStyle='#27322f';ctx.beginPath();ctx.arc(-6,4.5,2.5,0,Math.PI*2);ctx.arc(6,4.5,2.5,0,Math.PI*2);ctx.fill();ctx.restore();
+    }
+    for(let i=0;i<2;i++){
+      const q=(i*.52+t*(.008+i*.001))%1;
+      const x=cw*(.78+q*.22);
+      const y=ch*(.635-q*.175);
+      ctx.save();ctx.translate(x,y);ctx.rotate(-0.18);
+      ctx.fillStyle=i?'#667c91':'#c45e4e';ctx.fillRect(-9,-4,18,8);ctx.fillStyle='#dcebea';ctx.fillRect(-4,-6.5,8,3.5);ctx.fillStyle='#27322f';ctx.beginPath();ctx.arc(-6,4,2.3,0,Math.PI*2);ctx.arc(6,4,2.3,0,Math.PI*2);ctx.fill();ctx.restore();
+    }
+
+    // A calm waterfront boardwalk and a few moored boats — activity without crowding.
+    ctx.save();
+    ctx.strokeStyle=sceneIndex===3?'#9aaea4':'#9b7855';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(cw*.70,ch*.79);ctx.quadraticCurveTo(cw*.80,ch*.76,cw*.91,ch*.78);ctx.stroke();
+    ctx.strokeStyle=sceneIndex===3?'#d0dcd5':'#d1ae7f';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cw*.70,ch*.775);ctx.quadraticCurveTo(cw*.80,ch*.745,cw*.91,ch*.765);ctx.stroke();
+    const moored=[.74,.82,.89];
+    moored.forEach((xp,i)=>{
+      const x=cw*xp,y=ch*(.785+(i%2)*.012);ctx.fillStyle=i===1?'#d3a05f':'#6f8e9a';ctx.beginPath();ctx.moveTo(x-14,y);ctx.lineTo(x+14,y);ctx.lineTo(x+9,y+6);ctx.lineTo(x-10,y+6);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='rgba(240,255,249,.55)';ctx.lineWidth=1.4;ctx.beginPath();ctx.ellipse(x,y+8,19,3,0,0,Math.PI*2);ctx.stroke();
+    });
+    ctx.restore();
+
+    // A little more depth on the far horizon: a connected town rather than a wall of buildings.
+    const distant=[
+      [.18,.53,42,.08],[.22,.52,58,.10],[.27,.525,34,.07],[.64,.525,48,.08],[.69,.535,61,.09],[.74,.525,37,.07]
+    ];
+    distant.forEach(([xp,yp,h,w],i)=>{
+      const x=cw*xp,y=ch*yp;ctx.fillStyle=sceneIndex===3?'#2c4b44':i%2?'#738d82':'#688077';ctx.fillRect(x,y-h,w*cw*.035,h);
+      if(sceneIndex===3){ctx.fillStyle='#ffe0a0';ctx.fillRect(x+5,y-h+11,4,4);ctx.fillRect(x+15,y-h+22,4,4);}
+    });
   }
 
   // Large framing trees: only at the edges so they don't hide the interface.
