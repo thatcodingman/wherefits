@@ -760,6 +760,44 @@ function drawWorld(dt){
         ctx.fillStyle=night?'#ffe5a2':'#e8d49d';ctx.beginPath();ctx.arc(x-size*.34,y-size*.27,2,0,Math.PI*2);ctx.arc(x+size*.36,y-size*.31,2,0,Math.PI*2);ctx.fill();
         ctx.restore();
       });
+      // Additional luxury homes fill out the neighborhood without making it feel crowded.
+      // These sit at slightly different depths and scales so the shoreline reads as a real community.
+      const moreHomes=[
+        [.735,.555,29,1],[.765,.535,25,0],[.805,.545,27,2],[.855,.535,30,1],
+        [.905,.545,27,0],[.94,.525,25,2],[.975,.55,28,1],[.995,.59,23,0]
+      ];
+      moreHomes.forEach(([xp,yp,size,style],i)=>{
+        const x=cw*xp,y=ch*yp,night=sceneIndex===3;
+        const body=night?'#334f48':['#c9bca7','#b5beb5','#c7ad91'][style];
+        const roof=night?'#263f39':['#5c6862','#53615c','#6a675e'][style];
+        const glass=night?'#ffe0a0':'#789da0';
+        const trim=night?'#d8dfd9':'#eee6d6';
+        ctx.save();
+        ctx.fillStyle='rgba(25,48,43,.12)';ctx.beginPath();ctx.ellipse(x,y+2,size*.66,4,0,0,Math.PI*2);ctx.fill();
+        // Compact modern villa mass.
+        ctx.fillStyle=body;ctx.fillRect(x-size*.50,y-size*.53,size,size*.53);
+        const shift=style===1?-size*.08:style===2?size*.06:0;
+        ctx.fillRect(x-size*.24+shift,y-size*.82,size*.52,size*.29);
+        ctx.fillStyle=roof;ctx.fillRect(x-size*.30+shift,y-size*.87,size*.62,3);
+        ctx.fillRect(x-size*.53,y-size*.57,size*1.06,3);
+        // Glass frontage.
+        ctx.fillStyle=glass;ctx.fillRect(x-size*.40,y-size*.45,size*.23,size*.26);
+        ctx.fillRect(x-size*.12,y-size*.45,size*.37,size*.26);
+        ctx.strokeStyle='rgba(241,246,242,.52)';ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(x-size*.285,y-size*.45);ctx.lineTo(x-size*.285,y-size*.19);ctx.moveTo(x+size*.06,y-size*.45);ctx.lineTo(x+size*.06,y-size*.19);ctx.stroke();
+        // Small upper windows.
+        ctx.fillStyle=glass;ctx.fillRect(x-size*.13+shift,y-size*.75,size*.18,size*.14);ctx.fillRect(x+size*.10+shift,y-size*.75,size*.16,size*.14);
+        // Terrace and rail.
+        ctx.fillStyle=trim;ctx.fillRect(x+size*.01,y-size*.57,size*.40,3);
+        ctx.strokeStyle=trim;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+size*.02,y-size*.57);ctx.lineTo(x+size*.40,y-size*.57);ctx.moveTo(x+size*.08,y-size*.57);ctx.lineTo(x+size*.08,y-size*.46);ctx.moveTo(x+size*.20,y-size*.57);ctx.lineTo(x+size*.20,y-size*.46);ctx.moveTo(x+size*.32,y-size*.57);ctx.lineTo(x+size*.32,y-size*.46);ctx.stroke();
+        // Entry, garage and landscaping.
+        ctx.fillStyle=night?'#29423d':'#72766f';ctx.fillRect(x-size*.43,y-size*.18,size*.13,size*.18);
+        ctx.fillStyle=night?'#b9c7c0':'#d9d4c7';ctx.fillRect(x+size*.22,y-size*.23,size*.22,size*.23);
+        ctx.fillStyle=night?'#355a4d':'#608368';ctx.beginPath();ctx.arc(x-size*.58,y-2,4,0,Math.PI*2);ctx.arc(x-size*.49,y-3,5,0,Math.PI*2);ctx.arc(x+size*.53,y-3,5,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle=night?'#ffe5a2':'#e8d49d';ctx.beginPath();ctx.arc(x-size*.31,y-size*.27,1.7,0,Math.PI*2);ctx.arc(x+size*.32,y-size*.29,1.7,0,Math.PI*2);ctx.fill();
+        ctx.restore();
+      });
+
       // Small storefront.
       ctx.save();const sx=cw*.925,sy=ch*.625;ctx.fillStyle=sceneIndex===3?'#3b5750':'#b06f51';ctx.fillRect(sx-28,sy-25,56,25);ctx.fillStyle=sceneIndex===3?'#263e39':'#ead7b2';ctx.fillRect(sx-23,sy-20,46,9);ctx.fillStyle='#5e7669';ctx.fillRect(sx-16,sy-8,12,8);ctx.fillRect(sx+5,sy-8,12,8);ctx.restore();
     }
