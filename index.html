@@ -898,6 +898,40 @@ function drawWorld(dt){
   // and a more active waterfront. The mountains, lake, ferry, plane and existing
   // homes remain untouched.
   if(tier6){
+    // TOWN CENTER PASS — keep the community activity in the exposed right-side
+    // landscape so the glass dashboard cards do not hide the main payoff.
+    // This is deliberately a small village center, not a city block.
+    ctx.save();
+    const centerNight=sceneIndex===3;
+    const centerBuildings=[
+      {x:.815,y:.535,w:48,h:34,body:centerNight?'#35514a':'#ad7458',roof:centerNight?'#263f3a':'#56645d',sign:'CAFE'},
+      {x:.875,y:.515,w:56,h:40,body:centerNight?'#3b574f':'#b39a70',roof:centerNight?'#29423d':'#53615b',sign:'MARKET'},
+      {x:.945,y:.535,w:48,h:34,body:centerNight?'#36534c':'#78958a',roof:centerNight?'#283f3a':'#4e5e59',sign:'HALL'}
+    ];
+    centerBuildings.forEach((b,i)=>{
+      const x=cw*b.x,y=ch*b.y;
+      ctx.fillStyle='rgba(24,46,41,.18)';ctx.beginPath();ctx.ellipse(x,y+4,b.w*.72,5,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=b.body;ctx.fillRect(x-b.w/2,y-b.h,b.w,b.h);
+      ctx.fillStyle=b.roof;ctx.fillRect(x-b.w/2-3,y-b.h-6,b.w+6,7);
+      // large readable shopfronts
+      ctx.fillStyle=centerNight?'#ffe0a0':'#e6d7b8';ctx.fillRect(x-b.w*.40,y-b.h*.68,b.w*.80,9);
+      ctx.fillStyle=centerNight?'#f5d28f':'#d9e5df';ctx.fillRect(x-b.w*.32,y-b.h*.38,b.w*.22,b.h*.34);ctx.fillRect(x+b.w*.10,y-b.h*.38,b.w*.22,b.h*.34);
+      ctx.fillStyle=centerNight?'#ffe5a3':'#304d46';ctx.font='800 6px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(b.sign,x,y-b.h*.72);
+      if(centerNight){
+        ctx.globalAlpha=.16;ctx.fillStyle='#ffe7a5';ctx.beginPath();ctx.arc(x,y-b.h*.55,17,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+      }
+    });
+    // Small town square between the buildings.
+    ctx.fillStyle=centerNight?'rgba(74,104,91,.72)':'rgba(132,151,122,.76)';
+    ctx.beginPath();ctx.ellipse(cw*.878,ch*.575,cw*.055,ch*.025,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=centerNight?'rgba(215,218,194,.45)':'rgba(245,232,195,.8)';ctx.lineWidth=3;
+    ctx.beginPath();ctx.ellipse(cw*.878,ch*.575,cw*.038,ch*.017,0,0,Math.PI*2);ctx.stroke();
+    // A tiny civic marker makes this read as a town center.
+    ctx.strokeStyle=centerNight?'#bac8bd':'#6e6f63';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(cw*.878,ch*.575);ctx.lineTo(cw*.878,ch*.535);ctx.stroke();
+    ctx.fillStyle=centerNight?'#d9e0d8':'#d7c38f';ctx.beginPath();ctx.arc(cw*.878,ch*.53,5,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+
     // A clean secondary street connects the hillside neighborhood to the town.
     ctx.save();
     ctx.strokeStyle=sceneIndex===3?'#303c38':'#565b56';ctx.lineWidth=18;ctx.lineCap='round';
@@ -914,11 +948,10 @@ function drawWorld(dt){
     ctx.stroke();ctx.setLineDash([]);
     ctx.restore();
 
-    // A compact civic/commercial row: cafe, market and community building.
+    // The main commercial row is now anchored on the exposed right-side town center above.
+    // Keep this secondary row minimal so the scene does not become a wall of shops.
     const shops=[
-      {x:.395,y:.565,w:58,h:34,body:'#b87455',roof:'#596761',label:'CAFE'},
-      {x:.475,y:.555,w:64,h:38,body:'#b39b72',roof:'#53625c',label:'MARKET'},
-      {x:.555,y:.565,w:56,h:34,body:'#78968b',roof:'#4e5f5a',label:'COMMUNITY'}
+      {x:.67,y:.575,w:44,h:29,body:'#8d7660',roof:'#56635d',label:'SHOP'}
     ];
     shops.forEach((b,i)=>{
       const x=cw*b.x,y=ch*b.y,night=sceneIndex===3;
@@ -934,7 +967,7 @@ function drawWorld(dt){
 
     // Street lamps along the new connection make the town feel inhabited after sunset.
     const lamps=[
-      [.43,.585],[.50,.575],[.57,.58],[.65,.60],[.72,.625]
+      [.67,.575],[.72,.60],[.77,.625],[.82,.60],[.88,.595],[.94,.60]
     ];
     lamps.forEach(([xp,yp],i)=>{
       const x=cw*xp,y=ch*yp;ctx.save();
@@ -958,6 +991,14 @@ function drawWorld(dt){
       const x=cw*xp,y=ch*yp;ctx.fillStyle=sceneIndex===3?'#355e50':'#547d5e';ctx.beginPath();ctx.arc(x,y-r,r,0,Math.PI*2);ctx.fill();ctx.fillRect(x-2,y-r+5,4,13);
     });
     ctx.restore();
+
+    // Two parked cars sit beside the town center, clearly on the road shoulder.
+    [[.835,.555,'#4d8493'],[.925,.555,'#c9654e']].forEach(([xp,yp,col])=>{
+      const x=cw*xp,y=ch*yp;ctx.save();ctx.translate(x,y);ctx.rotate(-0.06);
+      ctx.fillStyle=col;ctx.fillRect(-10,-4.5,20,9);
+      ctx.fillStyle='#d9eceb';ctx.fillRect(-4,-7.5,8,4);
+      ctx.fillStyle='#27322f';ctx.beginPath();ctx.arc(-6,4.5,2.5,0,Math.PI*2);ctx.arc(6,4.5,2.5,0,Math.PI*2);ctx.fill();ctx.restore();
+    });
 
     // Sparse pedestrians around the town center. Their movement is subtle and local.
     const walkers=[
