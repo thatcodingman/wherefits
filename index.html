@@ -65,7 +65,7 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 @media(min-width:900px){.shell{width:min(820px,calc(100% - 44px))}.dashboard{gap:18px}.card{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}}
 @media(max-width:760px){.shell{width:min(100% - 24px,860px)}.dashboard{grid-template-columns:1fr}.card{background:rgba(255,254,249,.78)}}
 </style>
-<!-- 85-95% town center: buildings spread along a shallow street with more breathing room. -->
+<!-- 95-99% preview: mature destination layer + living meadow refinement. -->
 </head>
 <body>
 <div id="world" aria-hidden="true"><canvas id="worldCanvas"></canvas><div class="world-ui-layer"></div><div class="world-badge" id="worldBadge">Your world · first signs</div></div><div class="overlay"></div>
@@ -109,9 +109,9 @@ let cw=0,ch=0,dpr=1,worldTime=0,progressMoves=0;
 const demoProgressParam=new URLSearchParams(location.search).get("progress");
 const parsedDemoProgress=demoProgressParam===null?NaN:Number(demoProgressParam);
 // This build is the 85–95% visual preview. Keep the URL override so the same file can still be tested at any percentage.
-const previewDefaultProgress=90;
+const previewDefaultProgress=97;
 const worldProgress=Math.min(100,Math.max(0,Number.isFinite(parsedDemoProgress)?parsedDemoProgress:previewDefaultProgress));
-function getWorldTier(p){if(p>=100)return 7;if(p>=90)return 6;if(p>=75)return 5;if(p>=60)return 4;if(p>=40)return 3;if(p>=25)return 2;if(p>=10)return 1;return 0;}
+function getWorldTier(p){if(p>=100)return 8;if(p>=95)return 7;if(p>=90)return 6;if(p>=75)return 5;if(p>=60)return 4;if(p>=40)return 3;if(p>=25)return 2;if(p>=10)return 1;return 0;}
 const worldTier=getWorldTier(worldProgress);
 const tier1=worldTier>=1;
 const tier2=worldTier>=2;
@@ -120,6 +120,7 @@ const tier4=worldTier>=4;
 const tier5=worldTier>=5;
 const tier6=worldTier>=6;
 const tier7=worldTier>=7;
+const tier8=worldTier>=8;
 const clouds=[{x:.08,y:.16,s:1.0,v:.00024},{x:.46,y:.23,s:.76,v:.00016},{x:.78,y:.13,s:.84,v:.00020},{x:.30,y:.34,s:.60,v:.00013}];
 const trees=Array.from({length:34},(_,i)=>({x:(i/33)*1.08-.04,h:.10+((i*37)%11)/100,w:.035+((i*17)%7)/300,phase:i*.7}));
 const birds=Array.from({length:5},(_,i)=>({x:.1+i*.2,y:.18+(i%2)*.08,v:.018+i*.004}));
@@ -418,54 +419,91 @@ function drawWorld(dt){
   const rocks=[[.055,.78,27,15],[.13,.88,17,10],[.28,.82,13,8],[.89,.80,28,15],[.95,.90,18,11]];
   rocks.forEach(([xp,yp,rx,ry],i)=>{ctx.fillStyle=i%2?"rgba(103,120,110,.78)":"rgba(132,143,130,.82)";ctx.beginPath();ctx.ellipse(cw*xp,ch*yp,rx,ry,-.15,0,Math.PI*2);ctx.fill()});
 
-  // Grass tufts that visibly move.
-  ctx.save();ctx.strokeStyle=sceneIndex===3?"rgba(106,145,103,.75)":"rgba(66,111,73,.72)";ctx.lineWidth=1.5;
-  for(let i=0;i<95;i++){
-    const x=(i*73%47)/100*cw,y=ch*(.74+((i*19)%25)/100),sway=reduceMotion?0:Math.sin(t*2.8+i*.8)*10;
-    ctx.beginPath();ctx.moveTo(x,y+13);ctx.quadraticCurveTo(x+sway,y-2,x+sway*1.5,y-14);ctx.stroke();
-  }
-  ctx.restore();
-
-  // Tier 0 lower-left meadow: this is a real foreground zone, not a few strokes.
+  // LOWER-LEFT MEADOW — a layered living meadow, not repeated flat strokes.
+  // The whole patch gently responds to wind so it remains part of the animated world.
   ctx.save();
-  for(let i=0;i<(startingWorld?68:firstSigns?118:horizonOpens?145:92);i++){
-    const x=cw*(.005+((i*47)%46)/100), base=ch*(.81+((i*23)%17)/100);
-    const h=20+(i%9)*6, sway=reduceMotion?0:Math.sin(t*2.4+i*.55)*10+Math.sin(t*1.1+i)*4;
-    ctx.strokeStyle=i%5===0?'rgba(43,97,61,.94)':i%3===0?'rgba(66,119,69,.86)':'rgba(91,142,82,.80)';
-    ctx.lineWidth=i%4===0?2:1.55;
-    ctx.beginPath();ctx.moveTo(x,base);ctx.quadraticCurveTo(x+sway*.35,base-h*.58,x+sway,base-h);ctx.stroke();
-    if(i%8===0){
-      ctx.fillStyle=i%16===0?'rgba(229,198,118,.9)':'rgba(199,171,106,.8)';
-      ctx.beginPath();ctx.ellipse(x+sway,base-h,3,6,-.25,0,Math.PI*2);ctx.fill();
-    }
+
+  // Soft ground layer gives the plants something to sit in.
+  const meadowGrad=ctx.createLinearGradient(0,ch*.76,0,ch);
+  meadowGrad.addColorStop(0,sceneIndex===3?"rgba(38,82,62,.72)":"rgba(91,139,78,.76)");
+  meadowGrad.addColorStop(1,sceneIndex===3?"rgba(24,64,49,.92)":"rgba(58,111,64,.94)");
+  ctx.fillStyle=meadowGrad;
+  ctx.beginPath();
+  ctx.moveTo(0,ch*.77);
+  ctx.quadraticCurveTo(cw*.10,ch*.735,cw*.20,ch*.79);
+  ctx.quadraticCurveTo(cw*.30,ch*.84,cw*.40,ch*.78);
+  ctx.lineTo(cw*.42,ch);ctx.lineTo(0,ch);ctx.closePath();ctx.fill();
+
+  // Midground grass clumps: varied heights and directions prevent the old "comb" look.
+  const grassCount=worldTier>=7?145:112;
+  for(let i=0;i<grassCount;i++){
+    const xp=.008+((i*47)%405)/1000;
+    const yp=.815+((i*31)%175)/1000;
+    const x=cw*xp, base=ch*Math.min(.995,yp);
+    const h=15+(i%11)*2.8;
+    const sway=reduceMotion?0:Math.sin(t*1.8+i*.47)*5+Math.sin(t*.7+i*.13)*2.5;
+    const lean=((i%7)-3)*.7;
+    ctx.strokeStyle=sceneIndex===3
+      ? (i%4===0?"rgba(83,126,91,.82)":"rgba(66,111,79,.72)")
+      : (i%5===0?"rgba(52,112,62,.92)":i%2?"rgba(73,127,70,.84)":"rgba(92,145,78,.88)");
+    ctx.lineWidth=i%6===0?2.1:1.35;
+    ctx.beginPath();
+    ctx.moveTo(x,base);
+    ctx.quadraticCurveTo(x+sway*.35+lean,base-h*.55,x+sway+lean*1.5,base-h);
+    ctx.stroke();
   }
-  // Broad leaves and low plants break up the flat green surface.
-  for(let i=0;i<(startingWorld?15:firstSigns?34:horizonOpens?46:24);i++){
-    const x=cw*(.008+((i*31)%41)/100), y=ch*(.89+((i*11)%10)/100);
-    ctx.fillStyle=i%3===0?'rgba(45,105,63,.82)':i%2?'rgba(62,123,70,.78)':'rgba(91,145,79,.72)';
-    ctx.beginPath();ctx.ellipse(x,y,15+(i%4)*4,6+(i%3)*2,(-.65+(i%5)*.3),0,Math.PI*2);ctx.fill();
-    if(i%4===0){
-      ctx.strokeStyle='rgba(49,103,60,.82)';ctx.lineWidth=1.4;
-      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-5,y-16-(i%3)*3);ctx.stroke();
-    }
+
+  // Broad leaves near the viewer create depth and break up empty green areas.
+  for(let i=0;i<(worldTier>=7?38:28);i++){
+    const x=cw*(.015+((i*67)%380)/1000);
+    const y=ch*(.91+((i*29)%75)/1000);
+    const sway=reduceMotion?0:Math.sin(t*1.4+i*.8)*2.5;
+    ctx.fillStyle=sceneIndex===3
+      ? (i%2?"rgba(47,91,64,.82)":"rgba(57,105,69,.78)")
+      : (i%3===0?"rgba(52,112,61,.82)":i%2?"rgba(68,127,68,.78)":"rgba(83,139,73,.76)");
+    ctx.beginPath();
+    ctx.ellipse(x+sway,y,11+(i%4)*3,4.5+(i%3),-.55+(i%5)*.22,0,Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x-sway*.4,y+3,8+(i%3)*2,3.5,(.7-(i%4)*.18),0,Math.PI*2);
+    ctx.fill();
   }
-  // A few taller meadow clumps create foreground depth.
-  for(let i=0;i<(startingWorld?7:firstSigns?13:horizonOpens?19:13);i++){
-    const x=cw*(.025+((i*59)%42)/100), y=ch*(.985-((i*7)%9)/100);
-    const sway=reduceMotion?0:Math.sin(t*2+i)*9;
-    ctx.strokeStyle='rgba(37,88,54,.88)';ctx.lineWidth=2.2;
-    for(let j=0;j<4;j++){
-      ctx.beginPath();ctx.moveTo(x+j*3,y);ctx.quadraticCurveTo(x+sway+j*2,y-18-j*2,x+sway*.8+j*1.5,y-34-j*2);ctx.stroke();
+
+  // Distinct wildflowers with stems and small petals, distributed naturally.
+  const flowerCount=worldTier>=7?34:25;
+  const flowerColors=sceneIndex===3
+    ? ["rgba(255,226,151,.95)","rgba(219,218,192,.88)","rgba(194,188,225,.72)"]
+    : ["rgba(250,239,197,.96)","rgba(244,215,222,.90)","rgba(211,199,238,.86)","rgba(244,207,142,.92)"];
+  for(let i=0;i<flowerCount;i++){
+    const x=cw*(.018+((i*83)%390)/1000);
+    const base=ch*(.91+((i*41)%80)/1000);
+    const stemH=9+(i%5)*3;
+    const sway=reduceMotion?0:Math.sin(t*1.5+i*.65)*2.5;
+    ctx.strokeStyle=sceneIndex===3?"rgba(86,125,86,.72)":"rgba(57,112,63,.82)";
+    ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,base);ctx.quadraticCurveTo(x+sway,base-stemH*.55,x+sway,base-stemH);ctx.stroke();
+
+    const fx=x+sway,fy=base-stemH;
+    const col=flowerColors[i%flowerColors.length];
+    ctx.fillStyle=col;
+    const petals=4+(i%2);
+    for(let p=0;p<petals;p++){
+      const a=(Math.PI*2*p/petals)+i*.17;
+      ctx.beginPath();
+      ctx.ellipse(fx+Math.cos(a)*2.7,fy+Math.sin(a)*2.7,2.3,3.4,a,0,Math.PI*2);
+      ctx.fill();
     }
+    ctx.fillStyle=sceneIndex===3?"rgba(255,221,139,.95)":"rgba(218,172,83,.95)";
+    ctx.beginPath();ctx.arc(fx,fy,1.7,0,Math.PI*2);ctx.fill();
+  }
+
+  // A few small stones sit naturally among the plants.
+  for(let i=0;i<(worldTier>=7?10:7);i++){
+    const x=cw*(.035+((i*71)%345)/1000),y=ch*(.965-((i*17)%70)/1000);
+    ctx.fillStyle=i%2?"rgba(105,120,101,.68)":"rgba(132,139,118,.72)";
+    ctx.beginPath();ctx.ellipse(x,y,5+(i%3)*2,3+(i%2),-.2,0,Math.PI*2);ctx.fill();
   }
   ctx.restore();
-
-  // Flowers.
-  for(let i=0;i<(startingWorld?12:firstSigns?26:horizonOpens?42:34);i++){
-    const x=(i*91%48)/100*cw,y=ch*(.78+((i*13)%18)/100);
-    ctx.fillStyle=i%3===0?"rgba(255,242,204,.95)":"rgba(246,232,220,.82)";
-    ctx.beginPath();ctx.arc(x,y,2.4,0,Math.PI*2);ctx.fill();
-  }
 
   // Fence near the lake.
   ctx.strokeStyle="rgba(102,82,60,.52)";ctx.lineWidth=3;
@@ -1094,6 +1132,98 @@ function drawWorld(dt){
     });
   }
 
+  // TIER 7 — 95–99%: "Nearly complete."
+  // The town is mature and established now. We refine what already exists
+  // instead of adding another pile of buildings.
+  if(tier7){
+    const nearNight=sceneIndex===3;
+    ctx.save();
+
+    // Mature waterfront terrace: a small public overlook and richer marina edge.
+    ctx.fillStyle=nearNight?'rgba(58,91,78,.82)':'rgba(122,145,112,.72)';
+    ctx.beginPath();
+    ctx.ellipse(cw*.79,ch*.735,cw*.12,ch*.035,0,0,Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle=nearNight?'rgba(220,220,197,.55)':'rgba(245,229,190,.78)';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.ellipse(cw*.79,ch*.735,cw*.095,ch*.024,0,0,Math.PI*2);
+    ctx.stroke();
+
+    // A few mature trees frame the overlook without hiding the town.
+    [[.70,.715,15],[.75,.705,12],[.86,.705,14],[.91,.72,11]].forEach(([xp,yp,r],i)=>{
+      const x=cw*xp,y=ch*yp;
+      ctx.fillStyle=nearNight?'#315b4d':(i%2?'#4f7d59':'#5c895f');
+      ctx.beginPath();ctx.arc(x,y-r,r,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(x-7,y-r+5,r*.72,0,Math.PI*2);ctx.arc(x+8,y-r+4,r*.66,0,Math.PI*2);ctx.fill();
+      ctx.fillRect(x-2,y-r+7,4,16);
+    });
+
+    // Three small civic/waterfront buildings add polish to the distant destination.
+    const matureBuildings=[
+      {x:.71,y:.54,w:44,h:30,body:'#7b8e83',roof:'#4f615c',label:'LODGE'},
+      {x:.76,y:.52,w:52,h:35,body:'#9a8268',roof:'#59665f',label:'DOCKS'},
+      {x:.82,y:.535,w:46,h:31,body:'#738c83',roof:'#4d5f59',label:'PIER'}
+    ];
+    matureBuildings.forEach((b,i)=>{
+      const x=cw*b.x,y=ch*b.y;
+      ctx.fillStyle='rgba(24,46,41,.16)';ctx.beginPath();ctx.ellipse(x,y+4,b.w*.7,5,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=nearNight?(i===1?'#3d5a50':'#345149'):b.body;
+      ctx.fillRect(x-b.w/2,y-b.h,b.w,b.h);
+      ctx.fillStyle=nearNight?'#2a443e':b.roof;
+      ctx.fillRect(x-b.w/2-3,y-b.h-6,b.w+6,7);
+      ctx.fillStyle=nearNight?'#ffe1a0':'#e6d8b8';
+      ctx.fillRect(x-b.w*.36,y-b.h*.62,b.w*.72,7);
+      ctx.fillStyle=nearNight?'#ffe2a0':'#314d47';
+      ctx.font='800 5.5px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(b.label,x,y-b.h*.66);
+    });
+
+    // More mature street lighting: a continuous but restrained route into the waterfront.
+    const matureLamps=[
+      [.69,.60],[.74,.585],[.79,.575],[.84,.58],[.89,.59],[.94,.60]
+    ];
+    matureLamps.forEach(([xp,yp],i)=>{
+      const x=cw*xp,y=ch*yp;
+      ctx.strokeStyle=nearNight?'#b9c8c0':'#58645e';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-22);ctx.quadraticCurveTo(x,y-27,x+6,y-27);ctx.stroke();
+      ctx.fillStyle=nearNight?'#ffe5a0':'#e7d29b';
+      ctx.beginPath();ctx.arc(x+7,y-27,3,0,Math.PI*2);ctx.fill();
+      if(nearNight){ctx.globalAlpha=.16;ctx.fillStyle='#ffe7a5';ctx.beginPath();ctx.arc(x+7,y-27,10,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;}
+    });
+
+    // A few small boats make the marina feel established, not empty.
+    [[.73,.795,18],[.78,.805,22],[.84,.792,16],[.90,.805,20]].forEach(([xp,yp,w],i)=>{
+      const x=cw*xp,y=ch*yp;
+      ctx.fillStyle=i%2?'#6d8d99':'#d0a261';
+      ctx.beginPath();ctx.moveTo(x-w/2,y);ctx.lineTo(x+w/2,y);ctx.lineTo(x+w*.32,y+6);ctx.lineTo(x-w*.34,y+6);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='rgba(238,252,247,.48)';ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.ellipse(x,y+8,w*.62,2.5,0,0,Math.PI*2);ctx.stroke();
+    });
+
+    // A mature park edge on the left: flowering shrubs instead of more architecture.
+    for(let i=0;i<9;i++){
+      const x=cw*(.17+i*.025),y=ch*(.69-(i%3)*.012);
+      ctx.fillStyle=nearNight?'#3e6957':(i%2?'#688e62':'#759b68');
+      ctx.beginPath();ctx.arc(x,y-7,7+(i%3),0,Math.PI*2);ctx.arc(x-7,y-4,5,0,Math.PI*2);ctx.arc(x+7,y-4,5,0,Math.PI*2);ctx.fill();
+      if(i%3===0){
+        ctx.fillStyle=nearNight?'rgba(255,224,154,.85)':'rgba(244,214,163,.9)';
+        ctx.beginPath();ctx.arc(x,y-12,2.2,0,Math.PI*2);ctx.fill();
+      }
+    }
+
+    // Warm evening accents stay subtle and only become prominent in golden hour/night.
+    if(sceneIndex===2 || sceneIndex===3){
+      ctx.globalAlpha=sceneIndex===3?.18:.10;
+      const glow=ctx.createRadialGradient(cw*.80,ch*.61,0,cw*.80,ch*.61,cw*.16);
+      glow.addColorStop(0,'#ffe7a3');glow.addColorStop(1,'rgba(255,231,163,0)');
+      ctx.fillStyle=glow;ctx.fillRect(cw*.62,ch*.45,cw*.32,ch*.35);
+      ctx.globalAlpha=1;
+    }
+
+    ctx.restore();
+  }
+
+
   // Large framing trees: only at the edges so they don't hide the interface.
   const edgeTrees=startingWorld?[[.05,.88,.14,.075],[.93,.88,.14,.075]]:firstSigns?[[.035,.87,.19,.10],[.13,.88,.14,.08],[.87,.88,.15,.085],[.965,.86,.21,.12]]:horizonOpens?[[.025,.87,.22,.12],[.10,.87,.19,.105],[.20,.88,.17,.09],[.79,.87,.18,.10],[.90,.86,.24,.13],[.985,.85,.28,.15]]:lifeTakesShape?[[.025,.86,.25,.14],[.11,.87,.20,.11],[.19,.87,.16,.09],[.79,.87,.17,.09],[.89,.86,.24,.13],[.985,.85,.29,.16]]:[[.045,.86,.24,.13],[.12,.87,.18,.105],[.22,.86,.14,.08],[.78,.87,.15,.085],[.90,.86,.22,.12],[.97,.85,.27,.145]];
   edgeTrees.forEach((tr,i)=>{
@@ -1142,7 +1272,8 @@ if(worldTier===3)document.getElementById("worldBadge").textContent="Your world �
 if(worldTier===4)document.getElementById("worldBadge").textContent="Your world · established";
 if(worldTier===5)document.getElementById("worldBadge").textContent="Your world · life takes shape";
 if(worldTier===6)document.getElementById("worldBadge").textContent="Your world · thriving";
-if(worldTier===7)document.getElementById("worldBadge").textContent="Your world · fully alive";
+if(worldTier===7)document.getElementById("worldBadge").textContent="Your world · nearly complete";
+if(worldTier===8)document.getElementById("worldBadge").textContent="Your world · fully alive";
 document.getElementById("themePulse").addEventListener("click",()=>{sceneIndex=(sceneIndex+1)%scenes.length;setScene()});
 document.getElementById("worldMotion").addEventListener("click",e=>{
   worldPaused=!worldPaused;
