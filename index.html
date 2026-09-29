@@ -764,9 +764,11 @@ function drawWorld(dt){
       // larger and placed on the visible right-side hillside so the upgrade is obvious
       // through the glass UI instead of disappearing into the distant background.
       const moreHomes=[
-        [.695,.545,38,1],[.745,.515,44,0],[.795,.535,40,2],[.845,.505,47,1],
-        [.895,.525,42,0],[.945,.495,45,2],[.985,.525,39,1],
-        [.72,.605,34,0],[.775,.585,37,2],[.835,.595,35,1],[.895,.575,39,0],[.95,.585,34,2]
+        // Deliberately large and separated so the new neighborhood reads clearly
+        // from the dashboard instead of disappearing into the distant scenery.
+        [.805,.475,62,1],[.885,.455,68,0],[.965,.475,60,2],
+        [.825,.565,58,2],[.905,.545,64,1],[.985,.565,58,0],
+        [.855,.645,54,0],[.945,.625,58,2]
       ];
       moreHomes.forEach(([xp,yp,size,style],i)=>{
         const x=cw*xp,y=ch*yp,night=sceneIndex===3;
