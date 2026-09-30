@@ -1393,6 +1393,171 @@ function drawWorld(dt){
       ctx.beginPath();ctx.moveTo(x,y-5);ctx.lineTo(x,y+5);ctx.moveTo(x,y-2);ctx.lineTo(x-5,y+2);ctx.moveTo(x,y-2);ctx.lineTo(x+5,y+2);ctx.moveTo(x,y+5);ctx.lineTo(x-3,y+10);ctx.moveTo(x,y+5);ctx.lineTo(x+3,y+10);ctx.stroke();
     }
 
+
+    // 100% LIVING DESTINATION — more people, luxury, roads, cars and one
+    // signature piece of infrastructure. Everything remains Canvas-drawn.
+
+    // A connected hillside boulevard ties the luxury neighborhood together.
+    // It stays on land and never crosses the lake, avoiding the earlier
+    // vehicle-in-water layering problem.
+    const roadY1=ch*.625, roadY2=ch*.695;
+    ctx.save();
+    ctx.lineCap='round';
+
+    ctx.strokeStyle=finalNight?'#273c38':'#3d504a';
+    ctx.lineWidth=18;
+    ctx.beginPath();
+    ctx.moveTo(cw*.58,roadY1);
+    ctx.bezierCurveTo(cw*.67,ch*.605,cw*.76,ch*.60,cw*.88,roadY2);
+    ctx.stroke();
+
+    ctx.strokeStyle=finalNight?'rgba(235,221,173,.72)':'rgba(246,224,164,.88)';
+    ctx.lineWidth=2;
+    ctx.setLineDash([13,10]);
+    ctx.beginPath();
+    ctx.moveTo(cw*.58,roadY1);
+    ctx.bezierCurveTo(cw*.67,ch*.605,cw*.76,ch*.60,cw*.88,roadY2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // A second road climbs toward the mountain overlook.
+    ctx.strokeStyle=finalNight?'#2d423d':'#465952';
+    ctx.lineWidth=13;
+    ctx.beginPath();
+    ctx.moveTo(cw*.49,ch*.78);
+    ctx.bezierCurveTo(cw*.47,ch*.73,cw*.41,ch*.68,cw*.34,ch*.625);
+    ctx.bezierCurveTo(cw*.31,ch*.61,cw*.29,ch*.60,cw*.27,ch*.59);
+    ctx.stroke();
+
+    ctx.strokeStyle=finalNight?'rgba(228,216,174,.6)':'rgba(245,226,173,.78)';
+    ctx.lineWidth=1.5;
+    ctx.setLineDash([9,8]);
+    ctx.beginPath();
+    ctx.moveTo(cw*.49,ch*.78);
+    ctx.bezierCurveTo(cw*.47,ch*.73,cw*.41,ch*.68,cw*.34,ch*.625);
+    ctx.bezierCurveTo(cw*.31,ch*.61,cw*.29,ch*.60,cw*.27,ch*.59);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Luxury cars — all firmly on the roads, with subtle motion and headlights.
+    const cars=[
+      {p:.61,y:.625,s:1.0,spd:.010,body:'#d9ddd5'},
+      {p:.69,y:.635,s:.9,spd:-.008,body:'#536d76'},
+      {p:.78,y:.67,s:1.08,spd:.007,body:'#b58a62'},
+      {p:.84,y:.695,s:.92,spd:-.006,body:'#e0e4dc'},
+      {p:.57,y:.78,s:.82,spd:.005,body:'#6c7e78'}
+    ];
+    cars.forEach((car,i)=>{
+      const travel=reduceMotion?0:Math.sin(t*car.spd*60+i)*.018;
+      const xp=Math.max(.54,Math.min(.92,car.p+travel));
+      const x=cw*xp, y=ch*car.y;
+      const w=25*car.s, h=8*car.s;
+      ctx.save();
+      ctx.translate(x,y);
+      if(car.spd<0) ctx.scale(-1,1);
+      ctx.fillStyle=car.body;
+      ctx.beginPath();
+      ctx.roundRect(-w/2,-h/2,w,h,3);
+      ctx.fill();
+      ctx.fillStyle=finalNight?'#30423e':'#65756e';
+      ctx.beginPath();
+      ctx.moveTo(-w*.20,-h*.45);ctx.lineTo(w*.10,-h*.45);
+      ctx.lineTo(w*.25,-h*.05);ctx.lineTo(-w*.28,-h*.05);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#202d2a';
+      ctx.beginPath();ctx.arc(-w*.30,h*.48,2.4,0,Math.PI*2);ctx.arc(w*.30,h*.48,2.4,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=finalNight?'#ffe6a8':'#e8eee9';
+      ctx.fillRect(w*.48,-1.7,3,2.5);
+      ctx.restore();
+    });
+
+    // More pedestrians: little groups near shops, paths and the marina.
+    const walkers=[
+      [.66,.59],[.70,.61],[.75,.585],[.80,.605],[.84,.62],
+      [.88,.655],[.73,.72],[.77,.73],[.82,.715],[.91,.735],
+      [.57,.57],[.61,.58]
+    ];
+    walkers.forEach(([xp,yp],i)=>{
+      const bob=reduceMotion?0:Math.sin(t*1.6+i*.7)*1.2;
+      const x=cw*xp+Math.sin(t*.35+i)*1.5,y=ch*yp+bob;
+      ctx.strokeStyle=finalNight?'#d7dfd9':'#405950';
+      ctx.lineWidth=1.5;
+      ctx.beginPath();
+      ctx.moveTo(x,y-5);ctx.lineTo(x,y+4);
+      ctx.moveTo(x,y-2);ctx.lineTo(x-4,y+1);
+      ctx.moveTo(x,y-2);ctx.lineTo(x+4,y+1);
+      ctx.moveTo(x,y+4);ctx.lineTo(x-3,y+9);
+      ctx.moveTo(x,y+4);ctx.lineTo(x+3,y+9);
+      ctx.stroke();
+      ctx.fillStyle=finalNight?(i%2?'#e7d6ae':'#c7ddd5'):(i%2?'#a87858':'#5f8077');
+      ctx.beginPath();ctx.arc(x,y-8,2.4,0,Math.PI*2);ctx.fill();
+    });
+
+    // A luxury hillside residence / lodge on the left mountain.
+    const hx=cw*.105, hy=ch*.555;
+    ctx.fillStyle=finalNight?'#314d46':'#8c7b62';
+    ctx.beginPath();
+    ctx.moveTo(hx-34,hy);ctx.lineTo(hx+30,hy);ctx.lineTo(hx+24,hy+25);ctx.lineTo(hx-29,hy+25);ctx.closePath();ctx.fill();
+    ctx.fillStyle=finalNight?'#3d5b53':'#d8d6c9';
+    ctx.beginPath();
+    ctx.moveTo(hx-40,hy);ctx.lineTo(hx,hy-23);ctx.lineTo(hx+38,hy);ctx.closePath();ctx.fill();
+    ctx.fillStyle=finalNight?'#f4d999':'#93b8b0';
+    for(let i=-2;i<=2;i++){
+      ctx.fillRect(hx+i*11-3,hy+7,6,7);
+    }
+    ctx.fillStyle=finalNight?'#f6d89b':'#6e8a7c';
+    ctx.fillRect(hx-48,hy+23,96,4);
+
+    // Signature 100% feature: a tiny animated mountain gondola linking the
+    // overlook to the town. It gives the final world a memorable silhouette.
+    const cableY=ch*.50;
+    ctx.strokeStyle=finalNight?'rgba(196,211,204,.55)':'rgba(71,91,83,.55)';
+    ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.moveTo(cw*.19,cableY);
+    ctx.lineTo(cw*.58,ch*.60);
+    ctx.stroke();
+
+    // Cable towers.
+    [[.29,.545],[.46,.575]].forEach(([xp,yp])=>{
+      const x=cw*xp,y=ch*yp;
+      ctx.strokeStyle=finalNight?'#526b63':'#5d6b64';
+      ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-25);ctx.moveTo(x-8,y);ctx.lineTo(x+8,y);ctx.stroke();
+    });
+
+    const gx=cw*(.19+((Math.sin(t*.22)+1)*.5)*.39);
+    const gy=ch*(.50+((gx/cw-.19)/.39)*.10);
+    ctx.fillStyle=finalNight?'#d7e1db':'#f1eee2';
+    ctx.beginPath();
+    ctx.roundRect(gx-12,gy-8,24,16,4);
+    ctx.fill();
+    ctx.strokeStyle=finalNight?'#f5d99d':'#62776f';
+    ctx.lineWidth=1.5;
+    ctx.stroke();
+    ctx.fillStyle=finalNight?'#ffe0a0':'#8db0aa';
+    ctx.fillRect(gx-7,gy-3,14,6);
+
+    // More luxury marina lights, reflected as small moving glints.
+    for(let i=0;i<16;i++){
+      const x=cw*(.61+((i*29)%340)/1000);
+      const y=ch*(.79+((i*13)%65)/1000);
+      const pulse=reduceMotion?0:Math.sin(t*1.4+i)*.8;
+      ctx.fillStyle=finalNight?'rgba(255,221,157,.78)':'rgba(255,239,192,.45)';
+      ctx.beginPath();ctx.arc(x,y,pulse+1.2,0,Math.PI*2);ctx.fill();
+    }
+
+    // A small public garden plaza beside the town: benches + a circular planter.
+    const px=cw*.57, py=ch*.61;
+    ctx.fillStyle=finalNight?'#51665e':'#7d8e7c';
+    ctx.beginPath();ctx.arc(px,py,17,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=finalNight?'#304a42':'#6e8b6d';
+    ctx.beginPath();ctx.arc(px,py,10,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=finalNight?'#c6cfc8':'#596a63';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(px-28,py+15);ctx.lineTo(px-14,py+15);
+    ctx.moveTo(px+14,py+15);ctx.lineTo(px+28,py+15);ctx.stroke();
+
+    ctx.restore();
+
     // A broad but subtle atmospheric glow ties the entire final world together.
     if(finalGolden || finalNight){
       const fg=ctx.createRadialGradient(cw*.52,ch*.56,0,cw*.52,ch*.56,cw*.42);
