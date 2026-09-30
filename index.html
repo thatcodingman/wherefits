@@ -1558,6 +1558,144 @@ function drawWorld(dt){
 
     ctx.restore();
 
+    // FINAL 100% POLISH — "swing for the hills"
+    // More life is concentrated where the eye can actually read it:
+    // mountain estate, town streets, plaza, and waterfront.
+
+    // A second luxury estate terrace on the left mountain.
+    const ex=cw*.16, ey=ch*.525;
+    ctx.fillStyle=finalNight?'#314b45':'#8a806d';
+    ctx.beginPath();
+    ctx.moveTo(ex-30,ey);ctx.lineTo(ex+32,ey);ctx.lineTo(ex+25,ey+19);ctx.lineTo(ex-27,ey+19);ctx.closePath();ctx.fill();
+    ctx.fillStyle=finalNight?'#49645b':'#ddd8c8';
+    ctx.beginPath();
+    ctx.moveTo(ex-37,ey);ctx.lineTo(ex,ey-18);ctx.lineTo(ex+38,ey);ctx.closePath();ctx.fill();
+    ctx.fillStyle=finalNight?'#f4d89c':'#8fb3ab';
+    for(let i=-2;i<=2;i++) ctx.fillRect(ex+i*10-2.5,ey+5,5,6);
+
+    // Terraced garden around the estate.
+    for(let row=0;row<3;row++){
+      const gy=ey+25+row*8;
+      ctx.strokeStyle=finalNight?'#536f63':'#62866b';
+      ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(ex-43+row*5,gy);ctx.lineTo(ex+42-row*5,gy);ctx.stroke();
+      for(let j=0;j<5;j++){
+        const gx=ex-30+j*15+row*2;
+        const sway=reduceMotion?0:Math.sin(t*1.5+j+row)*1.5;
+        ctx.fillStyle=finalNight?(j%2?'#e4d39e':'#b9d0c7'):(j%2?'#e8c99d':'#c6a8dc');
+        ctx.beginPath();ctx.arc(gx+sway,gy-4,2.2,0,Math.PI*2);ctx.fill();
+      }
+    }
+
+    // A proper plaza fountain: animated center spray + circular paving.
+    const fx=cw*.58, fy=ch*.595;
+    ctx.strokeStyle=finalNight?'rgba(203,220,213,.55)':'rgba(232,241,231,.75)';
+    ctx.lineWidth=2;
+    ctx.beginPath();ctx.ellipse(fx,fy,24,8,0,0,Math.PI*2);ctx.stroke();
+    for(let i=0;i<5;i++){
+      const spray=reduceMotion?0:Math.sin(t*2.2+i)*3;
+      ctx.strokeStyle=finalNight?'rgba(190,226,219,.75)':'rgba(222,247,239,.82)';
+      ctx.beginPath();
+      ctx.moveTo(fx+(i-2)*3,fy-2);
+      ctx.quadraticCurveTo(fx+(i-2)*5+spray,fy-14,fx+(i-2)*7,fy-23-(i%2)*3);
+      ctx.stroke();
+    }
+
+    // Outdoor café seating under small awnings.
+    const cafes=[[.665,.585],[.715,.595]];
+    cafes.forEach(([xp,yp],i)=>{
+      const x=cw*xp,y=ch*yp;
+      ctx.fillStyle=i?'#b58a62':'#718f86';
+      ctx.fillRect(x-20,y-8,40,3);
+      ctx.fillStyle=finalNight?'#d9b87e':'#d8d2c1';
+      ctx.beginPath();ctx.moveTo(x-23,y-8);ctx.lineTo(x,y-17);ctx.lineTo(x+23,y-8);ctx.closePath();ctx.fill();
+      for(let j=-1;j<=1;j++){
+        ctx.strokeStyle=finalNight?'#d7c7a3':'#5d6e66';ctx.lineWidth=1.5;
+        ctx.beginPath();ctx.moveTo(x+j*11,y-5);ctx.lineTo(x+j*11,y+7);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(x+j*11-5,y+7);ctx.lineTo(x+j*11+5,y+7);ctx.stroke();
+      }
+    });
+
+    // More visible pedestrians on the open town promenade.
+    const promenade=[
+      [.63,.655],[.675,.665],[.72,.655],[.765,.67],[.81,.655],
+      [.855,.67],[.90,.655],[.945,.67],[.67,.735],[.73,.745],
+      [.79,.735],[.85,.745],[.91,.735]
+    ];
+    promenade.forEach(([xp,yp],i)=>{
+      const x=cw*xp+Math.sin(t*.6+i*.5)*2.5;
+      const y=ch*yp+Math.sin(t*1.3+i)*1.2;
+      ctx.fillStyle=finalNight?(i%2?'#ead6a8':'#d2e2dc'):(i%2?'#b77f58':'#63887c');
+      ctx.beginPath();ctx.arc(x,y-8,2.6,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle=finalNight?'#d5ded9':'#405951';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(x,y-5);ctx.lineTo(x,y+5);
+      ctx.moveTo(x,y-2);ctx.lineTo(x-4,y+2);ctx.moveTo(x,y-2);ctx.lineTo(x+4,y+2);
+      ctx.moveTo(x,y+5);ctx.lineTo(x-3,y+9);ctx.moveTo(x,y+5);ctx.lineTo(x+3,y+9);ctx.stroke();
+    });
+
+    // A few distinctive luxury vehicles in the open road sections.
+    const premium=[
+      [.60,.625,1.15,'#d8ddd8'],[.74,.652,1.0,'#657b83'],
+      [.86,.682,.92,'#b98c67'],[.92,.70,1.08,'#e0e2da']
+    ];
+    premium.forEach(([xp,yp,s,col],i)=>{
+      const drift=reduceMotion?0:Math.sin(t*.65+i)*.018;
+      const x=cw*(xp+drift),y=ch*yp,w=29*s,h=9*s;
+      ctx.fillStyle=col;
+      ctx.beginPath();ctx.roundRect(x-w/2,y-h/2,w,h,3);ctx.fill();
+      ctx.fillStyle='#52645f';
+      ctx.beginPath();ctx.moveTo(x-w*.22,y-h*.45);ctx.lineTo(x+w*.10,y-h*.45);
+      ctx.lineTo(x+w*.25,y-h*.04);ctx.lineTo(x-w*.28,y-h*.04);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#27332f';
+      ctx.beginPath();ctx.arc(x-w*.30,y+h*.45,2.5,0,Math.PI*2);ctx.arc(x+w*.30,y+h*.45,2.5,0,Math.PI*2);ctx.fill();
+      if(finalNight){
+        ctx.fillStyle='#ffe4a0';ctx.fillRect(x+w*.48,y-1.5,4,3);
+      }
+    });
+
+    // Waterfront boardwalk: railings, benches and people watching the lake.
+    const bx=cw*.69, by=ch*.775;
+    ctx.strokeStyle=finalNight?'#5e746b':'#71847b';ctx.lineWidth=2;
+    for(let i=0;i<7;i++){
+      const x=bx+i*28;
+      ctx.beginPath();ctx.moveTo(x,by-7);ctx.lineTo(x,by+7);ctx.stroke();
+    }
+    ctx.beginPath();ctx.moveTo(bx,by-7);ctx.lineTo(bx+168,by-7);ctx.stroke();
+    for(let i=0;i<5;i++){
+      const x=bx+20+i*36;
+      ctx.strokeStyle=finalNight?'#d4c7a5':'#52645e';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(x,by+4);ctx.lineTo(x+10,by+4);ctx.stroke();
+    }
+
+    // More boats, including one larger cruiser, with animated wakes.
+    const boats=[
+      [.66,.805,22],[.735,.795,28],[.81,.815,20],[.875,.798,24],[.94,.815,18]
+    ];
+    boats.forEach(([xp,yp,w],i)=>{
+      const drift=reduceMotion?0:Math.sin(t*.4+i)*2.5;
+      const x=cw*xp+drift,y=ch*yp;
+      ctx.fillStyle=i===1?'#d9ddd6':(i%2?'#718f9a':'#c89561');
+      ctx.beginPath();ctx.moveTo(x-w/2,y);ctx.lineTo(x+w/2,y);ctx.lineTo(x+w*.30,y+7);ctx.lineTo(x-w*.35,y+7);ctx.closePath();ctx.fill();
+      if(i===1){
+        ctx.fillStyle='#eef1e9';ctx.fillRect(x-5,y-10,10,10);
+      }
+      ctx.strokeStyle='rgba(235,252,246,.58)';ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.ellipse(x,y+9,w*.72,2.5,0,0,Math.PI*2);ctx.stroke();
+    });
+
+    // Signature "life" detail: birds briefly cross the open valley in small groups.
+    for(let g=0;g<3;g++){
+      const bx2=cw*(.34+g*.18)+Math.sin(t*.18+g)*35;
+      const by2=ch*(.28+g*.035)+Math.cos(t*.22+g)*8;
+      ctx.strokeStyle=finalNight?'rgba(214,224,218,.5)':'rgba(61,88,80,.58)';
+      ctx.lineWidth=1.5;
+      ctx.beginPath();
+      ctx.moveTo(bx2-6,by2);ctx.quadraticCurveTo(bx2-3,by2-4,bx2,by2);
+      ctx.quadraticCurveTo(bx2+3,by2-4,bx2+6,by2);
+      ctx.stroke();
+    }
+
+
     // A broad but subtle atmospheric glow ties the entire final world together.
     if(finalGolden || finalNight){
       const fg=ctx.createRadialGradient(cw*.52,ch*.56,0,cw*.52,ch*.56,cw*.42);
