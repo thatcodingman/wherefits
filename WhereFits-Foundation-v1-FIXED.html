@@ -112,7 +112,7 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 <div class="move" data-move="2"><button class="check" aria-label="Complete move">✓</button><div><div class="move-title">Research one neighborhood you could live in</div><div class="move-meta">Home · 15 minutes</div></div><span class="tag">TODAY</span></div>
 <div class="move" data-move="3"><button class="check" aria-label="Complete move">✓</button><div><div class="move-title">Write down one thing you want from your next job</div><div class="move-meta">Career · 5 minutes</div></div><span class="tag">TODAY</span></div>
 </div><div class="quote">You don't have to change your whole life today. <strong>Just make the next useful move.</strong></div></div>
-<div class="card pad"><div class="card-head"><div><div class="kicker">Current goal</div><h2>Move toward a new chapter</h2></div></div><div class="goal-visual"><div class="ring"><strong id="goalPercent">0%</strong></div><div class="goal-copy" id="goalMoney">$0 of $8,000 moving fund</div></div><div class="statline"><span>Progress</span><b id="goalProgress">$0 / $8,000</b></div><div class="progress"><i id="goalProgressBar" style="width:0%"></i></div><div class="statline"><span>Milestones</span><b id="goalMilestones">0 of 5</b></div></div>
+<div class="card pad"><div class="card-head"><div><div class="kicker">Current goal</div><h2>Move toward a new chapter</h2></div></div><div class="goal-visual"><div class="ring"><strong id="goalPercent">100%</strong></div><div class="goal-copy" id="goalMoney">$8,000 of $8,000 moving fund</div></div><div class="statline"><span>Progress</span><b id="goalProgress">$8,000 / $8,000</b></div><div class="progress"><i id="goalProgressBar" style="width:100%"></i></div><div class="statline"><span>Milestones</span><b id="goalMilestones">5 of 5</b></div></div>
 <div class="card pad journal"><div class="card-head"><div><div class="kicker">Journal</div><h2>What's on your mind?</h2></div><div class="date">Today</div></div><textarea id="journal" placeholder="Write a few words about today..."></textarea><div class="mini-row"><button class="primary" id="saveJournal">Save entry</button><span class="saved" id="saved">Saved locally</span></div></div>
 <div class="card pad"><div class="card-head"><div><div class="kicker">Journey</div><h2>Keep building</h2></div></div><div class="statline"><span>Today's moves</span><b id="moveCount">0 / 3</b></div><div class="progress"><i id="moveProgress" style="width:0%"></i></div><div class="statline"><span>Current streak</span><b>1 day</b></div><div class="quote">When life gets messy, your plan doesn't disappear. Come back, adjust, and keep going.</div></div>
 </div></section>
@@ -185,14 +185,16 @@ function update(){
  document.querySelectorAll(".path-lights i").forEach((el,i)=>el.style.opacity=done>=i+1?".9":"0");
  document.querySelector(".path").style.opacity=done?String(.65+done*.07):".65";
  progressMoves=done;
- const money=Math.round(8000*pct/100);
- document.getElementById("goalPercent").textContent=pct+"%";
- document.getElementById("goalMoney").textContent=`$${money.toLocaleString()} of $8,000 moving fund`;
- document.getElementById("goalProgress").textContent=`$${money.toLocaleString()} / $8,000`;
- document.getElementById("goalProgressBar").style.width=pct+"%";
- document.getElementById("goalMilestones").textContent=`${done} of 5`;
- const fp=document.getElementById("foundationProgressPercent");if(fp)fp.textContent=pct+"%";
- const fpb=document.getElementById("foundationProgressBar");if(fpb)fpb.style.width=pct+"%";
+ // Today's moves are intentionally separate from the demo goal.
+ // The CURRENT GOAL remains the 100% foundation demo until the real Plan
+ // system replaces this with goal/milestone-derived progress.
+ document.getElementById("goalPercent").textContent="100%";
+ document.getElementById("goalMoney").textContent="$8,000 of $8,000 moving fund";
+ document.getElementById("goalProgress").textContent="$8,000 / $8,000";
+ document.getElementById("goalProgressBar").style.width="100%";
+ document.getElementById("goalMilestones").textContent="5 of 5";
+ const fp=document.getElementById("foundationProgressPercent");if(fp)fp.textContent="100%";
+ const fpb=document.getElementById("foundationProgressBar");if(fpb)fpb.style.width="100%";
  document.getElementById("worldBadge").textContent=worldTier===0?("Your world · starting point"):(done===0?"Your world · "+sceneLabels[scenes[sceneIndex]]:done===1?"Your world · the path is appearing":done===2?"Your world · momentum is building":"Your world · three moves made");
  document.getElementById("worldStatus").textContent=done===0?"THE WORLD CHANGES AS YOU MOVE":done===1?"ONE MOVE MADE · THE PATH IS APPEARING":done===2?"TWO MOVES MADE · MOMENTUM IS BUILDING":"THREE MOVES MADE · THE PATH IS LIT";
  const gc=document.querySelector(".card.pad:has(#goalPercent)");
