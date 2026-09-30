@@ -1232,6 +1232,133 @@ function drawWorld(dt){
     const finalGolden=sceneIndex===2;
     ctx.save();
 
+
+    // SKY LIFE — animated parachutists + a cleaner procedural passenger jet.
+    const planePhase = reduceMotion ? 0 : (t * 0.028) % 1.18;
+    const planeX = cw * (0.06 + planePhase);
+    const planeY = ch * (0.235 + Math.sin(t * 0.34) * 0.012);
+
+    if (planeX < cw * 1.08) {
+      ctx.save();
+      ctx.translate(planeX, planeY);
+      const ps = Math.max(0.78, Math.min(1.18, cw / 1200));
+      ctx.scale(ps, ps);
+
+      ctx.strokeStyle = 'rgba(247,250,246,.42)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-92, 5);
+      ctx.quadraticCurveTo(-150, 0, -205, 8);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(247,250,246,.22)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(-98, 9);
+      ctx.quadraticCurveTo(-158, 7, -218, 15);
+      ctx.stroke();
+
+      ctx.fillStyle = finalNight ? '#d5ddd9' : '#eef1eb';
+      ctx.beginPath();
+      ctx.moveTo(-28, 0); ctx.lineTo(-52,-17); ctx.lineTo(-45,2);
+      ctx.lineTo(-57,10); ctx.lineTo(-25,7); ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = finalNight ? '#dbe2dd' : '#f5f3ea';
+      ctx.beginPath();
+      ctx.moveTo(-48,1);
+      ctx.quadraticCurveTo(-30,-6, 57,-1);
+      ctx.quadraticCurveTo(69,0,76,4);
+      ctx.quadraticCurveTo(63,9,46,9);
+      ctx.lineTo(-42,7);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = finalNight ? '#b9c7c1' : '#d8ddd7';
+      ctx.beginPath();
+      ctx.moveTo(4,1); ctx.lineTo(-17,26); ctx.lineTo(7,12);
+      ctx.lineTo(28,7); ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(16,2); ctx.lineTo(39,-17); ctx.lineTo(34,4);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = finalNight ? '#b9d1ce' : '#71939a';
+      ctx.beginPath();
+      ctx.moveTo(43,0); ctx.quadraticCurveTo(51,0,57,3);
+      ctx.lineTo(43,5); ctx.closePath(); ctx.fill();
+
+      for(let i=0;i<6;i++){
+        ctx.fillStyle = finalNight ? '#f6dba2' : '#56767d';
+        ctx.beginPath();
+        ctx.arc(18+i*6,3.2,1.15,0,Math.PI*2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = '#aebbb6';
+      ctx.beginPath();ctx.ellipse(8,10,7,2.2,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(25,10,7,2.2,0,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+
+    const jumpers = [
+      {base:.22, y:.25, s:.72, phase:0, drift:.030},
+      {base:.39, y:.18, s:.58, phase:1.8, drift:.022},
+      {base:.55, y:.285, s:.66, phase:3.4, drift:.026},
+      {base:.69, y:.205, s:.82, phase:5.1, drift:.020},
+      {base:.82, y:.31, s:.60, phase:2.4, drift:.024}
+    ];
+
+    jumpers.forEach((j,i)=>{
+      const drift = reduceMotion ? 0 : Math.sin(t*j.drift*60+j.phase)*.035;
+      const drop = reduceMotion ? 0 : ((t*(0.0045+j.drift*.025)+j.phase*.017)%1)*.055;
+      const x = cw*(j.base+drift);
+      const y = ch*(j.y+drop);
+      const s = j.s * Math.max(.82,Math.min(1.1,cw/1200));
+
+      ctx.save();
+      ctx.translate(x,y);
+      ctx.scale(s,s);
+
+      ctx.fillStyle = ['#7c9e8e','#c49362','#6e8794','#b27b69','#789b83'][i];
+      ctx.beginPath();
+      ctx.moveTo(-22,2);
+      ctx.quadraticCurveTo(-12,-13,0,-15);
+      ctx.quadraticCurveTo(12,-13,22,2);
+      ctx.quadraticCurveTo(10,-2,0,-3);
+      ctx.quadraticCurveTo(-10,-2,-22,2);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(247,244,226,.62)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(-13,0);ctx.lineTo(-6,-11);
+      ctx.moveTo(0,-2);ctx.lineTo(0,-14);
+      ctx.moveTo(13,0);ctx.lineTo(6,-11);
+      ctx.stroke();
+
+      ctx.strokeStyle = finalNight ? '#d9e0dc' : '#526b63';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(-13,1);ctx.lineTo(-3,14);
+      ctx.moveTo(13,1);ctx.lineTo(3,14);
+      ctx.stroke();
+
+      ctx.strokeStyle = finalNight ? '#d8e0db' : '#354b45';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0,17,2.3,0,Math.PI*2);
+      ctx.moveTo(0,20);ctx.lineTo(0,29);
+      ctx.moveTo(0,23);ctx.lineTo(-6,27);
+      ctx.moveTo(0,23);ctx.lineTo(6,27);
+      ctx.moveTo(0,29);ctx.lineTo(-4,35);
+      ctx.moveTo(0,29);ctx.lineTo(4,35);
+      ctx.stroke();
+
+      ctx.restore();
+    });
+
     // SIGNATURE LEFT-MOUNTAIN WATERFALL
     // Water starts high on the left ridge, breaks over the rock face, and
     // continuously changes shape with the world clock.
