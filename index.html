@@ -266,10 +266,8 @@ document.querySelectorAll(".secondaryBtn").forEach(btn=>btn.addEventListener("cl
  setTimeout(()=>{btn.textContent=original;btn.disabled=false},1400);
 }));
 document.querySelectorAll(".check").forEach(btn=>btn.addEventListener("click",()=>{btn.closest(".move").classList.toggle("done");update()}));
-update();
 if(state.primaryDone){completePrimary(state.primaryChoice);}
 document.getElementById("saveJournal").addEventListener("click",()=>{state.journal=journal.value;localStorage.setItem(key,JSON.stringify(state));const s=document.getElementById("saved");s.classList.add("show");document.querySelector(".journal")?.classList.add("reactive-pop");setTimeout(()=>{s.classList.remove("show");document.querySelector(".journal")?.classList.remove("reactive-pop")},1600)});
-update();
 document.getElementById("resetDemo").addEventListener("click",()=>{localStorage.removeItem(key);localStorage.removeItem("wherefits_app_v1");location.reload()});
 // FOUNDATION V1 — one local state model, six real views, no backend required yet.
 const appState=JSON.parse(localStorage.getItem("wherefits_app_v1")||"{}");
