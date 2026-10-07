@@ -92,7 +92,11 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 @keyframes reactivePop{0%{transform:scale(1)}45%{transform:scale(1.018)}100%{transform:scale(1)}}
 @media(max-width:820px){.dashboard{grid-template-columns:1fr}.hero{padding-top:38px}.bottom-nav{grid-template-columns:repeat(3,1fr)}}@media(max-width:560px){.shell{width:min(100% - 20px,1180px)}header{align-items:flex-start}.top-actions .ghost:nth-child(2){display:none}.hero p{font-size:16px}.card.pad{padding:17px}.move{grid-template-columns:26px 1fr}.move .tag{display:none}.moon{right:5%;width:64px;height:64px}.bottom-nav{grid-template-columns:repeat(2,1fr)}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 
-/* 029 — the world is a place, not wallpaper. */
+   journey.innerHTML=appState.milestones.length?appState.milestones.map((m,i)=>{
+    const done=appState.completedStages.includes(i), current=!done&&i===appState.currentStage, future=!done&&i!==appState.currentStage;
+    const action=done?`<button class="journey-action" type="button" data-reopen-stage="${i}">Review stage</button>`:current?`<button class="journey-action primaryish" type="button" data-work="${i}">Go to today</button><button class="journey-action" type="button" data-complete-stage="${i}">Mark complete</button>`:`<button class="journey-action" type="button" data-preview-stage="${i}">Preview stage</button><button class="journey-action primaryish" type="button" data-work="${i}">Work on this now</button>`;
+    return `<div class="journey-step ${done?"is-complete":""} ${current?"is-current":""} ${future?"is-future":""}" data-step="${i}"><div class="journey-node">${done?"✓":i+1}</div><div class="journey-card" data-open-step="${i}"><div class="journey-top"><div><div class="journey-status">${done?"COMPLETED":current?"CURRENT STAGE":"FUTURE STAGE"}</div><div class="journey-title">${escapeHtml(m)}</div><div class="journey-meta">${done?"You have moved through this stage.":current?"This is where today starts.":"Click to preview what is coming next."}</div></div><div class="journey-tools"><button class="icon-btn" type="button" data-up="${i}" ${i===0?"disabled":""}>↑</button><button class="icon-btn" type="button" data-down="${i}" ${i===appState.milestones.length-1?"disabled":""}>↓</button></div></div><div class="journey-detail"><p>${done?"This stage is complete. You can still reopen it to remember what you accomplished.":current?"This is your active stage. The next useful moves should come from here.":"This stage is part of your path, but you have not reached it yet. Preview it now without changing where you are."}</p><div class="journey-detail-actions">${action}<button class="journey-action" type="button" data-remove-milestone="${i}">Remove stage</button></div></div></div></div>`;
+   }).join(""):`<div class="empty-state">Your path starts here. Choose a direction above, then add the stages that make sense for your life.</div>`;
 @media(min-width:900px){.shell{width:min(820px,calc(100% - 44px))}.dashboard{gap:18px}.card{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}}
 @media(max-width:760px){.shell{width:min(100% - 24px,860px)}.dashboard{grid-template-columns:1fr}.card{background:rgba(255,254,249,.78)}}
 
@@ -131,41 +135,10 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 
 /* QUALITY PASS — interactive plan journey */
 .journey{position:relative;margin:26px 0 22px;padding:4px 0 2px}.journey:before{content:"";position:absolute;left:22px;top:18px;bottom:18px;width:2px;background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.07));}.journey-step{position:relative;display:grid;grid-template-columns:46px 1fr;gap:12px;padding:0 0 18px}.journey-node{position:relative;z-index:2;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(12,20,29,.88);border:1px solid rgba(255,255,255,.22);font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.14);transition:.22s}.journey-step:hover .journey-node{transform:scale(1.06);border-color:rgba(255,255,255,.5)}.journey-card{border:1px solid rgba(255,255,255,.13);background:rgba(9,16,24,.58);border-radius:18px;padding:15px 16px;transition:.22s;cursor:pointer}.journey-card:hover{transform:translateY(-2px);background:rgba(12,21,30,.72);border-color:rgba(255,255,255,.23)}.journey-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.journey-title{font-size:16px;font-weight:750}.journey-meta{font-size:12px;opacity:.6;margin-top:4px}.journey-tools{display:flex;gap:6px;opacity:.45}.journey-card:hover .journey-tools{opacity:1}.icon-btn{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:inherit;border-radius:9px;padding:6px 8px;cursor:pointer}.journey-detail{display:none;margin-top:13px;padding-top:13px;border-top:1px solid rgba(255,255,255,.1)}.journey-step.open .journey-detail{display:block}.journey-detail p{margin:0 0 11px;font-size:13px;line-height:1.55;opacity:.72}.journey-detail-actions{display:flex;gap:8px;flex-wrap:wrap}.journey-action{border:0;border-radius:10px;padding:9px 12px;background:rgba(255,255,255,.08);color:inherit;cursor:pointer}.journey-action.primaryish{background:rgba(255,255,255,.9);color:#101820;font-weight:750}.plan-current{margin-top:18px;border-radius:16px;padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}.plan-current b{display:block;font-size:15px}.plan-current span{display:block;margin-top:4px;font-size:12px;opacity:.62}.goal-choice{transition:transform .18s,border-color .18s,background .18s}.goal-choice:hover{transform:translateY(-2px)}.goal-choice.selected{border-color:rgba(255,255,255,.48);background:rgba(255,255,255,.1);box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.journey-status{font-size:10px;letter-spacing:.16em;font-weight:850;margin-bottom:4px;opacity:.72}.journey-step.is-current .journey-node{background:#2eb486;border-color:rgba(255,255,255,.5);box-shadow:0 10px 28px rgba(46,180,134,.28)}.journey-step.is-current .journey-card{background:rgba(246,251,248,.9);border-color:rgba(46,180,134,.38);box-shadow:0 12px 34px rgba(22,72,58,.10)}.journey-step.is-current .journey-status{color:#168764;opacity:1}.journey-step.is-future .journey-node{background:rgba(18,27,35,.78);opacity:.88}.journey-step.is-future .journey-card{background:rgba(62,72,78,.46);border-color:rgba(255,255,255,.2);opacity:.9}.journey-step.is-future .journey-card:hover{background:rgba(72,83,89,.62);opacity:1;border-color:rgba(255,255,255,.34);transform:translateY(-3px)}.journey-step.is-future .journey-status{color:rgba(255,255,255,.72)}.journey-step.is-complete .journey-node{background:rgba(46,180,134,.18);color:#168764;border-color:rgba(46,180,134,.38)}.journey-step.is-complete .journey-card{background:rgba(235,247,241,.68);border-color:rgba(46,180,134,.24)}.journey-step.is-complete .journey-status{color:#168764}.journey-step.is-future .journey-title{color:rgba(255,255,255,.88)}.journey-step.is-future .journey-meta{opacity:.72}.journey-step.is-current .journey-meta{opacity:.72}
 @media(max-width:720px){.journey-card{padding:13px}.journey-top{align-items:flex-start}.journey-tools{opacity:1}.journey-step{grid-template-columns:40px 1fr}.journey-node{width:40px;height:40px}.journey:before{left:19px}}
-<style>/* PATH QUALITY PASS */
-.journey{margin-top:28px;padding:4px 2px 8px}.journey:before{left:24px;background:linear-gradient(180deg,rgba(26,40,50,.30),rgba(26,40,50,.08))}.journey-step{grid-template-columns:50px 1fr;padding-bottom:16px}.journey-node{width:48px;height:48px;background:rgba(23,31,38,.88);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.55);box-shadow:0 8px 24px rgba(12,20,26,.12);transition:.25s}.journey-card{background:rgba(45,54,60,.54);border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(12px);transition:.22s;cursor:pointer}.journey-card:hover{transform:translateX(4px);background:rgba(62,72,78,.63);border-color:rgba(62,140,111,.35);box-shadow:0 12px 28px rgba(20,35,38,.10)}.journey-status{font-size:9px;letter-spacing:.16em;font-weight:850;color:rgba(255,255,255,.50);margin-bottom:4px}.journey-tools{opacity:.55}.journey-step.is-active .journey-card{background:rgba(241,248,244,.90);border-color:rgba(61,157,121,.42);box-shadow:0 16px 34px rgba(35,85,69,.14)}.journey-step.is-active .journey-node{background:#35a982;border-color:rgba(255,255,255,.7);color:white;box-shadow:0 10px 26px rgba(53,169,130,.30);transform:scale(1.04)}.journey-step.is-active .journey-status{color:#2d9270}.journey-step.is-active .journey-title{color:#132b25}.journey-step.is-active .journey-meta{color:#587269}.journey-detail{max-height:0;overflow:hidden;opacity:0;transform:translateY(-4px);transition:max-height .28s ease,opacity .2s ease,transform .28s ease}.journey-step.open .journey-detail,.journey-step.is-active .journey-detail{max-height:180px;opacity:1;transform:none;margin-top:14px}.journey-step.is-active .journey-detail{border-top:1px solid rgba(60,120,100,.14);padding-top:12px}.journey-detail p{margin:0;color:#5f716c;font-size:12px;line-height:1.55}.journey-action{transition:transform .18s}.journey-action:hover{transform:translateY(-1px)}</style></style>
-<!-- 100% preview: fully alive destination + signature mountain-side finale. -->
-
-<style id="wherefits-quality-next">
-/* QUALITY PASS 2 — clearer hierarchy + interactive plan map */
-.card{background:rgba(255,254,249,.84);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
-.section-guide{background:rgba(255,255,255,.58);box-shadow:0 8px 28px rgba(32,61,55,.05)}
-.plan-main,.plan-side,.plan-milestones{background:rgba(255,254,249,.88)}
-.goal-choice{background:rgba(255,255,255,.60);position:relative;overflow:hidden}
-.goal-choice:after{content:'Choose';position:absolute;right:13px;top:12px;font-size:9px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:rgba(77,112,101,.55);opacity:0;transform:translateY(-3px);transition:.18s}
-.goal-choice:hover:after{opacity:1;transform:none}
-.goal-choice.selected{background:linear-gradient(135deg,rgba(91,178,141,.17),rgba(255,255,255,.78));border-color:rgba(54,167,126,.48);box-shadow:0 12px 28px rgba(42,112,88,.12)}
-.goal-choice.selected:after{content:'Selected';opacity:1;transform:none;color:#2f8e6d}
-.goal-choice.selected b:before{content:'✓';display:inline-grid;place-items:center;width:18px;height:18px;margin-right:7px;border-radius:50%;background:#35a982;color:#fff;font-size:11px;vertical-align:-2px}
-.plan-side .view-intro{max-width:430px}
-.plan-flow{gap:0;margin:22px 0 16px}
-.plan-flow-node{position:relative;padding:15px 16px;border:1px solid rgba(38,52,49,.10);border-radius:15px;background:rgba(255,255,255,.58);cursor:pointer;transition:.2s}
-.plan-flow-node:hover{transform:translateX(3px);border-color:rgba(54,167,126,.30);box-shadow:0 10px 22px rgba(30,67,59,.08)}
-.plan-flow-node.active{background:rgba(91,178,141,.11);border-color:rgba(54,167,126,.34)}
-.plan-flow-node b{font-size:15px}.plan-flow-node span{font-size:11px}
-.plan-flow-node small{display:block;margin-top:7px;color:#4f7669;font-size:10px;font-weight:750;letter-spacing:.06em;text-transform:uppercase}
-.plan-flow i{display:block;height:19px;line-height:19px}
-.plan-side .quote{margin-top:14px}
-.plan-current{background:linear-gradient(135deg,rgba(91,178,141,.13),rgba(255,255,255,.58));border-color:rgba(54,167,126,.24);box-shadow:0 10px 25px rgba(35,85,69,.07)}
-.plan-current .direction-label{display:block;font-size:9px;letter-spacing:.13em;text-transform:uppercase;font-weight:850;color:#4d796a;margin-bottom:4px}
-.plan-current .direction-title{font-size:19px;font-weight:800;color:#17372e}
-.plan-current .direction-copy{display:block;margin-top:5px;color:#5b6e68;font-size:12px}
-.plan-current .direction-edit{margin-top:11px;border:0;background:transparent;color:#39745f;text-decoration:underline;font-size:11px;font-weight:700;cursor:pointer;padding:0}
-.journey-step:not(.is-active) .journey-card{filter:saturate(.72);opacity:.78}
-.journey-step:not(.is-active) .journey-card:hover{filter:none;opacity:1}
-.journey-step.is-active .journey-card{filter:none}
-@media(max-width:720px){.goal-choice:after{display:none}}
 </style>
+<!-- 100% preview: fully alive destination + signature mountain-side finale. -->
 </head>
 <body>
 <div id="world" aria-hidden="true"><canvas id="worldCanvas"></canvas><div class="world-ui-layer"></div><div class="world-badge" id="worldBadge">Your world · first signs</div></div><div class="overlay"></div>
@@ -222,13 +195,7 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
   <div class="card pad plan-side">
     <div class="kicker">02 · Build the path</div><h2>Goal → Milestones → Moves</h2>
     <p class="view-intro">Milestones are the meaningful stages between where you are and where you want to be. You can keep, remove, or add your own.</p>
-    <div class="plan-flow" id="planFlow">
-<div class="plan-flow-node active" data-flow="goal"><b>Goal</b><span id="flowGoalText">Where you want to end up.</span><small>Start here</small></div>
-<i>↓</i>
-<div class="plan-flow-node" data-flow="milestones"><b>Milestones</b><span id="flowMilestoneText">The important stages along the way.</span><small>Build the path</small></div>
-<i>↓</i>
-<div class="plan-flow-node" data-flow="today"><b>Today</b><span id="flowTodayText">One useful move from the current stage.</span><small>Take the next step</small></div>
-</div>
+    <div class="plan-flow"><div><b>Goal</b><span>Where you want to end up.</span></div><i>↓</i><div><b>Milestones</b><span>The important stages along the way.</span></div><i>↓</i><div><b>Today</b><span>One useful move from the current stage.</span></div></div>
     <div class="quote">You don't need a perfect plan. You need a path you can actually keep walking.</div>
   </div>
 </div>
@@ -362,9 +329,9 @@ document.getElementById("resetDemo")?.addEventListener("click",()=>{storage.remo
 const appState=JSON.parse(storage.get("wherefits_app_v1")||"{}");
 appState.goal=appState.goal||"";
 appState.milestones=Array.isArray(appState.milestones)?appState.milestones:[];
+appState.currentStage=Number.isInteger(appState.currentStage)?appState.currentStage:0;
+appState.completedStages=Array.isArray(appState.completedStages)?appState.completedStages:[];
 appState.reminders=Array.isArray(appState.reminders)?appState.reminders:[];
-appState.activeMilestone=Number.isInteger(appState.activeMilestone)?appState.activeMilestone:(appState.milestones.length?0:null);
-if(appState.milestones.length && appState.activeMilestone>=appState.milestones.length) appState.activeMilestone=0;
 function saveAppState(){storage.set("wherefits_app_v1",JSON.stringify(appState));}
 function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
 function renderFoundation(){
@@ -374,27 +341,20 @@ function renderFoundation(){
  const panel=document.getElementById("milestonePanel"), current=document.getElementById("planCurrent"), count=document.getElementById("milestoneCount");
  if(panel) panel.hidden=!appState.goal;
  if(count) count.textContent=`${appState.milestones.length} ${appState.milestones.length===1?'stage':'stages'}`;
- if(current){current.hidden=!appState.goal;current.innerHTML=appState.goal?`<span class="direction-label">Your saved direction</span><span class="direction-title">${escapeHtml(appState.goal)}</span><span class="direction-copy">Everything in this path should help move this forward.</span><button class="direction-edit" type="button" id="editDirection">Change direction</button>`:"";}
+ if(current){current.hidden=!appState.goal;current.innerHTML=appState.goal?`<b>${escapeHtml(appState.goal)}</b><span>Your direction. Everything in the path should help move this forward.</span>`:"";}
  if(journey){
-   journey.innerHTML=appState.milestones.length?appState.milestones.map((m,i)=>{const active=appState.activeMilestone===i;return `<div class="journey-step ${active?"is-active":""}" data-step="${i}"><div class="journey-node">${i+1}</div><div class="journey-card" data-open-step="${i}"><div class="journey-top"><div><div class="journey-status">${active?"CURRENT STAGE":"STAGE "+String(i+1).padStart(2,"0")}</div><div class="journey-title">${escapeHtml(m)}</div><div class="journey-meta">${active?"This is where today starts.":"Click to explore this stage."}</div></div><div class="journey-tools"><button class="icon-btn" type="button" data-up="${i}" ${i===0?"disabled":""}>↑</button><button class="icon-btn" type="button" data-down="${i}" ${i===appState.milestones.length-1?"disabled":""}>↓</button></div></div><div class="journey-detail"><p>${active?"Your current stage. The next useful moves will come from here.":"Open this stage, decide what “done” means, or make it your current stage."}</p><div class="journey-detail-actions"><button class="journey-action primaryish" type="button" data-work="${i}">${active?"Go to today":"Make this current"}</button><button class="journey-action" type="button" data-remove-milestone="${i}">Remove stage</button></div></div></div></div>`;}).join(""):`<div class="empty-state">Your path starts here. Choose a direction above, then add the stages that make sense for your life.</div>`;
+   journey.innerHTML=appState.milestones.length?appState.milestones.map((m,i)=>{
+    const done=appState.completedStages.includes(i),current=!done&&i===appState.currentStage,future=!done&&i!==appState.currentStage;
+    const action=done?`<button class="journey-action" type="button" data-reopen-stage="${i}">Review stage</button>`:current?`<button class="journey-action primaryish" type="button" data-work="${i}">Go to today</button><button class="journey-action" type="button" data-complete-stage="${i}">Mark complete</button>`:`<button class="journey-action" type="button" data-preview-stage="${i}">Preview stage</button><button class="journey-action primaryish" type="button" data-work="${i}">Work on this now</button>`;
+    return `<div class="journey-step ${done?"is-complete":""} ${current?"is-current":""} ${future?"is-future":""}" data-step="${i}"><div class="journey-node">${done?"✓":i+1}</div><div class="journey-card" data-open-step="${i}"><div class="journey-top"><div><div class="journey-status">${done?"COMPLETED":current?"CURRENT STAGE":"FUTURE STAGE"}</div><div class="journey-title">${escapeHtml(m)}</div><div class="journey-meta">${done?"You have moved through this stage.":current?"This is where today starts.":"Click to preview what is coming next."}</div></div><div class="journey-tools"><button class="icon-btn" type="button" data-up="${i}" ${i===0?"disabled":""}>↑</button><button class="icon-btn" type="button" data-down="${i}" ${i===appState.milestones.length-1?"disabled":""}>↓</button></div></div><div class="journey-detail"><p>${done?"This stage is complete. You can still reopen it to remember what you accomplished.":current?"This is your active stage. The next useful moves should come from here.":"This stage is part of your path, but you have not reached it yet. Preview it now without changing where you are."}</p><div class="journey-detail-actions">${action}<button class="journey-action" type="button" data-remove-milestone="${i}">Remove stage</button></div></div></div></div>`;
+   }).join(""):`<div class="empty-state">Your path starts here. Choose a direction above, then add the stages that make sense for your life.</div>`;
  }
  const rl=document.getElementById("reminderList");
  if(rl) rl.innerHTML=appState.reminders.length?appState.reminders.map((m,i)=>`<div class="foundation-item"><div><strong>${escapeHtml(m)}</strong><span>Local reminder</span></div><button class="small-btn" data-remove-reminder="${i}" type="button">Remove</button></div>`).join(""):`<div class="empty-state">No reminders yet.</div>`;
  const gt=document.getElementById("progressGoalTitle"); if(gt) gt.textContent=appState.goal||"Your current chapter";
  const pm=document.getElementById("progressMilestones"); if(pm) pm.textContent=appState.milestones.length;
- updatePlanFlow();
 }
 
-
-function updatePlanFlow(){
- document.querySelectorAll('.goal-choice').forEach(b=>b.classList.toggle('selected', b.dataset.template && templates[b.dataset.template]?.goal===appState.goal));
- const has=!!appState.goal, count=appState.milestones.length, active=has && count ? appState.milestones[appState.activeMilestone||0] : "Choose a direction first";
- const fg=document.getElementById('flowGoalText'), fm=document.getElementById('flowMilestoneText'), ft=document.getElementById('flowTodayText');
- if(fg) fg.textContent=has?appState.goal:'Where you want to end up.';
- if(fm) fm.textContent=count?`${count} stage${count===1?'':'s'} shaping the path`:'Build the stages that make the goal real.';
- if(ft) ft.textContent=active?`Next useful move from “${active}”`:'One useful move from the current stage.';
- document.querySelectorAll('[data-flow]').forEach(n=>n.classList.remove('active'));
-}
 document.querySelectorAll("[data-nav]").forEach(btn=>btn.addEventListener("click",()=>{
  const target=btn.dataset.nav;
  document.querySelectorAll(".app-view").forEach(v=>v.classList.toggle("active",v.dataset.view===target));
@@ -402,7 +362,7 @@ document.querySelectorAll("[data-nav]").forEach(btn=>btn.addEventListener("click
  window.scrollTo({top:0,behavior:"smooth"}); renderFoundation();
 }));
 const templates={career:{goal:"Get a better job",milestones:["Know what I want from my next job","Get my resume and profile ready","Find roles and companies that fit","Start applying","Follow up and improve"]},money:{goal:"Save more money",milestones:["Choose a savings target","Understand where my money is going","Create room to save","Build the savings consistently","Review and adjust"]},home:{goal:"Move somewhere new",milestones:["Define what I need in a place","Choose locations that fit","Understand the real cost","Research actual options","Make a move plan"]},health:{goal:"Improve my health",milestones:["Choose what I want to improve","Make the first habit easy","Build consistency","Notice what is working","Adjust without starting over"]},learn:{goal:"Learn something",milestones:["Define what I want to be able to do","Choose a way to learn","Practice the fundamentals","Build or apply something","Review what I can do now"]}};
-function selectTemplate(name){document.querySelectorAll('.goal-choice').forEach(b=>b.classList.toggle('selected',b.dataset.template===name));const t=templates[name];if(!t){document.getElementById('customGoalWrap').hidden=false;document.getElementById('goalInput').focus();return;}document.getElementById('customGoalWrap').hidden=true;appState.goal=t.goal;appState.milestones=[...t.milestones];appState.activeMilestone=0;saveAppState();renderFoundation();}
+function selectTemplate(name){document.querySelectorAll('.goal-choice').forEach(b=>b.classList.toggle('selected',b.dataset.template===name));const t=templates[name];if(!t){document.getElementById('customGoalWrap').hidden=false;document.getElementById('goalInput').focus();return;}document.getElementById('customGoalWrap').hidden=true;appState.goal=t.goal;appState.milestones=[...t.milestones];saveAppState();renderFoundation();}
 document.querySelectorAll('.goal-choice').forEach(b=>b.addEventListener('click',()=>selectTemplate(b.dataset.template)));
 document.getElementById("saveGoal")?.addEventListener("click",()=>{const i=document.getElementById("goalInput"),v=i.value.trim();if(!v)return;appState.goal=v;saveAppState();renderFoundation();});
 document.getElementById("addMilestone")?.addEventListener("click",()=>{const i=document.getElementById("milestoneInput"),v=i.value.trim();if(!v)return;appState.milestones.push(v);i.value="";saveAppState();renderFoundation();});
@@ -414,18 +374,11 @@ document.addEventListener("click",e=>{
  if(down){const i=Number(down.dataset.down);[appState.milestones[i+1],appState.milestones[i]]=[appState.milestones[i],appState.milestones[i+1]];saveAppState();renderFoundation();return;}
  if(m){appState.milestones.splice(Number(m.dataset.removeMilestone),1);saveAppState();renderFoundation();return;}
  if(r){appState.reminders.splice(Number(r.dataset.removeReminder),1);saveAppState();renderFoundation();return;}
- if(work){const i=Number(work.dataset.work);if(appState.activeMilestone!==i){appState.activeMilestone=i;saveAppState();renderFoundation();return;}document.querySelector('[data-nav="today"]')?.click();setTimeout(()=>document.getElementById('startPrimary')?.scrollIntoView({behavior:'smooth',block:'center'}),120);return;}
- if(open && !e.target.closest('button')){open.closest('.journey-step')?.classList.toggle('open');}
- if(e.target.closest('#editDirection')){document.getElementById('goalChoices')?.scrollIntoView({behavior:'smooth',block:'center'});return;}
- const flow=e.target.closest('[data-flow]');
- if(flow){
-   document.querySelectorAll('[data-flow]').forEach(n=>n.classList.remove('active'));flow.classList.add('active');
-   const kind=flow.dataset.flow;
-   if(kind==='goal'){document.getElementById('goalChoices')?.scrollIntoView({behavior:'smooth',block:'center'});}
-   if(kind==='milestones'){document.getElementById('milestonePanel')?.scrollIntoView({behavior:'smooth',block:'center'});}
-   if(kind==='today'){document.querySelector('[data-nav="today"]')?.click();setTimeout(()=>document.getElementById('startPrimary')?.scrollIntoView({behavior:'smooth',block:'center'}),140);}
-   return;
- }
+ if(work){const i=Number(work.dataset.work);appState.currentStage=i;appState.completedStages=appState.completedStages.filter(n=>n!==i);saveAppState();renderFoundation();document.querySelector('[data-nav="today"]')?.click();setTimeout(()=>document.getElementById('startPrimary')?.scrollIntoView({behavior:'smooth',block:'center'}),120);return;}
+ if(e.target.closest("[data-complete-stage]")){const i=Number(e.target.closest("[data-complete-stage]").dataset.completeStage);if(!appState.completedStages.includes(i))appState.completedStages.push(i);const next=appState.milestones.findIndex((_,n)=>n>i&&!appState.completedStages.includes(n));if(next>=0)appState.currentStage=next;saveAppState();renderFoundation();return;}
+ if(e.target.closest("[data-preview-stage]")){open?.closest(".journey-step")?.classList.add("open");return;}
+ if(e.target.closest("[data-reopen-stage]")){open?.closest(".journey-step")?.classList.add("open");return;}
+ if(open && !e.target.closest("button")){open.closest(".journey-step")?.classList.toggle("open");}
 });
 renderFoundation();
 
