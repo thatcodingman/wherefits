@@ -96,6 +96,16 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 @media(min-width:900px){.shell{width:min(820px,calc(100% - 44px))}.dashboard{gap:18px}.card{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}}
 @media(max-width:760px){.shell{width:min(100% - 24px,860px)}.dashboard{grid-template-columns:1fr}.card{background:rgba(255,254,249,.78)}}
 
+/* SECTION GUIDANCE — make every part of WhereFits immediately understandable. */
+.section-guide{margin:0 0 14px;padding:14px 16px;border:1px solid rgba(38,52,49,.10);border-radius:15px;background:rgba(255,255,255,.22);display:flex;gap:12px;align-items:flex-start}
+.section-guide-mark{width:8px;height:8px;min-width:8px;margin-top:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(54,167,126,.35)}
+.section-guide-kicker{font-size:10px;letter-spacing:.13em;text-transform:uppercase;font-weight:800;color:#4d7065;margin-bottom:4px}
+.section-guide p{margin:0;color:#536760;font-size:13px;line-height:1.5}
+.section-guide strong{color:#304b43}
+.nav-btn{position:relative}
+.nav-btn::after{content:attr(data-help);display:block;font-size:9px;font-weight:600;letter-spacing:.01em;color:#78908a;margin-top:2px;line-height:1.1}
+@media(max-width:560px){.section-guide{padding:12px 13px}.nav-btn::after{display:none}}
+
 /* TODAY'S MOVES — personal next-move experience */
 .moves-card{grid-column:1/-1}
 .moves-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
@@ -116,6 +126,8 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 .choice-panel{display:none;margin-top:17px;padding:17px;border-radius:17px;background:rgba(255,255,255,.22);border:1px solid rgba(38,52,49,.11)}.choice-panel.show{display:block}.choice-panel h4{margin:0 0 5px;font-size:16px}.choice-panel p{margin:0 0 13px;color:var(--muted);font-size:12px}.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.choice{border:1px solid rgba(38,52,49,.13);background:rgba(255,255,255,.28);border-radius:12px;padding:10px 11px;text-align:left;font-size:12px;color:#30423d;cursor:pointer;transition:.18s}.choice:hover{transform:translateY(-1px);border-color:rgba(54,167,126,.4);background:rgba(111,175,152,.09)}.choice.selected{border-color:var(--accent);background:rgba(91,178,141,.12);box-shadow:0 0 0 2px rgba(54,167,126,.10)}
 .im-done{border:0;background:none;color:#5d716a;font-size:12px;text-decoration:underline;cursor:pointer;padding:7px}.im-done:hover{color:#315a4e}
 @media(max-width:650px){.move-secondary-grid{grid-template-columns:1fr}.choices{grid-template-columns:1fr 1fr}.moves-head{display:block}.move-counter{margin-top:8px}}
+
+.plan-shell{display:grid;grid-template-columns:1.3fr .8fr;gap:16px}.goal-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}.goal-choice{text-align:left;padding:16px;border:1px solid rgba(38,52,49,.10);border-radius:16px;background:rgba(255,255,255,.48);cursor:pointer;color:var(--ink);transition:.18s}.goal-choice:hover,.goal-choice.selected{transform:translateY(-1px);border-color:rgba(76,125,104,.35);background:rgba(111,175,152,.09)}.goal-choice b{display:block;font-size:15px}.goal-choice span{display:block;color:var(--muted);font-size:12px;line-height:1.45;margin-top:5px}.custom-goal{margin-top:18px}.custom-goal label{font-size:12px;font-weight:700;color:var(--muted)}.plan-current{margin-top:18px;padding:14px 16px;border-radius:15px;background:rgba(111,175,152,.08);border:1px solid rgba(76,125,104,.16)}.plan-current b{display:block;font-size:18px}.plan-current span{display:block;margin-top:4px;color:var(--muted);font-size:12px}.plan-flow{display:grid;gap:8px;margin:20px 0}.plan-flow>div{padding:12px 14px;border-radius:13px;background:rgba(111,175,152,.055)}.plan-flow b{display:block}.plan-flow span{display:block;color:var(--muted);font-size:12px;margin-top:3px}.plan-flow i{text-align:center;color:var(--muted);font-style:normal}.plan-milestones{margin-top:16px}.plan-milestones[hidden],.plan-current[hidden],#customGoalWrap[hidden]{display:none}.milestone-template{font-size:11px;color:var(--muted);margin-top:3px}.milestone-item{display:flex;align-items:center;gap:12px}.milestone-num{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(76,125,104,.11);font-size:11px;font-weight:800;flex:none}@media(max-width:820px){.plan-shell{grid-template-columns:1fr}.goal-choices{grid-template-columns:1fr}}
 </style>
 <!-- 100% preview: fully alive destination + signature mountain-side finale. -->
 </head>
@@ -126,7 +138,9 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 <header><a class="brand" href="#" aria-label="WhereFits home"><div class="logo"></div><div><strong>WHEREFITS</strong><span>Build a life that fits you.</span></div></a><div class="top-actions"><button class="ghost" id="resetDemo">Reset demo</button><button class="ghost" id="themePulse">Change scene</button><button class="ghost" id="worldMotion">Pause world</button></div></header>
 <section class="hero"><div class="eyebrow">Your life, one move at a time</div><h1>Build a life that fits you.</h1><p>WhereFits turns the things you want to change into a clear plan, a few meaningful moves today, and a place to see your progress.</p></section>
 <div class="world-status" id="worldStatus">THE WORLD CHANGES AS YOU MOVE</div>
-<section class="app-view active" data-view="today"><div class="dashboard">
+<section class="app-view active" data-view="today">
+<div class="section-guide"><span class="section-guide-mark"></span><div><div class="section-guide-kicker">What to do here</div><p><strong>Decide what matters today, then take one useful step.</strong> Today is for action — not building the perfect plan.</p></div></div>
+<div class="dashboard">
 <div class="card pad moves-card">
 <div class="moves-head"><div><div class="kicker">Today's moves</div><h2>Make the next useful move.</h2><p class="moves-sub">You do not need to solve your whole life today. One meaningful step is enough.</p></div><div class="move-counter" id="moveCounter">0 of 3 complete</div></div>
 <div class="next-move" id="nextMove">
@@ -151,19 +165,41 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 
 <!-- FOUNDATION VIEWS -->
 <section class="app-view" data-view="plan">
-<div class="foundation-grid">
-  <div class="card pad">
-    <div class="kicker">Plan</div><h2>What are you working toward?</h2>
-    <p class="view-intro">Turn something you want to change into a goal, then break it into milestones and useful next moves.</p>
-    <div class="foundation-form"><input class="foundation-input" id="goalInput" placeholder="e.g. Move to a new city" /><button class="primary" id="saveGoal">Save goal</button></div>
-    <div class="foundation-list" id="milestoneList"></div>
-    <div class="foundation-form"><input class="foundation-input" id="milestoneInput" placeholder="Add a milestone" /><button class="small-btn" id="addMilestone">Add milestone</button></div>
+<div class="section-guide"><span class="section-guide-mark"></span><div><div class="section-guide-kicker">What to do here</div><p><strong>Turn something you want to change into a path.</strong> Start with the outcome you want, then choose the pieces that actually need to happen.</p></div></div>
+<div class="plan-shell">
+  <div class="card pad plan-main">
+    <div class="kicker">01 · Choose your direction</div><h2>What do you want to change?</h2>
+    <p class="view-intro">You don't need the whole answer. Pick the closest starting point and change it later if your direction shifts.</p>
+    <div class="goal-choices" id="goalChoices">
+      <button class="goal-choice" data-template="career"><b>Get a better job</b><span>Work, income, skills, and opportunities</span></button>
+      <button class="goal-choice" data-template="money"><b>Save more money</b><span>Build a safer financial position</span></button>
+      <button class="goal-choice" data-template="home"><b>Move somewhere new</b><span>Find a place that fits the life you want</span></button>
+      <button class="goal-choice" data-template="health"><b>Improve my health</b><span>Build habits that make daily life better</span></button>
+      <button class="goal-choice" data-template="learn"><b>Learn something</b><span>Build a skill or become better at something</span></button>
+      <button class="goal-choice" data-template="custom"><b>Something else</b><span>Start with your own direction</span></button>
+    </div>
+    <div class="custom-goal" id="customGoalWrap">
+      <label for="goalInput">Your goal</label><div class="foundation-form"><input class="foundation-input" id="goalInput" placeholder="e.g. Move to a new city" /><button class="primary" id="saveGoal">Save goal</button></div>
+    </div>
+    <div class="plan-current" id="planCurrent" hidden></div>
   </div>
-  <div class="card pad"><div class="kicker">Goal structure</div><h2>Goal → Milestones → Moves</h2><p class="view-intro">Your plan creates the work; Today turns that work into a small number of actions.</p><div class="quote">You don't need a perfect plan. You need a clear next move.</div></div>
+  <div class="card pad plan-side">
+    <div class="kicker">02 · Build the path</div><h2>Goal → Milestones → Moves</h2>
+    <p class="view-intro">Milestones are the meaningful stages between where you are and where you want to be. You can keep, remove, or add your own.</p>
+    <div class="plan-flow"><div><b>Goal</b><span>Where you want to end up.</span></div><i>↓</i><div><b>Milestones</b><span>The important stages along the way.</span></div><i>↓</i><div><b>Today</b><span>One useful move from the current stage.</span></div></div>
+    <div class="quote">You don't need a perfect plan. You need a path you can actually keep walking.</div>
+  </div>
+</div>
+<div class="card pad plan-milestones" id="milestonePanel" hidden>
+  <div class="card-head"><div><div class="kicker">03 · Your milestones</div><h2>What needs to happen?</h2></div><span class="tag" id="milestoneCount">0 stages</span></div>
+  <p class="view-intro">These become the source for your future Today's Moves. Edit the path whenever real life changes.</p>
+  <div class="foundation-list" id="milestoneList"></div>
+  <div class="foundation-form"><input class="foundation-input" id="milestoneInput" placeholder="Add a milestone of your own" /><button class="small-btn" id="addMilestone">Add milestone</button></div>
 </div>
 </section>
 
 <section class="app-view" data-view="journal">
+<div class="section-guide"><span class="section-guide-mark"></span><div><div class="section-guide-kicker">What to do here</div><p><strong>Keep a record of what is happening.</strong> Write down what changed, what you learned, or what you want to remember.</p></div></div>
 <div class="foundation-grid">
   <div class="card pad journal"><div class="card-head"><div><div class="kicker">Journal</div><h2>What's on your mind?</h2></div><div class="date">Today</div></div><textarea class="foundation-textarea" id="journalFull" placeholder="Write a few words about today..."></textarea><div class="foundation-actions"><button class="primary" id="saveJournalFull">Save entry</button><span class="saved" id="savedFull">Saved locally</span></div></div>
   <div class="card pad"><div class="kicker">Journal</div><h2>Keep the record.</h2><p class="view-intro">Your entries stay on this device for now. Later, this becomes the reflection layer of WhereFits.</p></div>
@@ -171,6 +207,7 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 </section>
 
 <section class="app-view" data-view="progress">
+<div class="section-guide"><span class="section-guide-mark"></span><div><div class="section-guide-kicker">What to do here</div><p><strong>See whether your life is moving in the direction you chose.</strong> Check milestones, momentum, and how the world is changing with you.</p></div></div>
 <div class="foundation-grid">
   <div class="card pad"><div class="kicker">Progress</div><h2 id="progressGoalTitle">Your current chapter</h2><div class="statline"><span>World progress</span><b id="foundationProgressPercent">0%</b></div><div class="progress"><i id="foundationProgressBar" style="width:0%"></i></div><div class="statline"><span>Milestones</span><b id="progressMilestones">0</b></div></div>
   <div class="card pad"><div class="kicker">Momentum</div><h2>Keep the loop going.</h2><p class="view-intro">Complete moves, review what changed, adjust the plan, and keep moving.</p><div class="quote">Progress should describe your life — not become another thing you have to manage.</div></div>
@@ -178,6 +215,7 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 </section>
 
 <section class="app-view" data-view="reminders">
+<div class="section-guide"><span class="section-guide-mark"></span><div><div class="section-guide-kicker">What to do here</div><p><strong>Get future actions out of your head.</strong> Add things you need to remember later without turning your life into a giant task list.</p></div></div>
 <div class="foundation-grid">
   <div class="card pad"><div class="kicker">Reminders</div><h2>Things worth remembering</h2><p class="view-intro">A simple place for future actions. We'll make these useful before adding complexity.</p><div class="foundation-form"><input class="foundation-input" id="reminderInput" placeholder="e.g. Check new apartment listings" /><button class="primary" id="addReminder">Add reminder</button></div><div class="foundation-list" id="reminderList"></div></div>
   <div class="card pad"><div class="kicker">Later</div><h2>Timing that actually helps.</h2><p class="view-intro">Recurring moves, deadlines, and follow-ups will eventually live here without turning WhereFits into a noisy task manager.</p></div>
@@ -185,6 +223,7 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 </section>
 
 <section class="app-view" data-view="explore">
+<div class="section-guide"><span class="section-guide-mark"></span><div><div class="section-guide-kicker">What to do here</div><p><strong>Explore where the life you want could happen.</strong> Compare places and use “What If?” to think through different directions.</p></div></div>
 <div class="foundation-grid">
   <div class="card pad"><div class="kicker">Explore</div><h2>Places that could fit.</h2><p class="view-intro">Explore will eventually connect the life you're building to places where that life could happen.</p><div class="foundation-list"><div class="foundation-item"><div><strong>Neighborhoods</strong><span>Compare places against the life you want.</span></div><button class="small-btn" type="button">Coming next</button></div><div class="foundation-item"><div><strong>What If?</strong><span>See how different choices change the path.</span></div><button class="small-btn" type="button">Coming next</button></div></div></div>
   <div class="card pad"><div class="kicker">WhereFits</div><h2>The world is the backdrop.</h2><p class="view-intro">The product layer now sits on top of the living world we just finished building.</p></div>
@@ -192,12 +231,12 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 </section>
 
 <nav class="card bottom-nav" aria-label="Main navigation">
-<button class="nav-btn active" data-nav="today">Today</button>
-<button class="nav-btn" data-nav="plan">Plan</button>
-<button class="nav-btn" data-nav="journal">Journal</button>
-<button class="nav-btn" data-nav="progress">Progress</button>
-<button class="nav-btn" data-nav="reminders">Reminders</button>
-<button class="nav-btn" data-nav="explore">Explore</button>
+<button class="nav-btn active" data-nav="today" data-help="Decide & act">Today</button>
+<button class="nav-btn" data-nav="plan" data-help="Build your path">Plan</button>
+<button class="nav-btn" data-nav="journal" data-help="Reflect & record">Journal</button>
+<button class="nav-btn" data-nav="progress" data-help="See what changed">Progress</button>
+<button class="nav-btn" data-nav="reminders" data-help="Remember later">Reminders</button>
+<button class="nav-btn" data-nav="explore" data-help="Consider possibilities">Explore</button>
 </nav>
 <footer>WhereFits · Your life. Your plan. Your next move.</footer>
 </main>
@@ -288,7 +327,9 @@ function renderFoundation(){
  const goal=document.getElementById("goalInput"); if(goal) goal.value=appState.goal;
  const full=document.getElementById("journalFull"); if(full) full.value=state.journal||"";
  const ml=document.getElementById("milestoneList");
- if(ml) ml.innerHTML=appState.milestones.length?appState.milestones.map((m,i)=>`<div class="foundation-item"><div><strong>${escapeHtml(m)}</strong><span>Milestone ${i+1}</span></div><button class="small-btn" data-remove-milestone="${i}" type="button">Remove</button></div>`).join(""):`<div class="empty-state">Your first milestone will appear here.</div>`;
+ const panel=document.getElementById("milestonePanel"), current=document.getElementById("planCurrent"), count=document.getElementById("milestoneCount");
+ if(ml) ml.innerHTML=appState.milestones.length?appState.milestones.map((m,i)=>`<div class="foundation-item milestone-item"><div class="milestone-num">${i+1}</div><div style="flex:1"><strong>${escapeHtml(m)}</strong><span class="milestone-template">Milestone ${i+1} · becomes future moves</span></div><button class="small-btn" data-remove-milestone="${i}" type="button">Remove</button></div>`).join(""):`<div class="empty-state">Start with the first stage your goal needs. You can add the rest as you learn.</div>`;
+ if(panel) panel.hidden=!appState.goal; if(count) count.textContent=`${appState.milestones.length} ${appState.milestones.length===1?'stage':'stages'}`; if(current){current.hidden=!appState.goal;current.innerHTML=appState.goal?`<b>${escapeHtml(appState.goal)}</b><span>Your current direction. Change it whenever your life changes.</span>`:"";}
  const rl=document.getElementById("reminderList");
  if(rl) rl.innerHTML=appState.reminders.length?appState.reminders.map((m,i)=>`<div class="foundation-item"><div><strong>${escapeHtml(m)}</strong><span>Local reminder</span></div><button class="small-btn" data-remove-reminder="${i}" type="button">Remove</button></div>`).join(""):`<div class="empty-state">No reminders yet.</div>`;
  const gt=document.getElementById("progressGoalTitle"); if(gt) gt.textContent=appState.goal||"Your current chapter";
@@ -300,6 +341,9 @@ document.querySelectorAll("[data-nav]").forEach(btn=>btn.addEventListener("click
  document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===target));
  window.scrollTo({top:0,behavior:"smooth"}); renderFoundation();
 }));
+const templates={career:{goal:"Get a better job",milestones:["Know what I want from my next job","Get my resume and profile ready","Find roles and companies that fit","Start applying","Follow up and improve"]},money:{goal:"Save more money",milestones:["Choose a savings target","Understand where my money is going","Create room to save","Build the savings consistently","Review and adjust"]},home:{goal:"Move somewhere new",milestones:["Define what I need in a place","Choose locations that fit","Understand the real cost","Research actual options","Make a move plan"]},health:{goal:"Improve my health",milestones:["Choose what I want to improve","Make the first habit easy","Build consistency","Notice what is working","Adjust without starting over"]},learn:{goal:"Learn something",milestones:["Define what I want to be able to do","Choose a way to learn","Practice the fundamentals","Build or apply something","Review what I can do now"]}};
+function selectTemplate(name){document.querySelectorAll('.goal-choice').forEach(b=>b.classList.toggle('selected',b.dataset.template===name));const t=templates[name];if(!t){document.getElementById('customGoalWrap').hidden=false;document.getElementById('goalInput').focus();return;}document.getElementById('customGoalWrap').hidden=true;appState.goal=t.goal;appState.milestones=[...t.milestones];saveAppState();renderFoundation();}
+document.querySelectorAll('.goal-choice').forEach(b=>b.addEventListener('click',()=>selectTemplate(b.dataset.template)));
 document.getElementById("saveGoal")?.addEventListener("click",()=>{const i=document.getElementById("goalInput"),v=i.value.trim();if(!v)return;appState.goal=v;saveAppState();renderFoundation();});
 document.getElementById("addMilestone")?.addEventListener("click",()=>{const i=document.getElementById("milestoneInput"),v=i.value.trim();if(!v)return;appState.milestones.push(v);i.value="";saveAppState();renderFoundation();});
 document.getElementById("addReminder")?.addEventListener("click",()=>{const i=document.getElementById("reminderInput"),v=i.value.trim();if(!v)return;appState.reminders.push(v);i.value="";saveAppState();renderFoundation();});
