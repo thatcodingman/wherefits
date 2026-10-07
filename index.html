@@ -216,7 +216,8 @@ function update(){
  localStorage.setItem(key,JSON.stringify(state));
  const w=document.getElementById("world");w.dataset.progress=done;
  document.querySelectorAll(".path-lights i").forEach((el,i)=>el.style.opacity=done>=i+1?".9":"0");
- document.querySelector(".path").style.opacity=done?String(.65+done*.07):".65";
+ const worldPath=document.querySelector(".path");
+ if(worldPath) worldPath.style.opacity=done?String(.65+done*.07):".65";
  progressMoves=done;
  document.getElementById("goalPercent").textContent="100%";
  document.getElementById("goalMoney").textContent="$8,000 of $8,000 moving fund";
