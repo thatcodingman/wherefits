@@ -415,85 +415,105 @@ function drawWorld(dt){
   const rocks=[[.055,.78,27,15],[.13,.88,17,10],[.28,.82,13,8],[.89,.80,28,15],[.95,.90,18,11]];
   rocks.forEach(([xp,yp,rx,ry],i)=>{ctx.fillStyle=i%2?"rgba(103,120,110,.78)":"rgba(132,143,130,.82)";ctx.beginPath();ctx.ellipse(cw*xp,ch*yp,rx,ry,-.15,0,Math.PI*2);ctx.fill()});
 
-  // Grass + meadow life. Tier 0 gets a softer, layered meadow instead of repetitive strokes.
-  // Later tiers keep their existing vegetation counts/logic; this upgrade is primarily for the starting world.
+  // Grass + meadow life. Tier 0 uses layered, clustered vegetation so the left meadow feels grown-in,
+  // not like a texture painted with repeated marks. Later tiers retain their established vegetation logic.
   ctx.save();
-  const meadowGrassCount=startingWorld?76:(firstSigns?118:horizonOpens?145:92);
+  const meadowGrassCount=startingWorld?118:(firstSigns?118:horizonOpens?145:92);
   for(let i=0;i<meadowGrassCount;i++){
-    const x=cw*(.005+((i*47)%46)/100);
-    const base=ch*(.805+((i*23)%18)/100);
-    const h=(startingWorld?15:20)+(i%9)*(startingWorld?4.5:6);
-    const sway=reduceMotion?0:Math.sin(t*2.15+i*.61)*5.5+Math.sin(t*1.05+i*.17)*2.5;
-    const lean=((i%7)-3)*.8;
-    ctx.strokeStyle=i%7===0?'rgba(39,94,58,.82)':i%3===0?'rgba(63,116,69,.76)':'rgba(82,132,77,.68)';
-    ctx.lineWidth=i%5===0?1.8:1.25;
+    // Uneven clusters: dense near the foreground, sparser toward the path/horizon.
+    const cluster=i%9;
+    const x=cw*(.008+((i*37+cluster*11)%47)/100);
+    const depth=(i%17)/17;
+    const base=ch*(.782+depth*.205);
+    const h=(startingWorld?11:15)+(i%8)*(startingWorld?3.2:4.5)+depth*10;
+    const sway=reduceMotion?0:Math.sin(t*1.7+i*.47)*3.8+Math.sin(t*.82+i*.19)*1.8;
+    const lean=((i%9)-4)*.65;
+    const tone=i%11===0?'rgba(31,82,49,.88)':i%4===0?'rgba(48,105,59,.82)':i%3===0?'rgba(68,121,67,.76)':'rgba(82,133,73,.66)';
+    ctx.strokeStyle=tone;
+    ctx.lineWidth=(i%13===0?2.15:i%5===0?1.65:1.15)*(0.72+depth*.35);
     ctx.beginPath();
     ctx.moveTo(x,base);
-    ctx.quadraticCurveTo(x+lean+sway*.28,base-h*.52,x+lean+sway,base-h);
+    ctx.quadraticCurveTo(x+lean+sway*.22,base-h*.48,x+lean+sway,base-h);
     ctx.stroke();
-    if(i%3===0){
+    // paired blade gives the silhouette some natural asymmetry
+    if(i%2===0){
       ctx.beginPath();
-      ctx.moveTo(x+1,base-2);
-      ctx.quadraticCurveTo(x-2+sway*.18,base-h*.34,x-4+sway*.52,base-h*.7);
+      ctx.moveTo(x+1,base-1);
+      ctx.quadraticCurveTo(x-2+sway*.15,base-h*.34,x-4+sway*.42,base-h*.68);
       ctx.stroke();
     }
   }
 
-  // Low, overlapping leaves give the meadow an organic surface rather than a flat texture.
-  const leafCount=startingWorld?30:(firstSigns?34:horizonOpens?46:24);
+  // Broad low plants break up the individual blades and make the meadow read as a real patch of ground.
+  const leafCount=startingWorld?44:(firstSigns?34:horizonOpens?46:24);
   for(let i=0;i<leafCount;i++){
-    const x=cw*(.006+((i*31)%43)/100), y=ch*(.875+((i*11)%13)/100);
-    const scale=startingWorld?.72:1;
-    const rx=(11+(i%5)*3)*scale, ry=(4+(i%3))*scale;
-    const angle=-.85+(i%7)*.27;
-    ctx.fillStyle=i%4===0?'rgba(39,100,59,.70)':i%3===0?'rgba(58,116,66,.64)':'rgba(79,133,75,.57)';
+    const x=cw*(.004+((i*29+7)%48)/100);
+    const y=ch*(.865+((i*17)%13)/100);
+    const scale=startingWorld?.68:1;
+    const rx=(8+(i%6)*2.8)*scale, ry=(2.7+(i%3)*.9)*scale;
+    const angle=-.8+(i%9)*.19;
+    ctx.fillStyle=i%5===0?'rgba(35,91,54,.72)':i%3===0?'rgba(53,110,62,.62)':'rgba(75,126,69,.52)';
     ctx.beginPath();ctx.ellipse(x,y,rx,ry,angle,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle='rgba(48,101,61,.38)';ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(38,91,53,.30)';ctx.lineWidth=.8;
     ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(angle)*rx*.72,y+Math.sin(angle)*rx*.72);ctx.stroke();
   }
 
-  // A handful of foreground grass clumps create depth and parallax.
-  const clumpCount=startingWorld?9:(firstSigns?13:horizonOpens?19:13);
+  // Foreground tufts: larger, softer silhouettes at the bottom edge create depth.
+  const clumpCount=startingWorld?13:(firstSigns?13:horizonOpens?19:13);
   for(let i=0;i<clumpCount;i++){
-    const x=cw*(.02+((i*59)%43)/100), y=ch*(.985-((i*7)%10)/100);
-    const sway=reduceMotion?0:Math.sin(t*1.7+i*.8)*6;
-    for(let j=0;j<5;j++){
-      const lean=(j-2)*3;
-      ctx.strokeStyle=j===2?'rgba(32,83,50,.88)':'rgba(45,96,57,.70)';
-      ctx.lineWidth=j===2?2.1:1.45;
-      ctx.beginPath();ctx.moveTo(x+j*1.2,y);ctx.quadraticCurveTo(x+lean+sway*.25,y-17,x+lean+sway,y-30-j*2);ctx.stroke();
+    const x=cw*(.015+((i*53)%45)/100), y=ch*(.988-((i*11)%9)/100);
+    const sway=reduceMotion?0:Math.sin(t*1.45+i*.72)*4.5;
+    for(let j=0;j<7;j++){
+      const lean=(j-3)*3.2;
+      ctx.strokeStyle=j===3?'rgba(29,79,48,.88)':j%2?'rgba(43,94,55,.72)':'rgba(62,113,64,.64)';
+      ctx.lineWidth=j===3?2.2:1.35;
+      ctx.beginPath();
+      ctx.moveTo(x+(j-3)*1.1,y);
+      ctx.quadraticCurveTo(x+lean+sway*.18,y-14,x+lean+sway,y-25-(j%3)*3);
+      ctx.stroke();
     }
   }
   ctx.restore();
 
-  // Flowers: small clusters with stems, leaves and varied heads so they read as a meadow,
-  // not evenly spaced dots. Their heads gently bob with the living world.
+  // Flowers: irregular little colonies rather than evenly distributed dots.
+  // Each colony has a few stems, leaves, and different flower shapes; heads gently move with the wind.
   ctx.save();
-  const flowerCount=startingWorld?22:(firstSigns?30:horizonOpens?44:34);
-  const flowerPalette=['rgba(247,237,205,.96)','rgba(231,213,237,.92)','rgba(244,190,178,.88)','rgba(226,229,181,.90)'];
-  for(let i=0;i<flowerCount;i++){
-    const x=cw*(.012+((i*83)%46)/100);
-    const ground=ch*(.815+((i*37)%18)/100);
-    const stem=startingWorld?(12+(i%5)*2.5):(15+(i%6)*3);
-    const bob=reduceMotion?0:Math.sin(t*1.45+i*.73)*1.5;
-    const fx=x+bob, fy=ground-stem;
-    ctx.strokeStyle='rgba(58,110,64,.66)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(x,ground);ctx.quadraticCurveTo(x+bob*.4,ground-stem*.55,fx,fy);ctx.stroke();
-    if(i%2===0){
-      ctx.fillStyle='rgba(61,119,68,.58)';
-      ctx.beginPath();ctx.ellipse(x-3,ground-stem*.52,3.8,1.7,-.45,0,Math.PI*2);ctx.fill();
-    }
-    const color=flowerPalette[i%flowerPalette.length];
-    if(i%5===0){
-      // tiny daisy-like cluster
-      for(let p=0;p<5;p++){
-        const a=p*Math.PI*2/5;
-        ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(fx+Math.cos(a)*2.6,fy+Math.sin(a)*2.6,2.0,1.35,a,0,Math.PI*2);ctx.fill();
+  const flowerColonies=startingWorld?8:(firstSigns?10:horizonOpens?13:10);
+  const flowerPalette=['rgba(247,238,205,.95)','rgba(222,214,235,.92)','rgba(241,188,177,.88)','rgba(225,228,177,.88)'];
+  for(let c=0;c<flowerColonies;c++){
+    const cx=cw*(.025+((c*71)%42)/100);
+    const gy=ch*(.805+((c*29)%19)/100);
+    const members=2+(c%4);
+    for(let j=0;j<members;j++){
+      const ox=(j-(members-1)/2)*(7+(c%3)*2)+Math.sin(c*3.1+j)*2;
+      const x=cx+ox;
+      const stem=10+(c+j)%5*2.2;
+      const bob=reduceMotion?0:Math.sin(t*1.25+c*1.7+j*.8)*1.2;
+      const fx=x+bob, fy=gy-stem;
+      ctx.strokeStyle='rgba(55,106,62,.62)';ctx.lineWidth=.9;
+      ctx.beginPath();ctx.moveTo(x,gy);ctx.quadraticCurveTo(x+bob*.35,gy-stem*.55,fx,fy);ctx.stroke();
+      if((c+j)%2===0){
+        ctx.fillStyle='rgba(54,112,63,.55)';
+        ctx.beginPath();ctx.ellipse(x-2.6,gy-stem*.48,3.1,1.25,-.45,0,Math.PI*2);ctx.fill();
       }
-      ctx.fillStyle='rgba(221,176,84,.95)';ctx.beginPath();ctx.arc(fx,fy,1.7,0,Math.PI*2);ctx.fill();
-    }else{
-      ctx.fillStyle=color;ctx.beginPath();ctx.arc(fx,fy,2.5+(i%3)*.35,0,Math.PI*2);ctx.fill();
-      if(i%4===0){ctx.fillStyle='rgba(221,176,84,.88)';ctx.beginPath();ctx.arc(fx,fy,1.1,0,Math.PI*2);ctx.fill();}
+      const color=flowerPalette[(c+j)%flowerPalette.length];
+      if((c+j)%4===0){
+        // tiny daisy
+        for(let p=0;p<5;p++){
+          const a=p*Math.PI*2/5;
+          ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(fx+Math.cos(a)*2.3,fy+Math.sin(a)*2.3,1.9,1.15,a,0,Math.PI*2);ctx.fill();
+        }
+        ctx.fillStyle='rgba(215,169,73,.92)';ctx.beginPath();ctx.arc(fx,fy,1.35,0,Math.PI*2);ctx.fill();
+      }else if((c+j)%4===1){
+        // small bell/bud silhouette
+        ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(fx,fy+1,2.7,2.0,0,0,Math.PI*2);ctx.fill();
+      }else{
+        // tiny clustered wildflower head
+        for(let p=0;p<3;p++){
+          const a=p*2.1;
+          ctx.fillStyle=color;ctx.beginPath();ctx.arc(fx+Math.cos(a)*1.7,fy+Math.sin(a)*1.5,1.65,0,Math.PI*2);ctx.fill();
+        }
+      }
     }
   }
   ctx.restore();
