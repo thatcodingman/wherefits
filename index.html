@@ -202,8 +202,16 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 <footer>WhereFits · Your life. Your plan. Your next move.</footer>
 </main>
 <script>
-const key="wherefits001",state=JSON.parse(localStorage.getItem(key)||"{}"),dateEl=document.getElementById("todayDate");
-dateEl.textContent=new Intl.DateTimeFormat(undefined,{weekday:"short",month:"short",day:"numeric"}).format(new Date());
+const key="wherefits001";
+const storage={
+  get(k){try{return localStorage.getItem(k)}catch(e){return null}},
+  set(k,v){try{localStorage.setItem(k,v)}catch(e){}},
+  remove(k){try{localStorage.removeItem(k)}catch(e){}}
+};
+let state={};
+try{state=JSON.parse(storage.get(key)||"{}")}catch(e){state={}};
+const dateEl=document.getElementById("todayDate");
+if(dateEl)dateEl.textContent=new Intl.DateTimeFormat(undefined,{weekday:"short",month:"short",day:"numeric"}).format(new Date());
 const journal=document.getElementById("journal");journal.value=state.journal||"";
 if(state.done)Object.keys(state.done).forEach(k=>{const el=document.querySelector(`[data-move="${k}"]`);if(el)el.classList.toggle("done",state.done[k])});
 function update(){
@@ -213,7 +221,7 @@ function update(){
  document.getElementById("moveCount").textContent=`${done} / ${all.length}`;
  document.getElementById("moveProgress").style.width=pct+"%";
  state.done={};all.forEach(x=>state.done[x.dataset.move]=x.classList.contains("done"));
- localStorage.setItem(key,JSON.stringify(state));
+ storage.set(key,JSON.stringify(state));
  const w=document.getElementById("world");w.dataset.progress=done;
  document.querySelectorAll(".path-lights i").forEach((el,i)=>el.style.opacity=done>=i+1?".9":"0");
  const worldPath=document.querySelector(".path");
@@ -228,53 +236,53 @@ function update(){
  const fpb=document.getElementById("foundationProgressBar");if(fpb)fpb.style.width="100%";
  document.getElementById("worldBadge").textContent=worldTier===0?"Your world · starting point":(done===0?"Your world · "+sceneLabels[scenes[sceneIndex]]:done===1?"Your world · the path is appearing":done===2?"Your world · momentum is building":"Your world · three moves made");
  document.getElementById("worldStatus").textContent=done===0?"THE WORLD CHANGES AS YOU MOVE":done===1?"ONE MOVE MADE · THE PATH IS APPEARING":done===2?"TWO MOVES MADE · MOMENTUM IS BUILDING":"THREE MOVES MADE · THE PATH IS LIT";
- document.getElementById("moveCounter").textContent=`${Math.min(done,3)} of 3 complete`;
+ if(document.getElementById("moveCounter"))document.getElementById("moveCounter").textContent=`${Math.min(done,3)} of 3 complete`;
 }
 
 function completePrimary(choice){
- state.primaryDone=true; state.primaryChoice=choice||"Direction clarified"; localStorage.setItem(key,JSON.stringify(state));
- document.getElementById("choicePanel").classList.remove("show");
- document.getElementById("primaryDone").classList.add("show");
- document.getElementById("doneDetail").textContent=`${state.primaryChoice} · 1 step closer`;
- document.getElementById("startPrimary").textContent="Completed";
- document.getElementById("startPrimary").disabled=true;
- document.getElementById("skipPrimary").style.display="none";
- document.getElementById("primaryTitle").textContent=state.primaryChoice==="Not sure"?"You gave yourself permission not to know yet.":"You clarified what matters.";
- document.getElementById("primaryWhy").innerHTML="<strong>What changed:</strong> You now have a clearer direction to use when choosing the next step.";
- document.getElementById("moveCounter").textContent="1 of 3 complete";
+ state.primaryDone=true; state.primaryChoice=choice||"Direction clarified"; storage.set(key,JSON.stringify(state));
+ document.getElementById("choicePanel")?.classList.remove("show");
+ document.getElementById("primaryDone")?.classList.add("show");
+ if(document.getElementById("doneDetail"))document.getElementById("doneDetail").textContent=`${state.primaryChoice} · 1 step closer`;
+ if(document.getElementById("startPrimary"))document.getElementById("startPrimary").textContent="Completed";
+ if(document.getElementById("startPrimary"))document.getElementById("startPrimary").disabled=true;
+ if(document.getElementById("skipPrimary"))document.getElementById("skipPrimary").style.display="none";
+ if(document.getElementById("primaryTitle"))document.getElementById("primaryTitle").textContent=state.primaryChoice==="Not sure"?"You gave yourself permission not to know yet.":"You clarified what matters.";
+ if(document.getElementById("primaryWhy"))document.getElementById("primaryWhy").innerHTML="<strong>What changed:</strong> You now have a clearer direction to use when choosing the next step.";
+ if(document.getElementById("moveCounter"))document.getElementById("moveCounter").textContent="1 of 3 complete";
 }
 
-document.getElementById("startPrimary").addEventListener("click",()=>{
+document.getElementById("startPrimary")?.addEventListener("click",()=>{
  if(state.primaryDone)return;
  document.getElementById("choicePanel").classList.add("show");
- document.getElementById("startPrimary").textContent="Choose below";
+ if(document.getElementById("startPrimary"))document.getElementById("startPrimary").textContent="Choose below";
 });
 document.querySelectorAll(".choice").forEach(btn=>btn.addEventListener("click",()=>{
  document.querySelectorAll(".choice").forEach(x=>x.classList.remove("selected"));btn.classList.add("selected");
  completePrimary(btn.dataset.choice);
 }));
-document.getElementById("skipPrimary").addEventListener("click",()=>{
- state.primarySkipped=true;localStorage.setItem(key,JSON.stringify(state));
- document.getElementById("primaryTitle").textContent="No pressure. Choose something else today.";
- document.getElementById("primaryMeta").textContent="You can come back to this move anytime";
- document.getElementById("primaryWhy").innerHTML="<strong>That counts too:</strong> WhereFits is here to help, not give you another thing to feel behind on.";
- document.getElementById("startPrimary").textContent="Come back to this";
+document.getElementById("skipPrimary")?.addEventListener("click",()=>{
+ state.primarySkipped=true;storage.set(key,JSON.stringify(state));
+ if(document.getElementById("primaryTitle"))document.getElementById("primaryTitle").textContent="No pressure. Choose something else today.";
+ if(document.getElementById("primaryMeta"))document.getElementById("primaryMeta").textContent="You can come back to this move anytime";
+ if(document.getElementById("primaryWhy"))document.getElementById("primaryWhy").innerHTML="<strong>That counts too:</strong> WhereFits is here to help, not give you another thing to feel behind on.";
+ if(document.getElementById("startPrimary"))document.getElementById("startPrimary").textContent="Come back to this";
 });
-document.getElementById("continueAfterDone").addEventListener("click",()=>{document.getElementById("primaryDone").classList.remove("show");document.querySelector(".move-secondary-grid")?.scrollIntoView({behavior:"smooth",block:"nearest"});});
+document.getElementById("continueAfterDone")?.addEventListener("click",()=>{document.getElementById("primaryDone").classList.remove("show");document.querySelector(".move-secondary-grid")?.scrollIntoView({behavior:"smooth",block:"nearest"});});
 document.querySelectorAll(".secondaryBtn").forEach(btn=>btn.addEventListener("click",()=>{
  const original=btn.textContent;btn.textContent="Added to today";btn.disabled=true;btn.closest(".secondary-move")?.classList.add("reactive-pop");
  setTimeout(()=>{btn.textContent=original;btn.disabled=false},1400);
 }));
 document.querySelectorAll(".check").forEach(btn=>btn.addEventListener("click",()=>{btn.closest(".move").classList.toggle("done");update()}));
 if(state.primaryDone){completePrimary(state.primaryChoice);}
-document.getElementById("saveJournal").addEventListener("click",()=>{state.journal=journal.value;localStorage.setItem(key,JSON.stringify(state));const s=document.getElementById("saved");s.classList.add("show");document.querySelector(".journal")?.classList.add("reactive-pop");setTimeout(()=>{s.classList.remove("show");document.querySelector(".journal")?.classList.remove("reactive-pop")},1600)});
-document.getElementById("resetDemo").addEventListener("click",()=>{localStorage.removeItem(key);localStorage.removeItem("wherefits_app_v1");location.reload()});
+document.getElementById("saveJournal")?.addEventListener("click",()=>{state.journal=journal.value;storage.set(key,JSON.stringify(state));const s=document.getElementById("saved");s.classList.add("show");document.querySelector(".journal")?.classList.add("reactive-pop");setTimeout(()=>{s.classList.remove("show");document.querySelector(".journal")?.classList.remove("reactive-pop")},1600)});
+document.getElementById("resetDemo")?.addEventListener("click",()=>{storage.remove(key);storage.remove("wherefits_app_v1");location.reload()});
 // FOUNDATION V1 — one local state model, six real views, no backend required yet.
-const appState=JSON.parse(localStorage.getItem("wherefits_app_v1")||"{}");
+const appState=JSON.parse(storage.get("wherefits_app_v1")||"{}");
 appState.goal=appState.goal||"";
 appState.milestones=Array.isArray(appState.milestones)?appState.milestones:[];
 appState.reminders=Array.isArray(appState.reminders)?appState.reminders:[];
-function saveAppState(){localStorage.setItem("wherefits_app_v1",JSON.stringify(appState));}
+function saveAppState(){storage.set("wherefits_app_v1",JSON.stringify(appState));}
 function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
 function renderFoundation(){
  const goal=document.getElementById("goalInput"); if(goal) goal.value=appState.goal;
@@ -295,7 +303,7 @@ document.querySelectorAll("[data-nav]").forEach(btn=>btn.addEventListener("click
 document.getElementById("saveGoal")?.addEventListener("click",()=>{const i=document.getElementById("goalInput"),v=i.value.trim();if(!v)return;appState.goal=v;saveAppState();renderFoundation();});
 document.getElementById("addMilestone")?.addEventListener("click",()=>{const i=document.getElementById("milestoneInput"),v=i.value.trim();if(!v)return;appState.milestones.push(v);i.value="";saveAppState();renderFoundation();});
 document.getElementById("addReminder")?.addEventListener("click",()=>{const i=document.getElementById("reminderInput"),v=i.value.trim();if(!v)return;appState.reminders.push(v);i.value="";saveAppState();renderFoundation();});
-document.getElementById("saveJournalFull")?.addEventListener("click",()=>{const full=document.getElementById("journalFull");state.journal=full.value;localStorage.setItem(key,JSON.stringify(state));const s=document.getElementById("savedFull");s.classList.add("show");setTimeout(()=>s.classList.remove("show"),1600);});
+document.getElementById("saveJournalFull")?.addEventListener("click",()=>{const full=document.getElementById("journalFull");state.journal=full.value;storage.set(key,JSON.stringify(state));const s=document.getElementById("savedFull");s.classList.add("show");setTimeout(()=>s.classList.remove("show"),1600);});
 document.addEventListener("click",e=>{const m=e.target.closest("[data-remove-milestone]"),r=e.target.closest("[data-remove-reminder]");if(m){appState.milestones.splice(Number(m.dataset.removeMilestone),1);saveAppState();renderFoundation();}if(r){appState.reminders.splice(Number(r.dataset.removeReminder),1);saveAppState();renderFoundation();}});
 renderFoundation();
 
@@ -2086,8 +2094,8 @@ if(worldTier===5)document.getElementById("worldBadge").textContent="Your world �
 if(worldTier===6)document.getElementById("worldBadge").textContent="Your world · thriving";
 if(worldTier===7)document.getElementById("worldBadge").textContent="Your world · nearly complete";
 if(worldTier===8)document.getElementById("worldBadge").textContent="Your world · fully alive";
-document.getElementById("themePulse").addEventListener("click",()=>{sceneIndex=(sceneIndex+1)%scenes.length;setScene()});
-document.getElementById("worldMotion").addEventListener("click",e=>{
+document.getElementById("themePulse")?.addEventListener("click",()=>{sceneIndex=(sceneIndex+1)%scenes.length;setScene()});
+document.getElementById("worldMotion")?.addEventListener("click",e=>{
   worldPaused=!worldPaused;
   e.currentTarget.textContent=worldPaused?"Resume world":"Pause world";
   if(!worldPaused){last=performance.now();frame(last);}
@@ -2099,7 +2107,7 @@ document.querySelectorAll(".nav-btn").forEach(btn=>btn.addEventListener("click",
 update();
 </script>
 <script>
-(()=>{const unlock=document.getElementById("worldUnlock"),close=document.getElementById("closeWorldUnlock");if(!unlock||!close)return;function show(){if(worldTier!==5||localStorage.getItem("wherefits_tier5_seen"))return;setTimeout(()=>{const k=unlock.querySelector(".world-unlock-kicker"),h=unlock.querySelector("h2"),p=unlock.querySelector("p");if(k)k.textContent="75% · LIFE TAKES SHAPE";if(h)h.textContent="LIFE TAKES SHAPE";if(p)p.textContent="You've reached a new chapter. The quiet landscape is becoming a place: a growing town, roads, a marina, and more life around the water.";unlock.classList.add("show");unlock.setAttribute("aria-hidden","false")},700)}function hide(){unlock.classList.remove("show");unlock.setAttribute("aria-hidden","true");localStorage.setItem("wherefits_tier5_seen","1")}close.addEventListener("click",hide);unlock.addEventListener("click",e=>{if(e.target===unlock)hide()});show()})();
+(()=>{const unlock=document.getElementById("worldUnlock"),close=document.getElementById("closeWorldUnlock");if(!unlock||!close)return;function show(){if(worldTier!==5||storage.get("wherefits_tier5_seen"))return;setTimeout(()=>{const k=unlock.querySelector(".world-unlock-kicker"),h=unlock.querySelector("h2"),p=unlock.querySelector("p");if(k)k.textContent="75% · LIFE TAKES SHAPE";if(h)h.textContent="LIFE TAKES SHAPE";if(p)p.textContent="You've reached a new chapter. The quiet landscape is becoming a place: a growing town, roads, a marina, and more life around the water.";unlock.classList.add("show");unlock.setAttribute("aria-hidden","false")},700)}function hide(){unlock.classList.remove("show");unlock.setAttribute("aria-hidden","true");storage.set("wherefits_tier5_seen","1")}close.addEventListener("click",hide);unlock.addEventListener("click",e=>{if(e.target===unlock)hide()});show()})();
 </script>
 <!-- WHEREFITS_FERRY_CROSSING_036 -->
 </body>
