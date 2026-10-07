@@ -415,54 +415,88 @@ function drawWorld(dt){
   const rocks=[[.055,.78,27,15],[.13,.88,17,10],[.28,.82,13,8],[.89,.80,28,15],[.95,.90,18,11]];
   rocks.forEach(([xp,yp,rx,ry],i)=>{ctx.fillStyle=i%2?"rgba(103,120,110,.78)":"rgba(132,143,130,.82)";ctx.beginPath();ctx.ellipse(cw*xp,ch*yp,rx,ry,-.15,0,Math.PI*2);ctx.fill()});
 
-  // Grass tufts that visibly move.
-  ctx.save();ctx.strokeStyle=sceneIndex===3?"rgba(106,145,103,.75)":"rgba(66,111,73,.72)";ctx.lineWidth=1.5;
-  for(let i=0;i<95;i++){
-    const x=(i*73%47)/100*cw,y=ch*(.74+((i*19)%25)/100),sway=reduceMotion?0:Math.sin(t*2.8+i*.8)*10;
-    ctx.beginPath();ctx.moveTo(x,y+13);ctx.quadraticCurveTo(x+sway,y-2,x+sway*1.5,y-14);ctx.stroke();
-  }
-  ctx.restore();
-
-  // Tier 0 lower-left meadow: this is a real foreground zone, not a few strokes.
+  // Grass + meadow life. Tier 0 gets a softer, layered meadow instead of repetitive strokes.
+  // Later tiers keep their existing vegetation counts/logic; this upgrade is primarily for the starting world.
   ctx.save();
-  for(let i=0;i<(startingWorld?68:firstSigns?118:horizonOpens?145:92);i++){
-    const x=cw*(.005+((i*47)%46)/100), base=ch*(.81+((i*23)%17)/100);
-    const h=20+(i%9)*6, sway=reduceMotion?0:Math.sin(t*2.4+i*.55)*10+Math.sin(t*1.1+i)*4;
-    ctx.strokeStyle=i%5===0?'rgba(43,97,61,.94)':i%3===0?'rgba(66,119,69,.86)':'rgba(91,142,82,.80)';
-    ctx.lineWidth=i%4===0?2:1.55;
-    ctx.beginPath();ctx.moveTo(x,base);ctx.quadraticCurveTo(x+sway*.35,base-h*.58,x+sway,base-h);ctx.stroke();
-    if(i%8===0){
-      ctx.fillStyle=i%16===0?'rgba(229,198,118,.9)':'rgba(199,171,106,.8)';
-      ctx.beginPath();ctx.ellipse(x+sway,base-h,3,6,-.25,0,Math.PI*2);ctx.fill();
+  const meadowGrassCount=startingWorld?76:(firstSigns?118:horizonOpens?145:92);
+  for(let i=0;i<meadowGrassCount;i++){
+    const x=cw*(.005+((i*47)%46)/100);
+    const base=ch*(.805+((i*23)%18)/100);
+    const h=(startingWorld?15:20)+(i%9)*(startingWorld?4.5:6);
+    const sway=reduceMotion?0:Math.sin(t*2.15+i*.61)*5.5+Math.sin(t*1.05+i*.17)*2.5;
+    const lean=((i%7)-3)*.8;
+    ctx.strokeStyle=i%7===0?'rgba(39,94,58,.82)':i%3===0?'rgba(63,116,69,.76)':'rgba(82,132,77,.68)';
+    ctx.lineWidth=i%5===0?1.8:1.25;
+    ctx.beginPath();
+    ctx.moveTo(x,base);
+    ctx.quadraticCurveTo(x+lean+sway*.28,base-h*.52,x+lean+sway,base-h);
+    ctx.stroke();
+    if(i%3===0){
+      ctx.beginPath();
+      ctx.moveTo(x+1,base-2);
+      ctx.quadraticCurveTo(x-2+sway*.18,base-h*.34,x-4+sway*.52,base-h*.7);
+      ctx.stroke();
     }
   }
-  // Broad leaves and low plants break up the flat green surface.
-  for(let i=0;i<(startingWorld?15:firstSigns?34:horizonOpens?46:24);i++){
-    const x=cw*(.008+((i*31)%41)/100), y=ch*(.89+((i*11)%10)/100);
-    ctx.fillStyle=i%3===0?'rgba(45,105,63,.82)':i%2?'rgba(62,123,70,.78)':'rgba(91,145,79,.72)';
-    ctx.beginPath();ctx.ellipse(x,y,15+(i%4)*4,6+(i%3)*2,(-.65+(i%5)*.3),0,Math.PI*2);ctx.fill();
-    if(i%4===0){
-      ctx.strokeStyle='rgba(49,103,60,.82)';ctx.lineWidth=1.4;
-      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-5,y-16-(i%3)*3);ctx.stroke();
-    }
+
+  // Low, overlapping leaves give the meadow an organic surface rather than a flat texture.
+  const leafCount=startingWorld?30:(firstSigns?34:horizonOpens?46:24);
+  for(let i=0;i<leafCount;i++){
+    const x=cw*(.006+((i*31)%43)/100), y=ch*(.875+((i*11)%13)/100);
+    const scale=startingWorld?.72:1;
+    const rx=(11+(i%5)*3)*scale, ry=(4+(i%3))*scale;
+    const angle=-.85+(i%7)*.27;
+    ctx.fillStyle=i%4===0?'rgba(39,100,59,.70)':i%3===0?'rgba(58,116,66,.64)':'rgba(79,133,75,.57)';
+    ctx.beginPath();ctx.ellipse(x,y,rx,ry,angle,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(48,101,61,.38)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(angle)*rx*.72,y+Math.sin(angle)*rx*.72);ctx.stroke();
   }
-  // A few taller meadow clumps create foreground depth.
-  for(let i=0;i<(startingWorld?7:firstSigns?13:horizonOpens?19:13);i++){
-    const x=cw*(.025+((i*59)%42)/100), y=ch*(.985-((i*7)%9)/100);
-    const sway=reduceMotion?0:Math.sin(t*2+i)*9;
-    ctx.strokeStyle='rgba(37,88,54,.88)';ctx.lineWidth=2.2;
-    for(let j=0;j<4;j++){
-      ctx.beginPath();ctx.moveTo(x+j*3,y);ctx.quadraticCurveTo(x+sway+j*2,y-18-j*2,x+sway*.8+j*1.5,y-34-j*2);ctx.stroke();
+
+  // A handful of foreground grass clumps create depth and parallax.
+  const clumpCount=startingWorld?9:(firstSigns?13:horizonOpens?19:13);
+  for(let i=0;i<clumpCount;i++){
+    const x=cw*(.02+((i*59)%43)/100), y=ch*(.985-((i*7)%10)/100);
+    const sway=reduceMotion?0:Math.sin(t*1.7+i*.8)*6;
+    for(let j=0;j<5;j++){
+      const lean=(j-2)*3;
+      ctx.strokeStyle=j===2?'rgba(32,83,50,.88)':'rgba(45,96,57,.70)';
+      ctx.lineWidth=j===2?2.1:1.45;
+      ctx.beginPath();ctx.moveTo(x+j*1.2,y);ctx.quadraticCurveTo(x+lean+sway*.25,y-17,x+lean+sway,y-30-j*2);ctx.stroke();
     }
   }
   ctx.restore();
 
-  // Flowers.
-  for(let i=0;i<(startingWorld?12:firstSigns?26:horizonOpens?42:34);i++){
-    const x=(i*91%48)/100*cw,y=ch*(.78+((i*13)%18)/100);
-    ctx.fillStyle=i%3===0?"rgba(255,242,204,.95)":"rgba(246,232,220,.82)";
-    ctx.beginPath();ctx.arc(x,y,2.4,0,Math.PI*2);ctx.fill();
+  // Flowers: small clusters with stems, leaves and varied heads so they read as a meadow,
+  // not evenly spaced dots. Their heads gently bob with the living world.
+  ctx.save();
+  const flowerCount=startingWorld?22:(firstSigns?30:horizonOpens?44:34);
+  const flowerPalette=['rgba(247,237,205,.96)','rgba(231,213,237,.92)','rgba(244,190,178,.88)','rgba(226,229,181,.90)'];
+  for(let i=0;i<flowerCount;i++){
+    const x=cw*(.012+((i*83)%46)/100);
+    const ground=ch*(.815+((i*37)%18)/100);
+    const stem=startingWorld?(12+(i%5)*2.5):(15+(i%6)*3);
+    const bob=reduceMotion?0:Math.sin(t*1.45+i*.73)*1.5;
+    const fx=x+bob, fy=ground-stem;
+    ctx.strokeStyle='rgba(58,110,64,.66)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,ground);ctx.quadraticCurveTo(x+bob*.4,ground-stem*.55,fx,fy);ctx.stroke();
+    if(i%2===0){
+      ctx.fillStyle='rgba(61,119,68,.58)';
+      ctx.beginPath();ctx.ellipse(x-3,ground-stem*.52,3.8,1.7,-.45,0,Math.PI*2);ctx.fill();
+    }
+    const color=flowerPalette[i%flowerPalette.length];
+    if(i%5===0){
+      // tiny daisy-like cluster
+      for(let p=0;p<5;p++){
+        const a=p*Math.PI*2/5;
+        ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(fx+Math.cos(a)*2.6,fy+Math.sin(a)*2.6,2.0,1.35,a,0,Math.PI*2);ctx.fill();
+      }
+      ctx.fillStyle='rgba(221,176,84,.95)';ctx.beginPath();ctx.arc(fx,fy,1.7,0,Math.PI*2);ctx.fill();
+    }else{
+      ctx.fillStyle=color;ctx.beginPath();ctx.arc(fx,fy,2.5+(i%3)*.35,0,Math.PI*2);ctx.fill();
+      if(i%4===0){ctx.fillStyle='rgba(221,176,84,.88)';ctx.beginPath();ctx.arc(fx,fy,1.1,0,Math.PI*2);ctx.fill();}
+    }
   }
+  ctx.restore();
 
   // Fence near the lake.
   ctx.strokeStyle="rgba(102,82,60,.52)";ctx.lineWidth=3;
