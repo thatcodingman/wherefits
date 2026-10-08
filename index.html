@@ -201,6 +201,12 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 </nav>
 <footer>WhereFits · Your life. Your plan. Your next move.</footer>
 </main>
+<script id="wherefits-health-bootstrap">
+/* Diagnostic-only guard. The original app/world renderer below is untouched. */
+window.__whereFitsHealth={errors:[],startedAt:Date.now()};
+window.addEventListener('error',function(e){window.__whereFitsHealth.errors.push((e.message||'Script error')+' at '+(e.filename||'inline')+':'+(e.lineno||'?'));});
+window.addEventListener('unhandledrejection',function(e){window.__whereFitsHealth.errors.push('Unhandled promise rejection: '+String(e.reason));});
+</script>
 <script>
 const key="wherefits001";
 const storage={
@@ -2110,5 +2116,23 @@ update();
 (()=>{const unlock=document.getElementById("worldUnlock"),close=document.getElementById("closeWorldUnlock");if(!unlock||!close)return;function show(){if(worldTier!==5||storage.get("wherefits_tier5_seen"))return;setTimeout(()=>{const k=unlock.querySelector(".world-unlock-kicker"),h=unlock.querySelector("h2"),p=unlock.querySelector("p");if(k)k.textContent="75% · LIFE TAKES SHAPE";if(h)h.textContent="LIFE TAKES SHAPE";if(p)p.textContent="You've reached a new chapter. The quiet landscape is becoming a place: a growing town, roads, a marina, and more life around the water.";unlock.classList.add("show");unlock.setAttribute("aria-hidden","false")},700)}function hide(){unlock.classList.remove("show");unlock.setAttribute("aria-hidden","true");storage.set("wherefits_tier5_seen","1")}close.addEventListener("click",hide);unlock.addEventListener("click",e=>{if(e.target===unlock)hide()});show()})();
 </script>
 <!-- WHEREFITS_FERRY_CROSSING_036 -->
+<script id="wherefits-health-panel">
+(function(){
+ const params=new URLSearchParams(location.search); if(params.get('diagnostics')!=='1') return;
+ const panel=document.createElement('aside'); panel.id='wherefits-health-report';
+ panel.style.cssText='position:fixed;z-index:99999;right:12px;bottom:12px;max-width:min(420px,calc(100vw - 24px));max-height:45vh;overflow:auto;background:#101b20;color:#eaf5f4;border:1px solid #78a7a1;border-radius:10px;padding:12px 14px;font:12px/1.5 ui-monospace,monospace;box-shadow:0 8px 28px #0005';
+ panel.innerHTML='<b>WhereFits background health check</b><div id="wf-health-content">Checking…</div><button id="wf-health-close" style="margin-top:8px;background:#d8efea;color:#102020;border:0;border-radius:5px;padding:4px 8px;cursor:pointer">Hide</button>'; document.body.appendChild(panel);
+ document.getElementById('wf-health-close').onclick=()=>panel.remove();
+ function report(){
+  const c=document.getElementById('worldCanvas'),ctx=c&&c.getContext&&c.getContext('2d');
+  let pixel='unavailable'; try{if(ctx&&c.width&&c.height){const p=ctx.getImageData(Math.floor(c.width*.5),Math.floor(c.height*.5),1,1).data;pixel='rgba('+Array.from(p).join(',')+')';}}catch(e){pixel='read blocked: '+e.message}
+  const p=params.get('progress'); const n=p===null?0:Number(p); const expected=n>=100?8:n>=95?7:n>=90?6:n>=75?5:n>=60?4:n>=40?3:n>=25?2:n>=10?1:0;
+  const badge=document.getElementById('worldBadge'); const errors=window.__whereFitsHealth.errors;
+  const rows=[['URL progress',p===null?'default (0%)':p+'%'],['Expected world tier','Tier '+expected],['Canvas',c?(c.width+' × '+c.height):'MISSING'],['Canvas pixel',pixel],['World badge',badge?badge.textContent:'MISSING'],['Runtime errors',errors.length?errors.join(' | '):'None captured']];
+  document.getElementById('wf-health-content').innerHTML=rows.map(r=>'<div><span style="color:#9dbbb8">'+r[0]+':</span> '+String(r[1]).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>').join('')+'<div style="margin-top:7px;color:#a9c9c5">Test each threshold by changing ?progress= to 0,10,25,40,60,75,90,95,100. This panel is opt-in.</div>';
+ }
+ setTimeout(report,350); setTimeout(report,1200);
+})();
+</script>
 </body>
 </html>
