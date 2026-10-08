@@ -95,7 +95,7 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
    journey.innerHTML=appState.milestones.length?appState.milestones.map((m,i)=>{
     const done=appState.completedStages.includes(i), current=!done&&i===appState.currentStage, future=!done&&i!==appState.currentStage;
     const action=done?`<button class="journey-action" type="button" data-reopen-stage="${i}">Review stage</button>`:current?`<button class="journey-action primaryish" type="button" data-work="${i}">Go to today</button><button class="journey-action" type="button" data-complete-stage="${i}">Mark complete</button>`:`<button class="journey-action" type="button" data-preview-stage="${i}">Preview stage</button><button class="journey-action primaryish" type="button" data-work="${i}">Work on this now</button>`;
-    return `<div class="journey-step ${done?"is-complete":""} ${current?"is-current":""} ${future?"is-future":""}" data-step="${i}"><div class="journey-node">${done?"✓":i+1}</div><div class="journey-card" data-open-step="${i}"><div class="journey-top"><div><div class="journey-status">${done?"COMPLETED":current?"CURRENT STAGE":"FUTURE STAGE"}</div><div class="journey-title">${escapeHtml(m)}</div><div class="journey-meta">${done?"You have moved through this stage.":current?"This is where today starts.":"Click to preview what is coming next."}</div></div><div class="journey-tools"><button class="icon-btn" type="button" data-up="${i}" ${i===0?"disabled":""}>↑</button><button class="icon-btn" type="button" data-down="${i}" ${i===appState.milestones.length-1?"disabled":""}>↓</button></div></div><div class="journey-detail"><p>${done?"This stage is complete. You can still reopen it to remember what you accomplished.":current?"This is your active stage. The next useful moves should come from here.":"This stage is part of your path, but you have not reached it yet. Preview it now without changing where you are."}</p><div class="journey-detail-actions">${action}<button class="journey-action" type="button" data-remove-milestone="${i}">Remove stage</button></div></div></div></div>`;
+    return `<div class="journey-step ${done?"is-complete":""} ${current?"is-current":""} ${future?"is-future":""}" data-step="${i}"><div class="journey-node">${done?"✓":i+1}</div><div class="journey-card" data-open-step="${i}"><div class="journey-top"><div><div class="journey-status">${done?"COMPLETED":current?"CURRENT STAGE":"FUTURE STAGE"}</div><div class="journey-title">${escapeHtml(m)}</div><div class="journey-meta">${done?"You have moved through this stage.":current?"This is where today starts.":"Click to preview what is coming next."}</div></div><div class="journey-tools"><button class="icon-btn" type="button" data-up="${i}" ${i===0?"disabled":""}>↑</button><button class="icon-btn" type="button" data-down="${i}" ${i===appState.milestones.length-1?"disabled":""}>↓</button></div></div><div class="journey-detail"><p>${done?"This stage is complete. You can still reopen it to remember what you accomplished.":current?"This is your active stage. The next useful moves should come from here.":"This stage is part of your path, but you have not reached it yet. Preview it now without changing where you are."}</p><div class="journey-detail-actions">${action}<button class="journey-action" type="button" data-remove-milestone="${i}">Remove stage</button></div><div class="stage-workspace" id="stageWorkspace-${i}" data-stage-workspace="${i}"></div></div></div></div>`;
    }).join(""):`<div class="empty-state">Your path starts here. Choose a direction above, then add the stages that make sense for your life.</div>`;
 @media(min-width:900px){.shell{width:min(820px,calc(100% - 44px))}.dashboard{gap:18px}.card{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}}
 @media(max-width:760px){.shell{width:min(100% - 24px,860px)}.dashboard{grid-template-columns:1fr}.card{background:rgba(255,254,249,.78)}}
@@ -137,6 +137,10 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 .journey{position:relative;margin:26px 0 22px;padding:4px 0 2px}.journey:before{content:"";position:absolute;left:22px;top:18px;bottom:18px;width:2px;background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.07));}.journey-step{position:relative;display:grid;grid-template-columns:46px 1fr;gap:12px;padding:0 0 18px}.journey-node{position:relative;z-index:2;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(12,20,29,.88);border:1px solid rgba(255,255,255,.22);font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.14);transition:.22s}.journey-step:hover .journey-node{transform:scale(1.06);border-color:rgba(255,255,255,.5)}.journey-card{border:1px solid rgba(255,255,255,.13);background:rgba(9,16,24,.58);border-radius:18px;padding:15px 16px;transition:.22s;cursor:pointer}.journey-card:hover{transform:translateY(-2px);background:rgba(12,21,30,.72);border-color:rgba(255,255,255,.23)}.journey-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.journey-title{font-size:16px;font-weight:750}.journey-meta{font-size:12px;opacity:.6;margin-top:4px}.journey-tools{display:flex;gap:6px;opacity:.45}.journey-card:hover .journey-tools{opacity:1}.icon-btn{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:inherit;border-radius:9px;padding:6px 8px;cursor:pointer}.journey-detail{display:none;margin-top:13px;padding-top:13px;border-top:1px solid rgba(255,255,255,.1)}.journey-step.open .journey-detail{display:block}.journey-detail p{margin:0 0 11px;font-size:13px;line-height:1.55;opacity:.72}.journey-detail-actions{display:flex;gap:8px;flex-wrap:wrap}.journey-action{border:0;border-radius:10px;padding:9px 12px;background:rgba(255,255,255,.08);color:inherit;cursor:pointer}.journey-action.primaryish{background:rgba(255,255,255,.9);color:#101820;font-weight:750}.plan-current{margin-top:18px;border-radius:16px;padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}.plan-current b{display:block;font-size:15px}.plan-current span{display:block;margin-top:4px;font-size:12px;opacity:.62}.goal-choice{transition:transform .18s,border-color .18s,background .18s}.goal-choice:hover{transform:translateY(-2px)}.goal-choice.selected{border-color:rgba(255,255,255,.48);background:rgba(255,255,255,.1);box-shadow:0 10px 30px rgba(0,0,0,.12)}
 .journey-status{font-size:10px;letter-spacing:.16em;font-weight:850;margin-bottom:4px;opacity:.72}.journey-step.is-current .journey-node{background:#2eb486;border-color:rgba(255,255,255,.5);box-shadow:0 10px 28px rgba(46,180,134,.28)}.journey-step.is-current .journey-card{background:rgba(246,251,248,.9);border-color:rgba(46,180,134,.38);box-shadow:0 12px 34px rgba(22,72,58,.10)}.journey-step.is-current .journey-status{color:#168764;opacity:1}.journey-step.is-future .journey-node{background:rgba(18,27,35,.78);opacity:.88}.journey-step.is-future .journey-card{background:rgba(62,72,78,.46);border-color:rgba(255,255,255,.2);opacity:.9}.journey-step.is-future .journey-card:hover{background:rgba(72,83,89,.62);opacity:1;border-color:rgba(255,255,255,.34);transform:translateY(-3px)}.journey-step.is-future .journey-status{color:rgba(255,255,255,.72)}.journey-step.is-complete .journey-node{background:rgba(46,180,134,.18);color:#168764;border-color:rgba(46,180,134,.38)}.journey-step.is-complete .journey-card{background:rgba(235,247,241,.68);border-color:rgba(46,180,134,.24)}.journey-step.is-complete .journey-status{color:#168764}.journey-step.is-future .journey-title{color:rgba(255,255,255,.88)}.journey-step.is-future .journey-meta{opacity:.72}.journey-step.is-current .journey-meta{opacity:.72}
 @media(max-width:720px){.journey-card{padding:13px}.journey-top{align-items:flex-start}.journey-tools{opacity:1}.journey-step{grid-template-columns:40px 1fr}.journey-node{width:40px;height:40px}.journey:before{left:19px}}
+
+.stage-workspace{margin-top:14px;padding:18px;border:1px solid rgba(54,167,126,.18);border-radius:18px;background:rgba(255,255,250,.78);display:none;animation:stageIn .28s ease}.stage-workspace.show{display:block}.stage-workspace-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.stage-kicker{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:800}.stage-workspace h3{margin:5px 0 5px;font-size:22px;letter-spacing:-.03em}.stage-workspace p{margin:0;color:var(--muted);line-height:1.55}.stage-progress{margin:16px 0 12px}.stage-progress-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:7px}.stage-moves{display:grid;gap:8px}.stage-move{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;padding:12px;border:1px solid rgba(32,51,47,.08);border-radius:14px;background:rgba(255,255,255,.58);transition:.2s}.stage-move:hover{transform:translateY(-1px);border-color:rgba(54,167,126,.22)}.stage-move.is-done{opacity:.7}.stage-move-check{width:26px;height:26px;border-radius:50%;border:1px solid rgba(32,51,47,.16);background:transparent;color:var(--accent);display:grid;place-items:center;font-size:13px}.stage-move.is-done .stage-move-check{background:rgba(54,167,126,.14);border-color:rgba(54,167,126,.35)}.stage-move-title{font-weight:750}.stage-move-meta{font-size:11px;color:var(--muted);margin-top:2px}.stage-move-action{border:0;background:transparent;color:var(--accent);font-weight:750;font-size:12px}.stage-workspace-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px}.stage-next-note{font-size:12px;color:var(--muted)}.stage-next-note strong{color:var(--text)}.stage-close{border:0;background:transparent;color:var(--muted);font-size:12px}.today-stage-context{margin:0 0 14px;padding:11px 13px;border-radius:14px;background:rgba(54,167,126,.08);border:1px solid rgba(54,167,126,.13);display:none}.today-stage-context.show{display:block}.today-stage-context .context-kicker{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:800}.today-stage-context strong{display:block;margin-top:3px}.today-stage-context span{font-size:12px;color:var(--muted)}@keyframes stageIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+
+.today-stage-context{grid-column:1/-1}.today-action-panel{grid-column:1/-1;margin:0 0 2px;padding:18px;border-radius:18px;background:rgba(255,254,249,.82);border:1px solid rgba(54,167,126,.16);display:none;box-shadow:0 10px 28px rgba(30,67,59,.08)}.today-action-panel.show{display:block;animation:stageIn .24s ease}.today-action-panel h3{margin:4px 0 5px;font-size:20px}.today-action-panel p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}.action-options{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.action-option{border:1px solid rgba(32,51,47,.11);background:rgba(255,255,255,.68);color:var(--text);padding:9px 12px;border-radius:12px;font-weight:700;font-size:12px}.action-option:hover,.action-option.selected{border-color:rgba(54,167,126,.38);background:rgba(54,167,126,.10)}.action-fields{display:grid;gap:8px;margin-top:14px}.action-fields input,.action-fields textarea{width:100%;border:1px solid rgba(32,51,47,.12);background:rgba(255,255,255,.72);border-radius:12px;padding:11px 12px;color:var(--text);outline:none}.action-fields textarea{min-height:78px;resize:vertical}.action-panel-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:13px}.action-helper{font-size:11px;color:var(--muted)}
 </style>
 <!-- 100% preview: fully alive destination + signature mountain-side finale. -->
 </head>
@@ -150,6 +154,8 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 <section class="app-view active" data-view="today">
 <div class="section-guide"><span class="section-guide-mark"></span><div><div class="section-guide-kicker">What to do here</div><p><strong>Decide what matters today, then take one useful step.</strong> Today is for action — not building the perfect plan.</p></div></div>
 <div class="dashboard">
+<div class="today-stage-context" id="todayStageContext"></div>
+<div class="today-action-panel" id="todayActionPanel"></div>
 <div class="card pad moves-card">
 <div class="moves-head"><div><div class="kicker">Today's moves</div><h2>Make the next useful move.</h2><p class="moves-sub">You do not need to solve your whole life today. One meaningful step is enough.</p></div><div class="move-counter" id="moveCounter">0 of 3 complete</div></div>
 <div class="next-move" id="nextMove">
@@ -282,6 +288,7 @@ function update(){
  document.getElementById("goalMilestones").textContent="5 of 5";
  const fp=document.getElementById("foundationProgressPercent");if(fp)fp.textContent="100%";
  const fpb=document.getElementById("foundationProgressBar");if(fpb)fpb.style.width="100%";
+ refreshTodayFromPlan();
  document.getElementById("worldBadge").textContent=worldTier===0?"Your world · starting point":(done===0?"Your world · "+sceneLabels[scenes[sceneIndex]]:done===1?"Your world · the path is appearing":done===2?"Your world · momentum is building":"Your world · three moves made");
  document.getElementById("worldStatus").textContent=done===0?"THE WORLD CHANGES AS YOU MOVE":done===1?"ONE MOVE MADE · THE PATH IS APPEARING":done===2?"TWO MOVES MADE · MOMENTUM IS BUILDING":"THREE MOVES MADE · THE PATH IS LIT";
  if(document.getElementById("moveCounter"))document.getElementById("moveCounter").textContent=`${Math.min(done,3)} of 3 complete`;
@@ -301,7 +308,9 @@ function completePrimary(choice){
 }
 
 document.getElementById("startPrimary")?.addEventListener("click",()=>{
- if(state.primaryDone)return;
+ const idx=Number.isInteger(appState.currentStage)?appState.currentStage:-1;
+ const title=appState.milestones[idx];
+ if(title && !state.primaryDone){renderTodayActionPanel();document.getElementById("todayActionPanel")?.scrollIntoView({behavior:"smooth",block:"center"});return;}
  document.getElementById("choicePanel").classList.add("show");
  if(document.getElementById("startPrimary"))document.getElementById("startPrimary").textContent="Choose below";
 });
@@ -334,6 +343,64 @@ appState.completedStages=Array.isArray(appState.completedStages)?appState.comple
 appState.reminders=Array.isArray(appState.reminders)?appState.reminders:[];
 function saveAppState(){storage.set("wherefits_app_v1",JSON.stringify(appState));}
 function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
+
+const stageMoveLibrary={
+  money:[
+    {match:'Understand where my money is going',moves:[['Look at your last 30 days of spending','10 min'],['Identify your 3 biggest expenses','10 min'],['Find one expense you could realistically change','10 min']]},
+    {match:'Choose a savings target',moves:[['Choose the amount you want to save','5 min'],['Choose a date that feels realistic','5 min'],['Write down what this goal is for','5 min']]},
+    {match:'Create room to save',moves:[['Find one recurring expense to reduce','10 min'],['Choose one purchase you can skip this week','5 min'],['Move your first small amount toward the goal','5 min']]},
+    {match:'Build the savings consistently',moves:[['Choose a simple savings rhythm','5 min'],['Make the next contribution','5 min'],['Decide how you will keep track','5 min']]},
+    {match:'Review and adjust',moves:[['Check what worked this month','10 min'],['Notice what made saving harder','5 min'],['Adjust your target or approach','10 min']]}
+  ],
+  career:[
+    {match:'Know what I want',moves:[['Write down your target salary','5 min'],['Choose your top three job priorities','10 min'],['Name one thing you do not want again','5 min']]},
+    {match:'Get my resume',moves:[['Open your resume','2 min'],['Improve one section','15 min'],['Update one profile detail','10 min']]},
+    {match:'Find roles',moves:[['Find one role that fits','10 min'],['Save three companies you like','10 min'],['Compare one role with your priorities','10 min']]},
+    {match:'Start applying',moves:[['Choose one strong-fit opening','10 min'],['Tailor one part of your application','15 min'],['Send one application','10 min']]},
+    {match:'Follow up',moves:[['Review one application','10 min'],['Send one follow-up','5 min'],['Write down what you learned','5 min']]}
+  ]
+};
+function stageMovesFor(title){
+ const goal=(appState.goal||'').toLowerCase(); const family=goal.includes('job')?'career':goal.includes('money')||goal.includes('save')?'money':null;
+ const pool=stageMoveLibrary[family]||[]; const found=pool.find(x=>title.toLowerCase().includes(x.match.toLowerCase())||x.match.toLowerCase().includes(title.toLowerCase()));
+ return found?.moves||[['Define the smallest useful step for this stage','5 min'],['Do one concrete thing that moves it forward','10 min'],['Write down what you learned or finished','5 min']];
+}
+function renderStageWorkspace(i,mode='open'){
+ const host=document.getElementById(`stageWorkspace-${i}`); if(!host)return;
+ const title=appState.milestones[i]||'This stage'; const moves=stageMovesFor(title);
+ appState.stageMoves=appState.stageMoves||{}; appState.stageMoves[i]=appState.stageMoves[i]||{};
+ const doneMap=appState.stageMoves[i];
+ const doneCount=moves.filter((_,n)=>doneMap[n]).length;
+ host.innerHTML=`<div class="stage-workspace-head"><div><div class="stage-kicker">Work inside this stage</div><h3>${escapeHtml(title)}</h3><p>Do the pieces in whatever order makes sense. You do not need to finish everything today.</p></div><button class="stage-close" type="button" data-close-stage="${i}">Close</button></div><div class="stage-progress"><div class="stage-progress-row"><span>${doneCount} of ${moves.length} moves complete</span><span>${Math.round(doneCount/moves.length*100)}%</span></div><div class="progress"><i style="width:${doneCount/moves.length*100}%"></i></div></div><div class="stage-moves">${moves.map((m,n)=>`<div class="stage-move ${doneMap[n]?'is-done':''}" data-stage-move="${i}" data-move-index="${n}"><button class="stage-move-check" type="button" aria-label="Complete move">${doneMap[n]?'✓':''}</button><div><div class="stage-move-title">${escapeHtml(m[0])}</div><div class="stage-move-meta">${escapeHtml(m[1])}</div></div><button class="stage-move-action" type="button">${doneMap[n]?'Done':'Do it'}</button></div>`).join('')}</div><div class="stage-workspace-foot"><div class="stage-next-note">${doneCount===moves.length?'<strong>Stage ready to complete.</strong> You can move to the next stage.':`<strong>Next:</strong> ${escapeHtml(moves.find((_,n)=>!doneMap[n])?.[0]||'Keep going.')}`}</div>${doneCount===moves.length&&!appState.completedStages.includes(i)?`<button class="primary" type="button" data-complete-stage="${i}">Complete stage</button>`:''}</div>`;
+ host.classList.add('show'); host.closest('.journey-step')?.classList.add('open');
+}
+function renderTodayActionPanel(){
+ const panel=document.getElementById('todayActionPanel'); if(!panel)return;
+ const idx=Number.isInteger(appState.currentStage)?appState.currentStage:-1; const title=appState.milestones[idx];
+ if(!title){panel.classList.remove('show');return;}
+ const moves=stageMovesFor(title); appState.stageMoves=appState.stageMoves||{}; appState.stageMoves[idx]=appState.stageMoves[idx]||{}; const dm=appState.stageMoves[idx]; const nextIndex=moves.findIndex((_,n)=>!dm[n]);
+ if(nextIndex<0){panel.classList.remove('show');return;}
+ const move=moves[nextIndex][0];
+ let body='';
+ if(/choose the amount/i.test(move)) body=`<div class="action-options">${['$500','$1,000','$2,500','$5,000','$8,000','Custom'].map(x=>`<button class="action-option" type="button" data-action-choice="${x}">${x}</button>`).join('')}</div>`;
+ else if(/biggest expenses/i.test(move)) body=`<div class="action-fields"><input placeholder="Biggest expense #1"><input placeholder="Biggest expense #2"><input placeholder="Biggest expense #3"></div>`;
+ else if(/target salary/i.test(move)) body=`<div class="action-fields"><input inputmode="numeric" placeholder="Target salary, e.g. $65,000"></div>`;
+ else body=`<div class="action-fields"><textarea placeholder="Write a quick note about what you did, noticed, or decided..."></textarea></div>`;
+ panel.innerHTML=`<div class="stage-kicker">Do the next useful thing</div><h3>${escapeHtml(move)}</h3><p>${escapeHtml(title)} · ${escapeHtml(moves[nextIndex][1])}</p>${body}<div class="action-panel-footer"><span class="action-helper">You can save a rough answer. It does not need to be perfect.</span><button class="primary" type="button" id="saveTodayAction">Save & complete</button></div>`;
+ panel.classList.add('show');
+}
+function refreshTodayFromPlan(){
+ const ctx=document.getElementById('todayStageContext'); if(!ctx)return;
+ const idx=Number.isInteger(appState.currentStage)?appState.currentStage:-1; const title=appState.milestones[idx];
+ if(!title){ctx.classList.remove('show');return;}
+ const moves=stageMovesFor(title); appState.stageMoves=appState.stageMoves||{}; appState.stageMoves[idx]=appState.stageMoves[idx]||{}; const dm=appState.stageMoves[idx];
+ const next=moves.find((_,n)=>!dm[n]); const completed=moves.filter((_,n)=>dm[n]).length;
+ ctx.innerHTML=`<div class="context-kicker">Current stage</div><strong>${escapeHtml(title)}</strong><span>${completed} of ${moves.length} stage moves complete · Your next move comes from here.</span>`;ctx.classList.add('show');
+ const pt=document.getElementById('primaryTitle'),pm=document.getElementById('primaryMeta'),pw=document.getElementById('primaryWhy');
+ if(next && !state.primaryDone){pt.textContent=next[0];pm.textContent=`${title} · ${next[1]}`;pw.innerHTML=`<strong>Why this one:</strong> This is the next useful piece of <span>${escapeHtml(title)}</span>.`}
+ renderTodayActionPanel();
+}
+
 function renderFoundation(){
  const goal=document.getElementById("goalInput"); if(goal) goal.value=appState.goal;
  const full=document.getElementById("journalFull"); if(full) full.value=state.journal||"";
@@ -375,9 +442,14 @@ document.addEventListener("click",e=>{
  if(m){appState.milestones.splice(Number(m.dataset.removeMilestone),1);saveAppState();renderFoundation();return;}
  if(r){appState.reminders.splice(Number(r.dataset.removeReminder),1);saveAppState();renderFoundation();return;}
  if(work){const i=Number(work.dataset.work);appState.currentStage=i;appState.completedStages=appState.completedStages.filter(n=>n!==i);saveAppState();renderFoundation();document.querySelector('[data-nav="today"]')?.click();setTimeout(()=>document.getElementById('startPrimary')?.scrollIntoView({behavior:'smooth',block:'center'}),120);return;}
- if(e.target.closest("[data-complete-stage]")){const i=Number(e.target.closest("[data-complete-stage]").dataset.completeStage);if(!appState.completedStages.includes(i))appState.completedStages.push(i);const next=appState.milestones.findIndex((_,n)=>n>i&&!appState.completedStages.includes(n));if(next>=0)appState.currentStage=next;saveAppState();renderFoundation();return;}
- if(e.target.closest("[data-preview-stage]")){open?.closest(".journey-step")?.classList.add("open");return;}
- if(e.target.closest("[data-reopen-stage]")){open?.closest(".journey-step")?.classList.add("open");return;}
+ if(e.target.closest("[data-complete-stage]")){const i=Number(e.target.closest("[data-complete-stage]").dataset.completeStage);if(!appState.completedStages.includes(i))appState.completedStages.push(i);const next=appState.milestones.findIndex((_,n)=>n>i&&!appState.completedStages.includes(n));if(next>=0)appState.currentStage=next;state.primaryDone=false;state.primarySkipped=false;storage.set(key,JSON.stringify(state));saveAppState();renderFoundation();return;}
+ if(e.target.closest("[data-preview-stage]")){const i=Number(e.target.closest("[data-preview-stage]").dataset.previewStage);renderStageWorkspace(i);return;}
+ if(e.target.closest("[data-reopen-stage]")){const i=Number(e.target.closest("[data-reopen-stage]").dataset.reopenStage);renderStageWorkspace(i);return;}
+ if(e.target.closest("[data-close-stage]")){const i=Number(e.target.closest("[data-close-stage]").dataset.closeStage);document.getElementById(`stageWorkspace-${i}`)?.classList.remove('show');return;}
+ if(e.target.closest("[data-action-choice]")){document.querySelectorAll("[data-action-choice]").forEach(b=>b.classList.remove("selected"));e.target.closest("[data-action-choice]").classList.add("selected");return;}
+ if(e.target.closest("#saveTodayAction")){const idx=Number.isInteger(appState.currentStage)?appState.currentStage:-1;const title=appState.milestones[idx];if(idx<0||!title)return;const moves=stageMovesFor(title);appState.stageMoves=appState.stageMoves||{};appState.stageMoves[idx]=appState.stageMoves[idx]||{};const dm=appState.stageMoves[idx];const n=moves.findIndex((_,k)=>!dm[k]);if(n<0)return;const val=e.target.closest("#todayActionPanel")?.querySelector("[data-action-choice].selected")?.dataset.actionChoice||e.target.closest("#todayActionPanel")?.querySelector("input")?.value?.trim()||e.target.closest("#todayActionPanel")?.querySelector("textarea")?.value?.trim();if(!val){e.target.closest("#todayActionPanel")?.querySelector("input,textarea,[data-action-choice]")?.focus?.();return;}dm[n]=true;appState.stageNotes=appState.stageNotes||{};appState.stageNotes[`${idx}-${n}`]=val;state.primaryDone=false;saveAppState();storage.set(key,JSON.stringify(state));renderFoundation();return;}
+ if(e.target.closest("[data-stage-move]")){const row=e.target.closest("[data-stage-move]"),i=Number(row.dataset.stageMove),n=Number(row.dataset.moveIndex);appState.stageMoves=appState.stageMoves||{};appState.stageMoves[i]=appState.stageMoves[i]||{};appState.stageMoves[i][n]=!appState.stageMoves[i][n];saveAppState();renderFoundation();setTimeout(()=>renderStageWorkspace(i),0);return;}
+
  if(open && !e.target.closest("button")){open.closest(".journey-step")?.classList.toggle("open");}
 });
 renderFoundation();
