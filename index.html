@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>WhereFits — Working Copy</title>
+<title>WhereFits — Build a life that fits you. · Ferry Crossing</title>
 <meta name="description" content="WhereFits helps you turn the life you want into a plan, today's moves, and steady progress.">
 <style>
 :root{--bg:#f3f1e8;--panel:rgba(255,254,248,.82);--text:#20332f;--muted:#536c65;--line:rgba(32,51,47,.11);--accent:#36a77e;--accent2:#3aaec2;--gold:#f0c45f;--sky:#c9edf4;--shadow:0 20px 55px rgba(30,67,59,.14);--radius:22px}
@@ -92,23 +92,9 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 @keyframes reactivePop{0%{transform:scale(1)}45%{transform:scale(1.018)}100%{transform:scale(1)}}
 @media(max-width:820px){.dashboard{grid-template-columns:1fr}.hero{padding-top:38px}.bottom-nav{grid-template-columns:repeat(3,1fr)}}@media(max-width:560px){.shell{width:min(100% - 20px,1180px)}header{align-items:flex-start}.top-actions .ghost:nth-child(2){display:none}.hero p{font-size:16px}.card.pad{padding:17px}.move{grid-template-columns:26px 1fr}.move .tag{display:none}.moon{right:5%;width:64px;height:64px}.bottom-nav{grid-template-columns:repeat(2,1fr)}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 
-   journey.innerHTML=appState.milestones.length?appState.milestones.map((m,i)=>{
-    const done=appState.completedStages.includes(i), current=!done&&i===appState.currentStage, future=!done&&i!==appState.currentStage;
-    const action=done?`<button class="journey-action" type="button" data-reopen-stage="${i}">Review stage</button>`:current?`<button class="journey-action primaryish" type="button" data-work="${i}">Go to today</button><button class="journey-action" type="button" data-complete-stage="${i}">Mark complete</button>`:`<button class="journey-action" type="button" data-preview-stage="${i}">Preview stage</button><button class="journey-action primaryish" type="button" data-work="${i}">Work on this now</button>`;
-    return `<div class="journey-step ${done?"is-complete":""} ${current?"is-current":""} ${future?"is-future":""}" data-step="${i}"><div class="journey-node">${done?"✓":i+1}</div><div class="journey-card" data-open-step="${i}"><div class="journey-top"><div><div class="journey-status">${done?"COMPLETED":current?"CURRENT STAGE":"FUTURE STAGE"}</div><div class="journey-title">${escapeHtml(m)}</div><div class="journey-meta">${done?"You have moved through this stage.":current?"This is where today starts.":"Click to preview what is coming next."}</div></div><div class="journey-tools"><button class="icon-btn" type="button" data-up="${i}" ${i===0?"disabled":""}>↑</button><button class="icon-btn" type="button" data-down="${i}" ${i===appState.milestones.length-1?"disabled":""}>↓</button></div></div><div class="journey-detail"><p>${done?"This stage is complete. You can still reopen it to remember what you accomplished.":current?"This is your active stage. The next useful moves should come from here.":"This stage is part of your path, but you have not reached it yet. Preview it now without changing where you are."}</p><div class="journey-detail-actions">${action}<button class="journey-action" type="button" data-remove-milestone="${i}">Remove stage</button></div><div class="stage-workspace" id="stageWorkspace-${i}" data-stage-workspace="${i}"></div></div></div></div>`;
-   }).join(""):`<div class="empty-state">Your path starts here. Choose a direction above, then add the stages that make sense for your life.</div>`;
+/* 029 — the world is a place, not wallpaper. */
 @media(min-width:900px){.shell{width:min(820px,calc(100% - 44px))}.dashboard{gap:18px}.card{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}}
 @media(max-width:760px){.shell{width:min(100% - 24px,860px)}.dashboard{grid-template-columns:1fr}.card{background:rgba(255,254,249,.78)}}
-
-/* SECTION GUIDANCE — make every part of WhereFits immediately understandable. */
-.section-guide{margin:0 0 14px;padding:14px 16px;border:1px solid rgba(38,52,49,.10);border-radius:15px;background:rgba(255,255,255,.22);display:flex;gap:12px;align-items:flex-start}
-.section-guide-mark{width:8px;height:8px;min-width:8px;margin-top:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(54,167,126,.35)}
-.section-guide-kicker{font-size:10px;letter-spacing:.13em;text-transform:uppercase;font-weight:800;color:#4d7065;margin-bottom:4px}
-.section-guide p{margin:0;color:#536760;font-size:13px;line-height:1.5}
-.section-guide strong{color:#304b43}
-.nav-btn{position:relative}
-.nav-btn::after{content:attr(data-help);display:block;font-size:9px;font-weight:600;letter-spacing:.01em;color:#78908a;margin-top:2px;line-height:1.1}
-@media(max-width:560px){.section-guide{padding:12px 13px}.nav-btn::after{display:none}}
 
 /* TODAY'S MOVES — personal next-move experience */
 .moves-card{grid-column:1/-1}
@@ -130,24 +116,6 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 .choice-panel{display:none;margin-top:17px;padding:17px;border-radius:17px;background:rgba(255,255,255,.22);border:1px solid rgba(38,52,49,.11)}.choice-panel.show{display:block}.choice-panel h4{margin:0 0 5px;font-size:16px}.choice-panel p{margin:0 0 13px;color:var(--muted);font-size:12px}.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.choice{border:1px solid rgba(38,52,49,.13);background:rgba(255,255,255,.28);border-radius:12px;padding:10px 11px;text-align:left;font-size:12px;color:#30423d;cursor:pointer;transition:.18s}.choice:hover{transform:translateY(-1px);border-color:rgba(54,167,126,.4);background:rgba(111,175,152,.09)}.choice.selected{border-color:var(--accent);background:rgba(91,178,141,.12);box-shadow:0 0 0 2px rgba(54,167,126,.10)}
 .im-done{border:0;background:none;color:#5d716a;font-size:12px;text-decoration:underline;cursor:pointer;padding:7px}.im-done:hover{color:#315a4e}
 @media(max-width:650px){.move-secondary-grid{grid-template-columns:1fr}.choices{grid-template-columns:1fr 1fr}.moves-head{display:block}.move-counter{margin-top:8px}}
-
-.plan-shell{display:grid;grid-template-columns:1.3fr .8fr;gap:16px}.goal-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}.goal-choice{text-align:left;padding:16px;border:1px solid rgba(38,52,49,.10);border-radius:16px;background:rgba(255,255,255,.48);cursor:pointer;color:var(--ink);transition:.18s}.goal-choice:hover,.goal-choice.selected{transform:translateY(-1px);border-color:rgba(76,125,104,.35);background:rgba(111,175,152,.09)}.goal-choice b{display:block;font-size:15px}.goal-choice span{display:block;color:var(--muted);font-size:12px;line-height:1.45;margin-top:5px}.custom-goal{margin-top:18px}.custom-goal label{font-size:12px;font-weight:700;color:var(--muted)}.plan-current{margin-top:18px;padding:14px 16px;border-radius:15px;background:rgba(111,175,152,.08);border:1px solid rgba(76,125,104,.16)}.plan-current b{display:block;font-size:18px}.plan-current span{display:block;margin-top:4px;color:var(--muted);font-size:12px}.plan-flow{display:grid;gap:8px;margin:20px 0}.plan-flow>div{padding:12px 14px;border-radius:13px;background:rgba(111,175,152,.055)}.plan-flow b{display:block}.plan-flow span{display:block;color:var(--muted);font-size:12px;margin-top:3px}.plan-flow i{text-align:center;color:var(--muted);font-style:normal}.plan-milestones{margin-top:16px}.plan-milestones[hidden],.plan-current[hidden],#customGoalWrap[hidden]{display:none}.milestone-template{font-size:11px;color:var(--muted);margin-top:3px}.milestone-item{display:flex;align-items:center;gap:12px}.milestone-num{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(76,125,104,.11);font-size:11px;font-weight:800;flex:none}@media(max-width:820px){.plan-shell{grid-template-columns:1fr}.goal-choices{grid-template-columns:1fr}}
-
-/* QUALITY PASS — interactive plan journey */
-.journey{position:relative;margin:26px 0 22px;padding:4px 0 2px}.journey:before{content:"";position:absolute;left:22px;top:18px;bottom:18px;width:2px;background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.07));}.journey-step{position:relative;display:grid;grid-template-columns:46px 1fr;gap:12px;padding:0 0 18px}.journey-node{position:relative;z-index:2;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(12,20,29,.88);border:1px solid rgba(255,255,255,.22);font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.14);transition:.22s}.journey-step:hover .journey-node{transform:scale(1.06);border-color:rgba(255,255,255,.5)}.journey-card{border:1px solid rgba(255,255,255,.13);background:rgba(9,16,24,.58);border-radius:18px;padding:15px 16px;transition:.22s;cursor:pointer}.journey-card:hover{transform:translateY(-2px);background:rgba(12,21,30,.72);border-color:rgba(255,255,255,.23)}.journey-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.journey-title{font-size:16px;font-weight:750}.journey-meta{font-size:12px;opacity:.6;margin-top:4px}.journey-tools{display:flex;gap:6px;opacity:.45}.journey-card:hover .journey-tools{opacity:1}.icon-btn{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:inherit;border-radius:9px;padding:6px 8px;cursor:pointer}.journey-detail{display:none;margin-top:13px;padding-top:13px;border-top:1px solid rgba(255,255,255,.1)}.journey-step.open .journey-detail{display:block}.journey-detail p{margin:0 0 11px;font-size:13px;line-height:1.55;opacity:.72}.journey-detail-actions{display:flex;gap:8px;flex-wrap:wrap}.journey-action{border:0;border-radius:10px;padding:9px 12px;background:rgba(255,255,255,.08);color:inherit;cursor:pointer}.journey-action.primaryish{background:rgba(255,255,255,.9);color:#101820;font-weight:750}.plan-current{margin-top:18px;border-radius:16px;padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}.plan-current b{display:block;font-size:15px}.plan-current span{display:block;margin-top:4px;font-size:12px;opacity:.62}.goal-choice{transition:transform .18s,border-color .18s,background .18s}.goal-choice:hover{transform:translateY(-2px)}.goal-choice.selected{border-color:rgba(255,255,255,.48);background:rgba(255,255,255,.1);box-shadow:0 10px 30px rgba(0,0,0,.12)}
-.journey-status{font-size:10px;letter-spacing:.16em;font-weight:850;margin-bottom:4px;opacity:.72}.journey-step.is-current .journey-node{background:#2eb486;border-color:rgba(255,255,255,.5);box-shadow:0 10px 28px rgba(46,180,134,.28)}.journey-step.is-current .journey-card{background:rgba(246,251,248,.9);border-color:rgba(46,180,134,.38);box-shadow:0 12px 34px rgba(22,72,58,.10)}.journey-step.is-current .journey-status{color:#168764;opacity:1}.journey-step.is-future .journey-node{background:rgba(18,27,35,.78);opacity:.88}.journey-step.is-future .journey-card{background:rgba(62,72,78,.46);border-color:rgba(255,255,255,.2);opacity:.9}.journey-step.is-future .journey-card:hover{background:rgba(72,83,89,.62);opacity:1;border-color:rgba(255,255,255,.34);transform:translateY(-3px)}.journey-step.is-future .journey-status{color:rgba(255,255,255,.72)}.journey-step.is-complete .journey-node{background:rgba(46,180,134,.18);color:#168764;border-color:rgba(46,180,134,.38)}.journey-step.is-complete .journey-card{background:rgba(235,247,241,.68);border-color:rgba(46,180,134,.24)}.journey-step.is-complete .journey-status{color:#168764}.journey-step.is-future .journey-title{color:rgba(255,255,255,.88)}.journey-step.is-future .journey-meta{opacity:.72}.journey-step.is-current .journey-meta{opacity:.72}
-@media(max-width:720px){.journey-card{padding:13px}.journey-top{align-items:flex-start}.journey-tools{opacity:1}.journey-step{grid-template-columns:40px 1fr}.journey-node{width:40px;height:40px}.journey:before{left:19px}}
-
-.stage-workspace{margin-top:14px;padding:18px;border:1px solid rgba(54,167,126,.18);border-radius:18px;background:rgba(255,255,250,.78);display:none;animation:stageIn .28s ease}.stage-workspace.show{display:block}.stage-workspace-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.stage-kicker{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:800}.stage-workspace h3{margin:5px 0 5px;font-size:22px;letter-spacing:-.03em}.stage-workspace p{margin:0;color:var(--muted);line-height:1.55}.stage-progress{margin:16px 0 12px}.stage-progress-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:7px}.stage-moves{display:grid;gap:8px}.stage-move{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;padding:12px;border:1px solid rgba(32,51,47,.08);border-radius:14px;background:rgba(255,255,255,.58);transition:.2s}.stage-move:hover{transform:translateY(-1px);border-color:rgba(54,167,126,.22)}.stage-move.is-done{opacity:.7}.stage-move-check{width:26px;height:26px;border-radius:50%;border:1px solid rgba(32,51,47,.16);background:transparent;color:var(--accent);display:grid;place-items:center;font-size:13px}.stage-move.is-done .stage-move-check{background:rgba(54,167,126,.14);border-color:rgba(54,167,126,.35)}.stage-move-title{font-weight:750}.stage-move-meta{font-size:11px;color:var(--muted);margin-top:2px}.stage-move-action{border:0;background:transparent;color:var(--accent);font-weight:750;font-size:12px}.stage-workspace-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px}.stage-next-note{font-size:12px;color:var(--muted)}.stage-next-note strong{color:var(--text)}.stage-close{border:0;background:transparent;color:var(--muted);font-size:12px}.today-stage-context{margin:0 0 14px;padding:11px 13px;border-radius:14px;background:rgba(54,167,126,.08);border:1px solid rgba(54,167,126,.13);display:none}.today-stage-context.show{display:block}.today-stage-context .context-kicker{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:800}.today-stage-context strong{display:block;margin-top:3px}.today-stage-context span{font-size:12px;color:var(--muted)}@keyframes stageIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
-
-.today-stage-context{grid-column:1/-1}.today-action-panel{grid-column:1/-1;margin:0 0 2px;padding:18px;border-radius:18px;background:rgba(255,254,249,.82);border:1px solid rgba(54,167,126,.16);display:none;box-shadow:0 10px 28px rgba(30,67,59,.08)}.today-action-panel.show{display:block;animation:stageIn .24s ease}.today-action-panel h3{margin:4px 0 5px;font-size:20px}.today-action-panel p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}.action-options{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.action-option{border:1px solid rgba(32,51,47,.11);background:rgba(255,255,255,.68);color:var(--text);padding:9px 12px;border-radius:12px;font-weight:700;font-size:12px}.action-option:hover,.action-option.selected{border-color:rgba(54,167,126,.38);background:rgba(54,167,126,.10)}.action-fields{display:grid;gap:8px;margin-top:14px}.action-fields input,.action-fields textarea{width:100%;border:1px solid rgba(32,51,47,.12);background:rgba(255,255,255,.72);border-radius:12px;padding:11px 12px;color:var(--text);outline:none}.action-fields textarea{min-height:78px;resize:vertical}.action-panel-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:13px}.action-helper{font-size:11px;color:var(--muted)}
-
-/* CLARITY PASS — simple surface, deeper interactions underneath */
-.clarity-plan{align-items:start}.clarity-side{min-height:100%;display:flex;flex-direction:column}.clarity-steps{margin:20px 0 18px}.clarity-step{display:flex;align-items:flex-start;gap:12px}.clarity-step>span{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(54,167,126,.10);color:var(--accent);font-size:10px;font-weight:850;flex:none}.clarity-step b{display:block;font-size:14px}.clarity-step small{display:block;margin-top:3px;color:var(--muted);font-size:12px;line-height:1.4}.clarity-line{height:18px;width:1px;background:rgba(54,167,126,.18);margin:3px 0 3px 15px}.clarity-side .quote{margin-top:auto}.clarity-path{margin-top:16px}.clarity-path-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.path-goal{margin:18px 0 2px;padding:14px 16px;border-radius:15px;background:rgba(54,167,126,.07);border:1px solid rgba(54,167,126,.14)}.path-goal .path-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:850}.path-goal strong{display:block;font-size:18px;margin-top:3px}.path-goal span{display:block;font-size:12px;color:var(--muted);margin-top:3px}.path-add{margin-top:4px}.text-action{border:0;background:none;color:var(--accent);font-weight:750;font-size:12px;padding:8px 0;cursor:pointer}.text-action:hover{text-decoration:underline}.clarity-path .journey{margin-top:18px}.clarity-path .journey-step.is-future .journey-card{cursor:pointer}.clarity-path .journey-tools{opacity:.25}.clarity-path .journey-card:hover .journey-tools{opacity:.9}.clarity-path .journey-detail{background:rgba(255,255,255,.04);border-radius:12px;padding:13px;margin-top:12px}.clarity-path .journey-action.primaryish{background:var(--accent);color:#fff}.clarity-path .journey-action{background:rgba(255,255,255,.08)}
-@media(max-width:820px){.clarity-plan{grid-template-columns:1fr}.clarity-side{min-height:0}}
-
-.today-simple{grid-template-columns:1fr;max-width:860px;margin-inline:auto}.today-simple .moves-card{grid-column:1/-1}.today-simple .today-path-card{grid-column:1/-1}.today-finish{grid-column:1/-1;text-align:center;padding:8px 0 4px;color:var(--muted);font-size:13px}.today-finish strong{display:block;color:var(--text);font-size:15px;margin-top:3px}.today-path{display:grid;gap:8px;margin-top:14px}.today-path-empty{padding:16px;border:1px dashed rgba(32,51,47,.15);border-radius:15px;color:var(--muted)}.today-path-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,254,249,.58)}.today-path-item.current{background:rgba(54,167,126,.10);border-color:rgba(54,167,126,.28)}.today-path-item.future{opacity:.62}.today-path-dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#263633;color:white;font-size:11px;font-weight:800;flex:none}.today-path-item.current .today-path-dot{background:var(--accent)}.today-path-item.done .today-path-dot{background:var(--accent)}.today-path-text{min-width:0}.today-path-text strong{display:block;font-size:14px}.today-path-text span{display:block;font-size:11px;color:var(--muted);margin-top:2px}.today-simple .today-stage-context{grid-column:1/-1;margin-bottom:0}.compat-state{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-@media(max-width:820px){.today-simple{max-width:none}}
 </style>
 <!-- 100% preview: fully alive destination + signature mountain-side finale. -->
 </head>
@@ -158,73 +126,44 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 <header><a class="brand" href="#" aria-label="WhereFits home"><div class="logo"></div><div><strong>WHEREFITS</strong><span>Build a life that fits you.</span></div></a><div class="top-actions"><button class="ghost" id="resetDemo">Reset demo</button><button class="ghost" id="themePulse">Change scene</button><button class="ghost" id="worldMotion">Pause world</button></div></header>
 <section class="hero"><div class="eyebrow">Your life, one move at a time</div><h1>Build a life that fits you.</h1><p>WhereFits turns the things you want to change into a clear plan, a few meaningful moves today, and a place to see your progress.</p></section>
 <div class="world-status" id="worldStatus">THE WORLD CHANGES AS YOU MOVE</div>
-<section class="app-view active" data-view="today">
-<div class="section-guide"><span class="section-guide-mark"></span><div><div class="section-guide-kicker">What to do here</div><p><strong>Decide what matters today, then take one useful step.</strong> Today is for action — not building the perfect plan.</p></div></div>
-<div class="dashboard today-simple">
-<div class="today-stage-context" id="todayStageContext"></div>
-<div class="today-action-panel" id="todayActionPanel"></div>
+<section class="app-view active" data-view="today"><div class="dashboard">
 <div class="card pad moves-card">
-  <div class="moves-head"><div><div class="kicker">TODAY</div><h2>Make the next useful move.</h2><p class="moves-sub">You do not need to solve everything today. One useful step is enough.</p></div></div>
-  <div class="next-move" id="nextMove">
-    <div class="next-kicker"><span class="next-dot"></span> Your next move</div>
-    <h3 id="primaryTitle">Choose a direction first.</h3>
-    <div class="next-meta" id="primaryMeta">Start in Plan · 5 minutes</div>
-    <div class="next-why" id="primaryWhy"><strong>Why this one:</strong> Once you choose what you want to change, WhereFits can give you a clear next step.</div>
-    <div class="next-actions"><button class="primary" id="startPrimary">Start move</button><button class="im-done" id="skipPrimary">Not today</button></div>
-    <div class="choice-panel" id="choicePanel"><h4>What matters most right now?</h4><p>There is no right answer. Pick the one that feels most useful.</p><div class="choices" id="choices"><button class="choice" data-choice="More money">More money</button><button class="choice" data-choice="Better work">Better work</button><button class="choice" data-choice="Better home">Better home</button><button class="choice" data-choice="More freedom">More freedom</button><button class="choice" data-choice="New place">A new place</button><button class="choice" data-choice="Not sure">I'm not sure yet</button></div></div>
-    <div class="done-state" id="primaryDone"><div><strong id="doneHeadline">You moved forward.</strong><span id="doneDetail">One step closer.</span></div><button class="im-done" id="continueAfterDone">Keep going</button></div>
-  </div>
+<div class="moves-head"><div><div class="kicker">Today's moves</div><h2>Make the next useful move.</h2><p class="moves-sub">You do not need to solve your whole life today. One meaningful step is enough.</p></div><div class="move-counter" id="moveCounter">0 of 3 complete</div></div>
+<div class="next-move" id="nextMove">
+<div class="next-kicker"><span class="next-dot"></span> Your next move</div>
+<h3 id="primaryTitle">Figure out what matters most in your next chapter.</h3>
+<div class="next-meta" id="primaryMeta">Life · 5 minutes</div>
+<div class="next-why" id="primaryWhy"><strong>Why this one:</strong> A clear direction makes every later decision easier. You're working toward <span id="primaryGoal">Move toward a new chapter</span>.</div>
+<div class="next-actions"><button class="primary" id="startPrimary">Start move</button><button class="im-done" id="skipPrimary">Not today</button></div>
+<div class="choice-panel" id="choicePanel"><h4>What matters most right now?</h4><p>There is no right answer. Pick the one that feels most useful.</p><div class="choices" id="choices"><button class="choice" data-choice="More money">More money</button><button class="choice" data-choice="Better work">Better work</button><button class="choice" data-choice="Better home">Better home</button><button class="choice" data-choice="More freedom">More freedom</button><button class="choice" data-choice="New place">A new place</button><button class="choice" data-choice="Not sure">I'm not sure yet</button></div></div>
+<div class="done-state" id="primaryDone"><div><strong id="doneHeadline">You moved your life forward today.</strong><span id="doneDetail">Direction clarified · 1 step closer</span></div><button class="im-done" id="continueAfterDone">Keep going</button></div>
 </div>
-<div class="card pad today-path-card">
-  <div class="card-head"><div><div class="kicker">YOUR PATH</div><h2 id="todayPathGoal">Choose a direction in Plan.</h2><p class="moves-sub">Your current stage and the next few stages will live here.</p></div><button class="small-btn" type="button" id="todayOpenPlan">View plan</button></div>
-  <div class="today-path" id="todayPath"><div class="today-path-empty">Your path will appear here after you choose a direction.</div></div>
+<div class="move-secondary-grid">
+<div class="secondary-move"><span class="secondary-label">02 · Keep momentum</span><h4>Find one real option you could act on.</h4><p>Look for one job, place, idea, or opportunity that genuinely fits the direction you're exploring.</p><div class="secondary-actions"><span class="secondary-time">15 min</span><button class="small-btn secondaryBtn" data-secondary="Find one real option">Do it</button></div></div>
+<div class="secondary-move"><span class="secondary-label">03 · Your choice</span><h4>Take one small step you already know you need.</h4><p>No planning required. If something obvious is waiting, this is your permission to do that instead.</p><div class="secondary-actions"><span class="secondary-time">10–20 min</span><button class="small-btn secondaryBtn" data-secondary="Take one small step">Choose</button></div></div>
 </div>
-<div class="today-finish"><span>Done for today?</span><strong>You can stop after one useful move.</strong></div>
-<div class="compat-state" aria-hidden="true"><span id="moveCount">0 / 1</span><span id="moveProgress"></span><span id="goalPercent">0%</span><span id="goalMoney">$0 of $8,000</span><span id="goalProgress">$0 / $8,000</span><span id="goalProgressBar"></span><span id="goalMilestones">0 of 5</span></div>
+<div class="quote">You don't have to change your whole life today. <strong>Just move something forward.</strong></div>
+</div>
+<div class="card pad"><div class="card-head"><div><div class="kicker">Current goal</div><h2>Move toward a new chapter</h2></div></div><div class="goal-visual"><div class="ring"><strong id="goalPercent">100%</strong></div><div class="goal-copy" id="goalMoney">$8,000 of $8,000 moving fund</div></div><div class="statline"><span>Progress</span><b id="goalProgress">$8,000 / $8,000</b></div><div class="progress"><i id="goalProgressBar" style="width:100%"></i></div><div class="statline"><span>Milestones</span><b id="goalMilestones">5 of 5</b></div></div>
+<div class="card pad journal"><div class="card-head"><div><div class="kicker">Journal</div><h2>What's on your mind?</h2></div><div class="date">Today</div></div><textarea id="journal" placeholder="Write a few words about today..."></textarea><div class="mini-row"><button class="primary" id="saveJournal">Save entry</button><span class="saved" id="saved">Saved locally</span></div></div>
+<div class="card pad"><div class="card-head"><div><div class="kicker">Journey</div><h2>Keep building</h2></div></div><div class="statline"><span>Today's moves</span><b id="moveCount">0 / 3</b></div><div class="progress"><i id="moveProgress" style="width:0%"></i></div><div class="statline"><span>Current streak</span><b>1 day</b></div><div class="quote">When life gets messy, your plan doesn't disappear. Come back, adjust, and keep going.</div></div>
 </div></section>
 
 <!-- FOUNDATION VIEWS -->
 <section class="app-view" data-view="plan">
-<div class="section-guide"><span class="section-guide-mark"></span><div><div class="section-guide-kicker">What to do here</div><p><strong>Turn something you want to change into a path.</strong> Start with the outcome you want, then choose the pieces that actually need to happen.</p></div></div>
-<div class="plan-shell clarity-plan">
-  <div class="card pad plan-main">
-    <div class="kicker">START HERE</div><h2>What do you want to change?</h2>
-    <p class="view-intro">Pick one direction. You can change it later.</p>
-    <div class="goal-choices" id="goalChoices">
-      <button class="goal-choice" data-template="career"><b>Get a better job</b><span>Work, income, skills, and opportunities</span></button>
-      <button class="goal-choice" data-template="money"><b>Save more money</b><span>Build a safer financial position</span></button>
-      <button class="goal-choice" data-template="home"><b>Move somewhere new</b><span>Find a place that fits the life you want</span></button>
-      <button class="goal-choice" data-template="health"><b>Improve my health</b><span>Build habits that make daily life better</span></button>
-      <button class="goal-choice" data-template="learn"><b>Learn something</b><span>Build a skill or become better at something</span></button>
-      <button class="goal-choice" data-template="custom"><b>Something else</b><span>Start with your own direction</span></button>
-    </div>
-    <div class="custom-goal" id="customGoalWrap" hidden>
-      <label for="goalInput">Your goal</label><div class="foundation-form"><input class="foundation-input" id="goalInput" placeholder="e.g. Move to a new city" /><button class="primary" id="saveGoal">Save goal</button></div>
-    </div>
-    <div class="plan-current" id="planCurrent" hidden></div>
+<div class="foundation-grid">
+  <div class="card pad">
+    <div class="kicker">Plan</div><h2>What are you working toward?</h2>
+    <p class="view-intro">Turn something you want to change into a goal, then break it into milestones and useful next moves.</p>
+    <div class="foundation-form"><input class="foundation-input" id="goalInput" placeholder="e.g. Move to a new city" /><button class="primary" id="saveGoal">Save goal</button></div>
+    <div class="foundation-list" id="milestoneList"></div>
+    <div class="foundation-form"><input class="foundation-input" id="milestoneInput" placeholder="Add a milestone" /><button class="small-btn" id="addMilestone">Add milestone</button></div>
   </div>
-  <div class="card pad plan-side clarity-side" id="planSummary">
-    <div class="kicker">HOW IT WORKS</div><h2>Your path is simple.</h2>
-    <div class="clarity-steps">
-      <div class="clarity-step"><span>01</span><div><b>Choose a direction</b><small>What you want to change.</small></div></div>
-      <div class="clarity-line"></div>
-      <div class="clarity-step"><span>02</span><div><b>Follow your path</b><small>A few stages get you there.</small></div></div>
-      <div class="clarity-line"></div>
-      <div class="clarity-step"><span>03</span><div><b>Make the next move</b><small>Today only asks for one useful step.</small></div></div>
-    </div>
-    <div class="quote">You don't need to figure out your whole life. Just decide what matters next.</div>
-  </div>
-</div>
-<div class="card pad plan-milestones clarity-path" id="milestonePanel" hidden>
-  <div class="clarity-path-head"><div><div class="kicker">YOUR PATH</div><h2 id="pathHeading">Where you're going.</h2><p class="view-intro" id="pathIntro">These are the stages between where you are and where you want to be.</p></div><span class="tag" id="milestoneCount">0 stages</span></div>
-  <div class="path-goal" id="pathGoal"></div>
-  <div class="journey" id="journey"></div>
-  <div class="path-add"><button class="text-action" id="showAddMilestone" type="button">+ Add or change a stage</button><div class="foundation-form" id="addMilestoneForm" hidden><input class="foundation-input" id="milestoneInput" placeholder="Add a stage that matters to you" /><button class="small-btn" id="addMilestone">Add stage</button></div></div>
+  <div class="card pad"><div class="kicker">Goal structure</div><h2>Goal → Milestones → Moves</h2><p class="view-intro">Your plan creates the work; Today turns that work into a small number of actions.</p><div class="quote">You don't need a perfect plan. You need a clear next move.</div></div>
 </div>
 </section>
 
 <section class="app-view" data-view="journal">
-<div class="section-guide"><span class="section-guide-mark"></span><div><div class="section-guide-kicker">What to do here</div><p><strong>Keep a record of what is happening.</strong> Write down what changed, what you learned, or what you want to remember.</p></div></div>
 <div class="foundation-grid">
   <div class="card pad journal"><div class="card-head"><div><div class="kicker">Journal</div><h2>What's on your mind?</h2></div><div class="date">Today</div></div><textarea class="foundation-textarea" id="journalFull" placeholder="Write a few words about today..."></textarea><div class="foundation-actions"><button class="primary" id="saveJournalFull">Save entry</button><span class="saved" id="savedFull">Saved locally</span></div></div>
   <div class="card pad"><div class="kicker">Journal</div><h2>Keep the record.</h2><p class="view-intro">Your entries stay on this device for now. Later, this becomes the reflection layer of WhereFits.</p></div>
@@ -232,7 +171,6 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 </section>
 
 <section class="app-view" data-view="progress">
-<div class="section-guide"><span class="section-guide-mark"></span><div><div class="section-guide-kicker">What to do here</div><p><strong>See whether your life is moving in the direction you chose.</strong> Check milestones, momentum, and how the world is changing with you.</p></div></div>
 <div class="foundation-grid">
   <div class="card pad"><div class="kicker">Progress</div><h2 id="progressGoalTitle">Your current chapter</h2><div class="statline"><span>World progress</span><b id="foundationProgressPercent">0%</b></div><div class="progress"><i id="foundationProgressBar" style="width:0%"></i></div><div class="statline"><span>Milestones</span><b id="progressMilestones">0</b></div></div>
   <div class="card pad"><div class="kicker">Momentum</div><h2>Keep the loop going.</h2><p class="view-intro">Complete moves, review what changed, adjust the plan, and keep moving.</p><div class="quote">Progress should describe your life — not become another thing you have to manage.</div></div>
@@ -240,7 +178,6 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 </section>
 
 <section class="app-view" data-view="reminders">
-<div class="section-guide"><span class="section-guide-mark"></span><div><div class="section-guide-kicker">What to do here</div><p><strong>Get future actions out of your head.</strong> Add things you need to remember later without turning your life into a giant task list.</p></div></div>
 <div class="foundation-grid">
   <div class="card pad"><div class="kicker">Reminders</div><h2>Things worth remembering</h2><p class="view-intro">A simple place for future actions. We'll make these useful before adding complexity.</p><div class="foundation-form"><input class="foundation-input" id="reminderInput" placeholder="e.g. Check new apartment listings" /><button class="primary" id="addReminder">Add reminder</button></div><div class="foundation-list" id="reminderList"></div></div>
   <div class="card pad"><div class="kicker">Later</div><h2>Timing that actually helps.</h2><p class="view-intro">Recurring moves, deadlines, and follow-ups will eventually live here without turning WhereFits into a noisy task manager.</p></div>
@@ -248,7 +185,6 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 </section>
 
 <section class="app-view" data-view="explore">
-<div class="section-guide"><span class="section-guide-mark"></span><div><div class="section-guide-kicker">What to do here</div><p><strong>Explore where the life you want could happen.</strong> Compare places and use “What If?” to think through different directions.</p></div></div>
 <div class="foundation-grid">
   <div class="card pad"><div class="kicker">Explore</div><h2>Places that could fit.</h2><p class="view-intro">Explore will eventually connect the life you're building to places where that life could happen.</p><div class="foundation-list"><div class="foundation-item"><div><strong>Neighborhoods</strong><span>Compare places against the life you want.</span></div><button class="small-btn" type="button">Coming next</button></div><div class="foundation-item"><div><strong>What If?</strong><span>See how different choices change the path.</span></div><button class="small-btn" type="button">Coming next</button></div></div></div>
   <div class="card pad"><div class="kicker">WhereFits</div><h2>The world is the backdrop.</h2><p class="view-intro">The product layer now sits on top of the living world we just finished building.</p></div>
@@ -256,12 +192,12 @@ h1{font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.055em;margin:
 </section>
 
 <nav class="card bottom-nav" aria-label="Main navigation">
-<button class="nav-btn active" data-nav="today" data-help="Decide & act">Today</button>
-<button class="nav-btn" data-nav="plan" data-help="Build your path">Plan</button>
-<button class="nav-btn" data-nav="journal" data-help="Reflect & record">Journal</button>
-<button class="nav-btn" data-nav="progress" data-help="See what changed">Progress</button>
-<button class="nav-btn" data-nav="reminders" data-help="Remember later">Reminders</button>
-<button class="nav-btn" data-nav="explore" data-help="Consider possibilities">Explore</button>
+<button class="nav-btn active" data-nav="today">Today</button>
+<button class="nav-btn" data-nav="plan">Plan</button>
+<button class="nav-btn" data-nav="journal">Journal</button>
+<button class="nav-btn" data-nav="progress">Progress</button>
+<button class="nav-btn" data-nav="reminders">Reminders</button>
+<button class="nav-btn" data-nav="explore">Explore</button>
 </nav>
 <footer>WhereFits · Your life. Your plan. Your next move.</footer>
 </main>
@@ -274,8 +210,6 @@ const storage={
 };
 let state={};
 try{state=JSON.parse(storage.get(key)||"{}")}catch(e){state={}};
-// Keep the prototype demo coherent: Today is driven by the current Plan stage, not the old demo move state.
-state.primaryDone=false; state.primaryChoice=""; state.primarySkipped=false;
 const dateEl=document.getElementById("todayDate");
 if(dateEl)dateEl.textContent=new Intl.DateTimeFormat(undefined,{weekday:"short",month:"short",day:"numeric"}).format(new Date());
 const journal=document.getElementById("journal");journal.value=state.journal||"";
@@ -300,7 +234,6 @@ function update(){
  document.getElementById("goalMilestones").textContent="5 of 5";
  const fp=document.getElementById("foundationProgressPercent");if(fp)fp.textContent="100%";
  const fpb=document.getElementById("foundationProgressBar");if(fpb)fpb.style.width="100%";
- refreshTodayFromPlan();
  document.getElementById("worldBadge").textContent=worldTier===0?"Your world · starting point":(done===0?"Your world · "+sceneLabels[scenes[sceneIndex]]:done===1?"Your world · the path is appearing":done===2?"Your world · momentum is building":"Your world · three moves made");
  document.getElementById("worldStatus").textContent=done===0?"THE WORLD CHANGES AS YOU MOVE":done===1?"ONE MOVE MADE · THE PATH IS APPEARING":done===2?"TWO MOVES MADE · MOMENTUM IS BUILDING":"THREE MOVES MADE · THE PATH IS LIT";
  if(document.getElementById("moveCounter"))document.getElementById("moveCounter").textContent=`${Math.min(done,3)} of 3 complete`;
@@ -319,11 +252,8 @@ function completePrimary(choice){
  if(document.getElementById("moveCounter"))document.getElementById("moveCounter").textContent="1 of 3 complete";
 }
 
-document.getElementById('todayOpenPlan')?.addEventListener('click',()=>{document.querySelector('.nav-btn[data-nav=plan]')?.click();});
 document.getElementById("startPrimary")?.addEventListener("click",()=>{
- const idx=Number.isInteger(appState.currentStage)?appState.currentStage:-1;
- const title=appState.milestones[idx];
- if(title && !state.primaryDone){renderTodayActionPanel();document.getElementById("todayActionPanel")?.scrollIntoView({behavior:"smooth",block:"center"});return;}
+ if(state.primaryDone)return;
  document.getElementById("choicePanel").classList.add("show");
  if(document.getElementById("startPrimary"))document.getElementById("startPrimary").textContent="Choose below";
 });
@@ -351,130 +281,30 @@ document.getElementById("resetDemo")?.addEventListener("click",()=>{storage.remo
 const appState=JSON.parse(storage.get("wherefits_app_v1")||"{}");
 appState.goal=appState.goal||"";
 appState.milestones=Array.isArray(appState.milestones)?appState.milestones:[];
-appState.currentStage=Number.isInteger(appState.currentStage)?appState.currentStage:0;
-appState.completedStages=Array.isArray(appState.completedStages)?appState.completedStages:[];
 appState.reminders=Array.isArray(appState.reminders)?appState.reminders:[];
 function saveAppState(){storage.set("wherefits_app_v1",JSON.stringify(appState));}
 function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
-
-const stageMoveLibrary={
-  money:[
-    {match:'Understand where my money is going',moves:[['Look at your last 30 days of spending','10 min'],['Identify your 3 biggest expenses','10 min'],['Find one expense you could realistically change','10 min']]},
-    {match:'Choose a savings target',moves:[['Choose the amount you want to save','5 min'],['Choose a date that feels realistic','5 min'],['Write down what this goal is for','5 min']]},
-    {match:'Create room to save',moves:[['Find one recurring expense to reduce','10 min'],['Choose one purchase you can skip this week','5 min'],['Move your first small amount toward the goal','5 min']]},
-    {match:'Build the savings consistently',moves:[['Choose a simple savings rhythm','5 min'],['Make the next contribution','5 min'],['Decide how you will keep track','5 min']]},
-    {match:'Review and adjust',moves:[['Check what worked this month','10 min'],['Notice what made saving harder','5 min'],['Adjust your target or approach','10 min']]}
-  ],
-  career:[
-    {match:'Know what I want',moves:[['Write down your target salary','5 min'],['Choose your top three job priorities','10 min'],['Name one thing you do not want again','5 min']]},
-    {match:'Get my resume',moves:[['Open your resume','2 min'],['Improve one section','15 min'],['Update one profile detail','10 min']]},
-    {match:'Find roles',moves:[['Find one role that fits','10 min'],['Save three companies you like','10 min'],['Compare one role with your priorities','10 min']]},
-    {match:'Start applying',moves:[['Choose one strong-fit opening','10 min'],['Tailor one part of your application','15 min'],['Send one application','10 min']]},
-    {match:'Follow up',moves:[['Review one application','10 min'],['Send one follow-up','5 min'],['Write down what you learned','5 min']]}
-  ]
-};
-function stageMovesFor(title){
- const goal=(appState.goal||'').toLowerCase(); const family=goal.includes('job')?'career':goal.includes('money')||goal.includes('save')?'money':null;
- const pool=stageMoveLibrary[family]||[]; const found=pool.find(x=>title.toLowerCase().includes(x.match.toLowerCase())||x.match.toLowerCase().includes(title.toLowerCase()));
- return found?.moves||[['Define the smallest useful step for this stage','5 min'],['Do one concrete thing that moves it forward','10 min'],['Write down what you learned or finished','5 min']];
-}
-function renderStageWorkspace(i,mode='open'){
- const host=document.getElementById(`stageWorkspace-${i}`); if(!host)return;
- const title=appState.milestones[i]||'This stage'; const moves=stageMovesFor(title);
- appState.stageMoves=appState.stageMoves||{}; appState.stageMoves[i]=appState.stageMoves[i]||{};
- const doneMap=appState.stageMoves[i];
- const doneCount=moves.filter((_,n)=>doneMap[n]).length;
- host.innerHTML=`<div class="stage-workspace-head"><div><div class="stage-kicker">Work inside this stage</div><h3>${escapeHtml(title)}</h3><p>Do the pieces in whatever order makes sense. You do not need to finish everything today.</p></div><button class="stage-close" type="button" data-close-stage="${i}">Close</button></div><div class="stage-progress"><div class="stage-progress-row"><span>${doneCount} of ${moves.length} moves complete</span><span>${Math.round(doneCount/moves.length*100)}%</span></div><div class="progress"><i style="width:${doneCount/moves.length*100}%"></i></div></div><div class="stage-moves">${moves.map((m,n)=>`<div class="stage-move ${doneMap[n]?'is-done':''}" data-stage-move="${i}" data-move-index="${n}"><button class="stage-move-check" type="button" aria-label="Complete move">${doneMap[n]?'✓':''}</button><div><div class="stage-move-title">${escapeHtml(m[0])}</div><div class="stage-move-meta">${escapeHtml(m[1])}</div></div><button class="stage-move-action" type="button">${doneMap[n]?'Done':'Do it'}</button></div>`).join('')}</div><div class="stage-workspace-foot"><div class="stage-next-note">${doneCount===moves.length?'<strong>Stage ready to complete.</strong> You can move to the next stage.':`<strong>Next:</strong> ${escapeHtml(moves.find((_,n)=>!doneMap[n])?.[0]||'Keep going.')}`}</div>${doneCount===moves.length&&!appState.completedStages.includes(i)?`<button class="primary" type="button" data-complete-stage="${i}">Complete stage</button>`:''}</div>`;
- host.classList.add('show'); host.closest('.journey-step')?.classList.add('open');
-}
-function renderTodayActionPanel(){
- const panel=document.getElementById('todayActionPanel'); if(!panel)return;
- const idx=Number.isInteger(appState.currentStage)?appState.currentStage:-1; const title=appState.milestones[idx];
- if(!title){panel.classList.remove('show');return;}
- const moves=stageMovesFor(title); appState.stageMoves=appState.stageMoves||{}; appState.stageMoves[idx]=appState.stageMoves[idx]||{}; const dm=appState.stageMoves[idx]; const nextIndex=moves.findIndex((_,n)=>!dm[n]);
- if(nextIndex<0){panel.classList.remove('show');return;}
- const move=moves[nextIndex][0];
- let body='';
- if(/choose the amount/i.test(move)) body=`<div class="action-options">${['$500','$1,000','$2,500','$5,000','$8,000','Custom'].map(x=>`<button class="action-option" type="button" data-action-choice="${x}">${x}</button>`).join('')}</div>`;
- else if(/biggest expenses/i.test(move)) body=`<div class="action-fields"><input placeholder="Biggest expense #1"><input placeholder="Biggest expense #2"><input placeholder="Biggest expense #3"></div>`;
- else if(/target salary/i.test(move)) body=`<div class="action-fields"><input inputmode="numeric" placeholder="Target salary, e.g. $65,000"></div>`;
- else body=`<div class="action-fields"><textarea placeholder="Write a quick note about what you did, noticed, or decided..."></textarea></div>`;
- panel.innerHTML=`<div class="stage-kicker">Do the next useful thing</div><h3>${escapeHtml(move)}</h3><p>${escapeHtml(title)} · ${escapeHtml(moves[nextIndex][1])}</p>${body}<div class="action-panel-footer"><span class="action-helper">You can save a rough answer. It does not need to be perfect.</span><button class="primary" type="button" id="saveTodayAction">Save & complete</button></div>`;
- panel.classList.add('show');
-}
-function refreshTodayFromPlan(){
- const ctx=document.getElementById('todayStageContext'); if(!ctx)return;
- const idx=Number.isInteger(appState.currentStage)?appState.currentStage:-1; const title=appState.milestones[idx];
- const path=document.getElementById('todayPath'), goalEl=document.getElementById('todayPathGoal');
- if(goalEl) goalEl.textContent=appState.goal||'Choose a direction in Plan.';
- if(path){
-   path.innerHTML=appState.milestones.length?appState.milestones.map((m,i)=>{const done=appState.completedStages.includes(i), current=!done&&i===idx; return `<div class="today-path-item ${done?'done':''} ${current?'current':'future'}"><div class="today-path-dot">${done?'✓':i+1}</div><div class="today-path-text"><strong>${escapeHtml(m)}</strong><span>${done?'Completed':current?'You are here':'Up next'}</span></div></div>`}).join(''):'<div class="today-path-empty">Your path will appear here after you choose a direction.</div>';
- }
- if(!title){ctx.classList.remove('show'); const pt=document.getElementById('primaryTitle'); if(pt)pt.textContent='Choose a direction first.'; const pm=document.getElementById('primaryMeta'); if(pm)pm.textContent='Start in Plan · 5 minutes'; const pw=document.getElementById('primaryWhy'); if(pw)pw.innerHTML='<strong>Why this one:</strong> Once you choose what you want to change, WhereFits can give you a clear next step.'; return;}
- const moves=stageMovesFor(title); appState.stageMoves=appState.stageMoves||{}; appState.stageMoves[idx]=appState.stageMoves[idx]||{}; const dm=appState.stageMoves[idx];
- const next=moves.find((_,n)=>!dm[n]); const completed=moves.filter((_,n)=>dm[n]).length;
- ctx.innerHTML=`<div class="context-kicker">Current stage</div><strong>${escapeHtml(title)}</strong><span>${completed} of ${moves.length} stage moves complete · Today starts here.</span>`;ctx.classList.add('show');
- const pt=document.getElementById('primaryTitle'),pm=document.getElementById('primaryMeta'),pw=document.getElementById('primaryWhy');
- if(next){pt.textContent=next[0];pm.textContent=`${title} · ${next[1]}`;pw.innerHTML=`<strong>Why this one:</strong> This is the next useful piece of <span>${escapeHtml(title)}</span>.`} else {pt.textContent='Finish this stage.';pm.textContent=`${title} · Ready`;pw.innerHTML='<strong>You have done the moves for this stage.</strong> Review them, then complete the stage in Plan.';}
- renderTodayActionPanel();
-}
-
-
 function renderFoundation(){
  const goal=document.getElementById("goalInput"); if(goal) goal.value=appState.goal;
  const full=document.getElementById("journalFull"); if(full) full.value=state.journal||"";
- const journey=document.getElementById("journey");
- const panel=document.getElementById("milestonePanel"), current=document.getElementById("planCurrent"), count=document.getElementById("milestoneCount");
- if(panel) panel.hidden=!appState.goal;
- if(count) count.textContent=`${appState.milestones.length} ${appState.milestones.length===1?'stage':'stages'}`;
- if(current){current.hidden=!appState.goal;current.innerHTML=appState.goal?`<b>Your direction: ${escapeHtml(appState.goal)}</b><span>Good. Now follow the path below. You only need to work on the current stage.</span>`:"";}
- const pathGoal=document.getElementById("pathGoal"); if(pathGoal){pathGoal.innerHTML=appState.goal?`<div class="path-label">YOUR DIRECTION</div><strong>${escapeHtml(appState.goal)}</strong><span>${appState.milestones.length} stages · one current stage at a time</span>`:"";}
- const summary=document.getElementById("planSummary"); if(summary){summary.innerHTML=appState.goal?`<div class="kicker">YOUR DIRECTION</div><h2>${escapeHtml(appState.goal)}</h2><p class="view-intro">Your plan is now a path. Start with the highlighted stage, then take one useful move.</p><div class="summary-next"><span class="summary-label">START WITH</span><strong>${escapeHtml(appState.milestones[appState.currentStage]||appState.milestones[0]||"Your first stage")}</strong><small>Current stage · Today starts here.</small></div><button class="primary" type="button" id="jumpToPath">View my path</button>`:`<div class="kicker">HOW IT WORKS</div><h2>Your path is simple.</h2><div class="clarity-steps"><div class="clarity-step"><span>01</span><div><b>Choose a direction</b><small>What you want to change.</small></div></div><div class="clarity-line"></div><div class="clarity-step"><span>02</span><div><b>Follow your path</b><small>A few stages get you there.</small></div></div><div class="clarity-line"></div><div class="clarity-step"><span>03</span><div><b>Make the next move</b><small>Today only asks for one useful step.</small></div></div></div><div class="quote">You don't need to figure out your whole life. Just decide what matters next.</div>`;}
- if(journey){
-   journey.innerHTML=appState.milestones.length?appState.milestones.map((m,i)=>{
-    const done=appState.completedStages.includes(i),current=!done&&i===appState.currentStage,future=!done&&i!==appState.currentStage;
-    const action=done?`<button class="journey-action" type="button" data-reopen-stage="${i}">Review stage</button>`:current?`<button class="journey-action primaryish" type="button" data-work="${i}">Go to today</button><button class="journey-action" type="button" data-complete-stage="${i}">Mark complete</button>`:`<button class="journey-action" type="button" data-preview-stage="${i}">Preview stage</button><button class="journey-action primaryish" type="button" data-work="${i}">Work on this now</button>`;
-    return `<div class="journey-step ${done?"is-complete":""} ${current?"is-current":""} ${future?"is-future":""}" data-step="${i}"><div class="journey-node">${done?"✓":i+1}</div><div class="journey-card" data-open-step="${i}"><div class="journey-top"><div><div class="journey-status">${done?"COMPLETED":current?"CURRENT STAGE":"FUTURE STAGE"}</div><div class="journey-title">${escapeHtml(m)}</div><div class="journey-meta">${done?"You have moved through this stage.":current?"This is where today starts.":"Click to preview what is coming next."}</div></div><div class="journey-tools"><button class="icon-btn" type="button" data-up="${i}" ${i===0?"disabled":""}>↑</button><button class="icon-btn" type="button" data-down="${i}" ${i===appState.milestones.length-1?"disabled":""}>↓</button></div></div><div class="journey-detail"><p>${done?"This stage is complete. You can still reopen it to remember what you accomplished.":current?"This is your active stage. The next useful moves should come from here.":"This stage is part of your path, but you have not reached it yet. Preview it now without changing where you are."}</p><div class="journey-detail-actions">${action}<button class="journey-action" type="button" data-remove-milestone="${i}">Remove stage</button></div></div></div></div>`;
-   }).join(""):`<div class="empty-state">Your path starts here. Choose a direction above, then add the stages that make sense for your life.</div>`;
- }
+ const ml=document.getElementById("milestoneList");
+ if(ml) ml.innerHTML=appState.milestones.length?appState.milestones.map((m,i)=>`<div class="foundation-item"><div><strong>${escapeHtml(m)}</strong><span>Milestone ${i+1}</span></div><button class="small-btn" data-remove-milestone="${i}" type="button">Remove</button></div>`).join(""):`<div class="empty-state">Your first milestone will appear here.</div>`;
  const rl=document.getElementById("reminderList");
  if(rl) rl.innerHTML=appState.reminders.length?appState.reminders.map((m,i)=>`<div class="foundation-item"><div><strong>${escapeHtml(m)}</strong><span>Local reminder</span></div><button class="small-btn" data-remove-reminder="${i}" type="button">Remove</button></div>`).join(""):`<div class="empty-state">No reminders yet.</div>`;
  const gt=document.getElementById("progressGoalTitle"); if(gt) gt.textContent=appState.goal||"Your current chapter";
  const pm=document.getElementById("progressMilestones"); if(pm) pm.textContent=appState.milestones.length;
 }
-
 document.querySelectorAll("[data-nav]").forEach(btn=>btn.addEventListener("click",()=>{
  const target=btn.dataset.nav;
  document.querySelectorAll(".app-view").forEach(v=>v.classList.toggle("active",v.dataset.view===target));
  document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===target));
  window.scrollTo({top:0,behavior:"smooth"}); renderFoundation();
 }));
-const templates={career:{goal:"Get a better job",milestones:["Know what I want from my next job","Get my resume and profile ready","Find roles and companies that fit","Start applying","Follow up and improve"]},money:{goal:"Save more money",milestones:["Choose a savings target","Understand where my money is going","Create room to save","Build the savings consistently","Review and adjust"]},home:{goal:"Move somewhere new",milestones:["Define what I need in a place","Choose locations that fit","Understand the real cost","Research actual options","Make a move plan"]},health:{goal:"Improve my health",milestones:["Choose what I want to improve","Make the first habit easy","Build consistency","Notice what is working","Adjust without starting over"]},learn:{goal:"Learn something",milestones:["Define what I want to be able to do","Choose a way to learn","Practice the fundamentals","Build or apply something","Review what I can do now"]}};
-function selectTemplate(name){document.querySelectorAll('.goal-choice').forEach(b=>b.classList.toggle('selected',b.dataset.template===name));const t=templates[name];if(!t){document.getElementById('customGoalWrap').hidden=false;document.getElementById('goalInput').focus();return;}document.getElementById('customGoalWrap').hidden=true;appState.goal=t.goal;appState.milestones=[...t.milestones];saveAppState();renderFoundation();}
-document.querySelectorAll('.goal-choice').forEach(b=>b.addEventListener('click',()=>selectTemplate(b.dataset.template)));
 document.getElementById("saveGoal")?.addEventListener("click",()=>{const i=document.getElementById("goalInput"),v=i.value.trim();if(!v)return;appState.goal=v;saveAppState();renderFoundation();});
 document.getElementById("addMilestone")?.addEventListener("click",()=>{const i=document.getElementById("milestoneInput"),v=i.value.trim();if(!v)return;appState.milestones.push(v);i.value="";saveAppState();renderFoundation();});
 document.getElementById("addReminder")?.addEventListener("click",()=>{const i=document.getElementById("reminderInput"),v=i.value.trim();if(!v)return;appState.reminders.push(v);i.value="";saveAppState();renderFoundation();});
-document.getElementById("showAddMilestone")?.addEventListener("click",()=>{const f=document.getElementById("addMilestoneForm");if(f){f.hidden=!f.hidden;if(!f.hidden)document.getElementById("milestoneInput")?.focus();}});
-document.addEventListener("click",e=>{if(e.target.closest("#jumpToPath")){document.getElementById("milestonePanel")?.scrollIntoView({behavior:"smooth",block:"start"});}});
 document.getElementById("saveJournalFull")?.addEventListener("click",()=>{const full=document.getElementById("journalFull");state.journal=full.value;storage.set(key,JSON.stringify(state));const s=document.getElementById("savedFull");s.classList.add("show");setTimeout(()=>s.classList.remove("show"),1600);});
-document.addEventListener("click",e=>{
- const m=e.target.closest("[data-remove-milestone]"),r=e.target.closest("[data-remove-reminder]"),up=e.target.closest("[data-up]"),down=e.target.closest("[data-down]"),open=e.target.closest("[data-open-step]"),work=e.target.closest("[data-work]");
- if(up){const i=Number(up.dataset.up);[appState.milestones[i-1],appState.milestones[i]]=[appState.milestones[i],appState.milestones[i-1]];saveAppState();renderFoundation();return;}
- if(down){const i=Number(down.dataset.down);[appState.milestones[i+1],appState.milestones[i]]=[appState.milestones[i],appState.milestones[i+1]];saveAppState();renderFoundation();return;}
- if(m){appState.milestones.splice(Number(m.dataset.removeMilestone),1);saveAppState();renderFoundation();return;}
- if(r){appState.reminders.splice(Number(r.dataset.removeReminder),1);saveAppState();renderFoundation();return;}
- if(work){const i=Number(work.dataset.work);appState.currentStage=i;appState.completedStages=appState.completedStages.filter(n=>n!==i);saveAppState();renderFoundation();document.querySelector('[data-nav="today"]')?.click();setTimeout(()=>document.getElementById('startPrimary')?.scrollIntoView({behavior:'smooth',block:'center'}),120);return;}
- if(e.target.closest("[data-complete-stage]")){const i=Number(e.target.closest("[data-complete-stage]").dataset.completeStage);if(!appState.completedStages.includes(i))appState.completedStages.push(i);const next=appState.milestones.findIndex((_,n)=>n>i&&!appState.completedStages.includes(n));if(next>=0)appState.currentStage=next;state.primaryDone=false;state.primarySkipped=false;storage.set(key,JSON.stringify(state));saveAppState();renderFoundation();return;}
- if(e.target.closest("[data-preview-stage]")){const i=Number(e.target.closest("[data-preview-stage]").dataset.previewStage);renderStageWorkspace(i);return;}
- if(e.target.closest("[data-reopen-stage]")){const i=Number(e.target.closest("[data-reopen-stage]").dataset.reopenStage);renderStageWorkspace(i);return;}
- if(e.target.closest("[data-close-stage]")){const i=Number(e.target.closest("[data-close-stage]").dataset.closeStage);document.getElementById(`stageWorkspace-${i}`)?.classList.remove('show');return;}
- if(e.target.closest("[data-action-choice]")){document.querySelectorAll("[data-action-choice]").forEach(b=>b.classList.remove("selected"));e.target.closest("[data-action-choice]").classList.add("selected");return;}
- if(e.target.closest("#saveTodayAction")){const idx=Number.isInteger(appState.currentStage)?appState.currentStage:-1;const title=appState.milestones[idx];if(idx<0||!title)return;const moves=stageMovesFor(title);appState.stageMoves=appState.stageMoves||{};appState.stageMoves[idx]=appState.stageMoves[idx]||{};const dm=appState.stageMoves[idx];const n=moves.findIndex((_,k)=>!dm[k]);if(n<0)return;const val=e.target.closest("#todayActionPanel")?.querySelector("[data-action-choice].selected")?.dataset.actionChoice||e.target.closest("#todayActionPanel")?.querySelector("input")?.value?.trim()||e.target.closest("#todayActionPanel")?.querySelector("textarea")?.value?.trim();if(!val){e.target.closest("#todayActionPanel")?.querySelector("input,textarea,[data-action-choice]")?.focus?.();return;}dm[n]=true;appState.stageNotes=appState.stageNotes||{};appState.stageNotes[`${idx}-${n}`]=val;state.primaryDone=false;saveAppState();storage.set(key,JSON.stringify(state));renderFoundation();return;}
- if(e.target.closest("[data-stage-move]")){const row=e.target.closest("[data-stage-move]"),i=Number(row.dataset.stageMove),n=Number(row.dataset.moveIndex);appState.stageMoves=appState.stageMoves||{};appState.stageMoves[i]=appState.stageMoves[i]||{};appState.stageMoves[i][n]=!appState.stageMoves[i][n];saveAppState();renderFoundation();setTimeout(()=>renderStageWorkspace(i),0);return;}
-
- if(open && !e.target.closest("button")){open.closest(".journey-step")?.classList.toggle("open");}
-});
+document.addEventListener("click",e=>{const m=e.target.closest("[data-remove-milestone]"),r=e.target.closest("[data-remove-reminder]");if(m){appState.milestones.splice(Number(m.dataset.removeMilestone),1);saveAppState();renderFoundation();}if(r){appState.reminders.splice(Number(r.dataset.removeReminder),1);saveAppState();renderFoundation();}});
 renderFoundation();
 
 const scenes=["morning","day","sunset","night"],sceneLabels={morning:"quiet morning",day:"open day",sunset:"golden hour",night:"quiet night"};let sceneIndex=0;
@@ -488,7 +318,7 @@ let cw=0,ch=0,dpr=1,worldTime=0,progressMoves=0;
 const demoProgressParam=new URLSearchParams(location.search).get("progress");
 const parsedDemoProgress=demoProgressParam===null?NaN:Number(demoProgressParam);
 // This build is the 85–95% visual preview. Keep the URL override so the same file can still be tested at any percentage.
-const previewDefaultProgress=100;
+const previewDefaultProgress=0;
 const worldProgress=Math.min(100,Math.max(0,Number.isFinite(parsedDemoProgress)?parsedDemoProgress:previewDefaultProgress));
 function getWorldTier(p){if(p>=100)return 8;if(p>=95)return 7;if(p>=90)return 6;if(p>=75)return 5;if(p>=60)return 4;if(p>=40)return 3;if(p>=25)return 2;if(p>=10)return 1;return 0;}
 const worldTier=getWorldTier(worldProgress);
