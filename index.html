@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>WhereFits — Build a life that fits you. · Ferry Crossing</title>
+<title>WhereFits — Working Copy</title>
 <meta name="description" content="WhereFits helps you turn the life you want into a plan, today's moves, and steady progress.">
 <style>
 :root{--bg:#f3f1e8;--panel:rgba(255,254,248,.82);--text:#20332f;--muted:#536c65;--line:rgba(32,51,47,.11);--accent:#36a77e;--accent2:#3aaec2;--gold:#f0c45f;--sky:#c9edf4;--shadow:0 20px 55px rgba(30,67,59,.14);--radius:22px}
@@ -319,7 +319,7 @@ function completePrimary(choice){
  if(document.getElementById("moveCounter"))document.getElementById("moveCounter").textContent="1 of 3 complete";
 }
 
-document.getElementById('todayOpenPlan')?.addEventListener('click',()=>{document.querySelector('[data-view=plan]')?.classList.add('active');document.querySelector('[data-view=today]')?.classList.remove('active');document.querySelector('.nav-btn[data-view=plan]')?.click();});
+document.getElementById('todayOpenPlan')?.addEventListener('click',()=>{document.querySelector('.nav-btn[data-nav=plan]')?.click();});
 document.getElementById("startPrimary")?.addEventListener("click",()=>{
  const idx=Number.isInteger(appState.currentStage)?appState.currentStage:-1;
  const title=appState.milestones[idx];
